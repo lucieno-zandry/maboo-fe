@@ -85,3 +85,16 @@ type Promotion = {
   end_date: string;
   is_active: boolean;
 }
+
+type CartItem = {
+  id: number;
+  variant_id: number;
+  count: number;
+  user_id: number;
+  promotion_discount_applied: number;
+  total: number;
+  updated_at: string; // ISO 8601 timestamp
+  created_at: string; // ISO 8601 timestamp
+  variant?: Variant,
+  user?: User,
+};

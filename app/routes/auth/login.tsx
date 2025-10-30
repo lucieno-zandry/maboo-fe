@@ -7,6 +7,7 @@ import { Form, redirect, useActionData, useLoaderData, useNavigation } from "rea
 import { getEmailInfo, logUserIn } from "~/api/httpRequests";
 import React from "react";
 import getUpdatedFormErrors from "~/lib/getUpdatedFormErrors";
+import useRedirectAction from "~/hooks/use-redirect-action";
 
 const dataFormat = {
   email: z.email(),
@@ -41,7 +42,9 @@ export const clientAction = async ({ request }: Route.ClientActionArgs) => {
     localStorage.setItem("token", response.data?.token)
   }
 
-  return redirect('/');
+  const { successPathname } = useRedirectAction.getState();
+
+  return redirect(successPathname || '/');
 }
 
 export default function () {

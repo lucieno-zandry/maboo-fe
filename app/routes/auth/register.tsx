@@ -44,7 +44,7 @@ export const clientAction = async ({ request }: Route.ClientActionArgs) => {
     localStorage.setItem("token", response.data?.token)
   }
 
-  return redirect('/');
+  return redirect('/auth/verify-email');
 }
 
 export default function () {

@@ -40,5 +40,5 @@ export function addVariantToCart(payload: {
     variant_id: number,
     count: number,
 }) {
-    return appFetch.post('/cart/create', payload);
+    return appFetch.post<{ cart_item: CartItem }>('/cart/create', payload);
 }

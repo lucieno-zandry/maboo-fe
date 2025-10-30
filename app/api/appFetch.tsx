@@ -1,4 +1,8 @@
 import { API_URL } from "~/env";
+import useRedirectAction from "~/hooks/use-redirect-action";
+import useRouterStore from "~/hooks/use-router-store";
+import isCsr from "~/lib/is-csr";
+import redirectPathnames from "~/lib/redirect-pathnames";
 
 export class AppFetchException {
     data: any;
@@ -21,7 +25,7 @@ const defaultHeaders = (): HeadersInit => {
         'Accept': 'application/json',
     }
 
-    if (typeof window !== "undefined") {
+    if (isCsr()) {
         const token = localStorage.getItem('token');
         const tokenType = "Bearer";
 
@@ -32,6 +36,17 @@ const defaultHeaders = (): HeadersInit => {
 
     return headers;
 };
+
+const handleActionRedirection = (json: any, request: () => Promise<Response>) => {
+    const redirectPathname = redirectPathnames[json.action as keyof typeof redirectPathnames];
+    const { navigate } = useRouterStore.getState();
+    const { setAction } = useRedirectAction.getState();
+
+    if (redirectPathname && navigate) {
+        setAction({ successPathname: location.pathname })
+        navigate(redirectPathname);
+    }
+}
 
 const getEndpointUrl = (path: string) => API_URL + path;
 
@@ -48,6 +63,10 @@ async function executeRequest<T>(request: () => Promise<Response>) {
         if (json.status) delete json.status;
 
         if (response.status >= 400) {
+            // if backend wants to redirect the user
+            if (response.status === 403 && json.action) {
+                handleActionRedirection(json, request);
+            }
             formatedResponse.error = json;
         } else {
             formatedResponse.data = json as T;

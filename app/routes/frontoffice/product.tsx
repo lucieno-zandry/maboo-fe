@@ -4,12 +4,35 @@ import { addVariantToCart, getProduct } from "~/api/httpRequests";
 import { useLoaderData, useNavigation, useSubmit, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { Loader2, Minus, Plus, ShoppingCart } from "lucide-react";
 import Button from "~/components/custom-components/button";
+import toast from "react-hot-toast";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const { slug } = params;
 
     const response = slug && await getProduct(slug);
     return response && response.data?.product;
+}
+
+export const clientAction = async ({ request }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const variantId = formData.get('variant_id')?.toString();
+    const count = formData.get('count')?.toString();
+
+    if (variantId && count) {
+        const response = await addVariantToCart({
+            variant_id: parseInt(variantId),
+            count: parseInt(count)
+        });
+
+        return response.data?.cart_item;
+    }
+
+    toast.error("Failed to add product to cart, refresh the page and try again!");
+
+    return {
+        status: 422,
+        message: "Failed to add product to cart, refresh the page and try again!",
+    }
 }
 
 export const HydrateFallback = () => (
@@ -182,7 +205,7 @@ export default function ProductPage() {
                                     </Button>
                                 </div>
 
-                                {/* 💰 Subtotal display */}
+                                {/* Subtotal display */}
                                 <div className="flex justify-end items-center gap-2 text-gray-700 pt-3">
                                     <span className="font-semibold text-lg">Subtotal:</span>
                                     <span className="text-3xl font-extrabold text-indigo-700">
