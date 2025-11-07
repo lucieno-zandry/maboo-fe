@@ -4,7 +4,9 @@ import { addVariantToCart, getProduct } from "~/api/httpRequests";
 import { useLoaderData, useNavigation, useSubmit, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { Loader2, Minus, Plus, ShoppingCart } from "lucide-react";
 import Button from "~/components/custom-components/button";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+import NotFound from "~/components/not-found";
+import { useRefreshCart } from "~/hooks/use-cart";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const { slug } = params;
@@ -17,6 +19,7 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const variantId = formData.get('variant_id')?.toString();
     const count = formData.get('count')?.toString();
+    const refreshCart = useRefreshCart();
 
     if (variantId && count) {
         const response = await addVariantToCart({
@@ -24,7 +27,11 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
             count: parseInt(count)
         });
 
-        return response.data?.cart_item;
+        if (response.data?.cart_item) {
+            refreshCart();
+        }
+
+        return toast.success("Product added to cart!")
     }
 
     toast.error("Failed to add product to cart, refresh the page and try again!");
@@ -35,26 +42,24 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
     }
 }
 
-export const HydrateFallback = () => (
-    <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 grow-1 mb-5">
-        <div className="flex flex-col items-center space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600 dark:text-blue-400" />
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                Loading ....
-            </p>
-        </div>
-    </div>
-)
-
 export default function ProductPage() {
-    const product = useLoaderData<Product>();
+    const product = useLoaderData<Product | null>();
     const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
     const [count, setCount] = useState<number>(1);
     const submit = useSubmit();
     const navigation = useNavigation();
 
+    // 🧮 Subtotal computation (updates dynamically)
+    const subtotal = React.useMemo(() => {
+        if (!selectedVariant) return 0;
+        const unitPrice = selectedVariant.special_price || selectedVariant.price;
+        return unitPrice * count;
+    }, [selectedVariant, count]);
+
     const isLoading = React.useMemo(() => navigation.state === "submitting", [navigation]);
+
+    if (!product) return <NotFound />
 
     const handleOptionSelect = (groupId: number, optionId: number) => {
         const updated = { ...selectedOptions, [groupId]: optionId };
@@ -80,13 +85,6 @@ export default function ProductPage() {
 
         submit(payload, { method: "POST" })
     };
-
-    // 🧮 Subtotal computation (updates dynamically)
-    const subtotal = React.useMemo(() => {
-        if (!selectedVariant) return 0;
-        const unitPrice = selectedVariant.special_price || selectedVariant.price;
-        return unitPrice * count;
-    }, [selectedVariant, count]);
 
     return (
         <div className="px-6 md:px-10 lg:px-24 py-16 bg-white min-h-screen">

@@ -86,15 +86,54 @@ type Promotion = {
   is_active: boolean;
 }
 
+
 type CartItem = {
   id: number;
-  variant_id: number;
-  count: number;
+
+  // Foreign keys (for integrity & backend analytics)
   user_id: number;
-  promotion_discount_applied: number;
-  total: number;
-  updated_at: string; // ISO 8601 timestamp
-  created_at: string; // ISO 8601 timestamp
-  variant?: Variant,
-  user?: User,
+  product_id: number;
+  variant_id: number;
+
+  // Quantity
+  count: number;
+
+  // Pricing (stable at time of adding to cart)
+  unit_price: number;                     // price per item at that time
+  promotion_discount_applied: number;     // total discount applied
+  total: number;                          // final total (count * unit_price - discounts)
+
+  // Snapshots (used by frontend — always reliable)
+  product_snapshot: string //ProductSnapshot JSON
+  variant_snapshot: string //VariantSnapshot JSON
+  variant_options_snapshot: string //VariantOptionsSnapshot JSON
+
+  // Meta
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+
+  // Optional hydrated relations
+  variant?: Variant;
+  product?: Product;
+  user?: User;
+};
+
+type ProductSnapshot = {
+  id: number;
+  title: string;
+  slug: string;
+  main_image: string | null;
+  category_id: number;
+};
+
+type VariantSnapshot = {
+  id: number;
+  sku: string;
+  price: number;
+  special_price: number | null;
+  image: string | null;
+};
+
+type VariantOptionsSnapshot = {
+  [group: string]: string;
 };

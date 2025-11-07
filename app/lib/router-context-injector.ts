@@ -6,7 +6,7 @@ import useRouterStore from '~/hooks/use-router-store';
 
 const RouterContextInjector = () => {
     const navigate = useNavigate();
-    const setRouterContext = useRouterStore((s) => s.setRouterContext);
+    const { setRouterContext } = useRouterStore();
 
     React.useEffect(() => {
         setRouterContext({

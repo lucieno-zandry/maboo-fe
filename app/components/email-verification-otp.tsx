@@ -4,7 +4,6 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "~/components/ui/input-otp";
-import { Button } from "~/components/ui/button";
 import {
     Card,
     CardContent,
@@ -12,28 +11,48 @@ import {
     CardHeader,
     CardTitle,
 } from "~/components/ui/card";
-import { Form, redirect, type ActionFunctionArgs } from "react-router";
+import { Form, useNavigation } from "react-router";
 import { Mail } from "lucide-react";
-import useRedirectAction from "~/hooks/use-redirect-action";
+import Button from "./custom-components/button";
 
-export const clientAction = async ({ request }: ActionFunctionArgs) => {
-    const formData = await request.formData();
-    const { successPathname } = useRedirectAction.getState();
-
-    return redirect(successPathname || '/')
+export type EmailVerificationOtpProps = {
+    onSendEmailVerificationCode: () => void,
+    errorMessages: string[] | null,
 }
 
-/**
- * Renders an interface for user email verification using an OTP (One-Time Password).
- * This component focuses purely on the UI/UX; the verification logic is omitted.
- */
-export function EmailVerificationOtp() {
+const RESEND_TIMEOUT = 30;
+
+export function EmailVerificationOtp({
+    onSendEmailVerificationCode,
+    errorMessages
+}: EmailVerificationOtpProps) {
     const [otp, setOtp] = React.useState("");
-    const codeLength = 6; // Standard OTP length
+    const codeLength = 6;
+
+    const [secondsLeft, setSecondsLeft] = React.useState(RESEND_TIMEOUT);
+    const [canResend, setCanResend] = React.useState(false);
+
+    const navigation = useNavigation();
+    const isLoading = React.useMemo(() => navigation.state === "submitting", [navigation.state]);
+
+    // countdown effect
+    React.useEffect(() => {
+        if (secondsLeft === 0) {
+            setCanResend(true);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setSecondsLeft((s) => s - 1);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [secondsLeft]);
 
     const handleResend = () => {
-        // Logic for requesting a new OTP goes here
-        console.log("Resend code requested");
+        onSendEmailVerificationCode();
+        setCanResend(false);
+        setSecondsLeft(RESEND_TIMEOUT);
     };
 
     return (
@@ -47,42 +66,51 @@ export function EmailVerificationOtp() {
                     Please enter it below to confirm your account.
                 </CardDescription>
             </CardHeader>
+
             <CardContent>
                 <Form className="space-y-6" method="post">
-                    <div className="flex justify-center">
+                    <div className="flex flex-col items-center gap-3">
                         <InputOTP
                             maxLength={codeLength}
                             value={otp}
-                            onChange={(value) => setOtp(value)}
-                        >
+                            onChange={setOtp}
+                            name="otp">
                             <InputOTPGroup>
-                                {/* Map over the required length to create the slots */}
                                 {Array.from({ length: codeLength }).map((_, index) => (
                                     <InputOTPSlot key={index} index={index} />
                                 ))}
                             </InputOTPGroup>
                         </InputOTP>
+
+                        {errorMessages && <p className="text-destructive text-sm">
+                            {errorMessages}
+                        </p>}
                     </div>
 
                     <Button
                         type="submit"
                         className="w-full"
                         disabled={otp.length !== codeLength}
-                    >
+                        isLoading={isLoading}>
                         Verify Account
                     </Button>
                 </Form>
 
                 <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     Didn't receive the code?
-                    <Button
-                        variant="link"
-                        onClick={handleResend}
-                        className="p-1 h-auto"
-                    >
-                        Resend Code
-                    </Button>
-                    {/* You might add a small countdown timer here for better UX */}
+                    {canResend ? (
+                        <Button
+                            variant="link"
+                            onClick={handleResend}
+                            className="p-1 h-auto"
+                        >
+                            Resend Code
+                        </Button>
+                    ) : (
+                        <span className="ml-1">
+                            Resend available in {secondsLeft}s
+                        </span>
+                    )}
                 </div>
             </CardContent>
         </Card>

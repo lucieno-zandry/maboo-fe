@@ -4,12 +4,13 @@ import { Link, Outlet } from "react-router"
 import { useUserStore } from "~/hooks/use-user"
 import { Button } from "./ui/button";
 import UserDropdown from "./user-dropdown";
+import Cart from "./cart/cart";
 
 export default function () {
     const { user } = useUserStore();
 
     return (
-        <header className="flex justify-between items-center px-8 py-4 shadow-sm bg-white sticky top-0 z-50">
+        <header className="flex justify-between items-center px-8 py-4 shadow-sm bg-white sticky top-0 z-25">
             <h1>
                 <Link to="/" className="text-2xl font-bold text-gray-800">ShopEase</Link>
             </h1>
@@ -23,8 +24,12 @@ export default function () {
                 <Link to="/auth" className="text-gray-600 hover:text-gray-900">Log in</Link>
             </Button>}
 
-            {user &&
-                <UserDropdown />}
+            {user  &&
+                <div className="flex gap-2 items-center">
+                    <Cart />
+                    <UserDropdown />
+                </div>
+            }
         </header>
     )
 }

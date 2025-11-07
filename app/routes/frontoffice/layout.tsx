@@ -1,23 +1,31 @@
 import React from "react";
 import { Outlet, useLoaderData } from "react-router";
-import { getAuthUser } from "~/api/httpRequests";
+import { getAuthUser, getCartItems } from "~/api/httpRequests";
 import Footer from "~/components/footer";
 import Navbar from "~/components/navbar";
+import useCartStore, { useRefreshCart } from "~/hooks/use-cart";
 import { useUserStore } from "~/hooks/use-user";
 
 export const clientLoader = async () => {
-    const { data } = await getAuthUser();
-    const user = data?.user || null;
+    const auth = await getAuthUser();
 
-    return user;
+    return {
+        user: auth.data?.user || null,
+    };
 }
 
 export default function () {
-    const { setUser, user } = useUserStore();
-    const loaderUser = useLoaderData<User | null>();
+    const { setUser } = useUserStore();
+    const refreshCart = useRefreshCart();
+
+    const loaderData = useLoaderData<{ user: User | null }>();
+    const loaderUser = loaderData?.user;
 
     React.useEffect(() => {
         setUser(loaderUser);
+        if(loaderUser){
+            refreshCart();
+        }
     }, [loaderUser, setUser]);
 
     return <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100">
