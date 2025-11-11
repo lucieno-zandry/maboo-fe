@@ -49,7 +49,7 @@ export default function App() {
   return <>
     <RouteProgress />
     <RouterContextInjector />
-    <Toaster />
+    <Toaster position="top-center"/>
     <Outlet />
   </>
 }

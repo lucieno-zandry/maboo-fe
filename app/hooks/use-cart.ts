@@ -20,13 +20,12 @@ const useCartStore = create<CartStore>(set => ({
 export const useRefreshCart = () => {
     const { setItems } = useCartStore.getState();
 
-    return () => {
+    return () =>
         getCartItems()
             .then((response) => {
                 const cartItems = response.data?.cart_items || null;
                 setItems(cartItems);
             });
-    }
 }
 
 export default useCartStore;

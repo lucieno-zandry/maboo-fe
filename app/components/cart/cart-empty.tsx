@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from "~/components/ui/empty"
 
-export function CartEmpty() {
+export function CartEmpty({ onClose }: { onClose: () => void }) {
   return (
     <Empty className="border border-dashed">
       <EmptyHeader>
@@ -25,7 +25,7 @@ export function CartEmpty() {
       </EmptyHeader>
 
       <EmptyContent>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={onClose}>
           Continue Shopping
         </Button>
       </EmptyContent>

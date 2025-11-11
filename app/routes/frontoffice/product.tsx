@@ -29,9 +29,8 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
 
         if (response.data?.cart_item) {
             refreshCart();
+            return toast.success("Product added to cart!")
         }
-
-        return toast.success("Product added to cart!")
     }
 
     toast.error("Failed to add product to cart, refresh the page and try again!");

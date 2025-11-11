@@ -29,7 +29,7 @@ export function getAuthUser() {
 }
 
 export function getProducts() {
-    return appFetch.get<{ products: Product[] }>('/product/all?limit=10&with=variants&images');
+    return appFetch.get<{ products: Product[] }>('/product/all?limit=9&with=variants&images');
 }
 
 export function getProduct(slug: string) {
@@ -53,4 +53,12 @@ export function addVariantToCart(payload: {
 
 export function getCartItems() {
     return appFetch.get<{ cart_items: CartItem[] }>('/cart/all');
+}
+
+export function updateCartItem(cartItemId: number, payload: { count: number }) {
+    return appFetch.put<{ cart_item: CartItem }>(`/cart/update/${cartItemId}`, payload);
+}
+
+export function removeCartItem(cartItemId: number) {
+    return appFetch.delete(`/cart/delete?cart_item_ids=${cartItemId}`);
 }

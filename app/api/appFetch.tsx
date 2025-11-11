@@ -111,7 +111,40 @@ async function post<T>(path: string, payload: FormData | Object, init: RequestIn
     return response;
 }
 
+async function put<T>(path: string, payload: FormData | Object, init: RequestInit = { headers: defaultHeaders() }): Promise<FormatedResponse<T>> {
+    let body: BodyInit;
+
+    if (payload instanceof FormData) {
+        body = payload
+    } else {
+        body = JSON.stringify(payload);
+        init.headers = {
+            ...init.headers,
+            'Content-Type': 'application/json',
+        };
+    }
+
+    const response = await executeRequest<T>(() => fetch(getEndpointUrl(path), {
+        ...init,
+        body,
+        method: "PUT",
+    }));
+
+    return response;
+}
+
+async function destroy<T>(path: string, init: RequestInit = { headers: defaultHeaders() }): Promise<FormatedResponse<T>> {
+    const response = await executeRequest<T>(() => fetch(getEndpointUrl(path), {
+        ...init,
+        method: "DELETE",
+    }));
+
+    return response;
+}
+
 export default {
     get,
-    post
+    post,
+    put,
+    delete: destroy,
 }

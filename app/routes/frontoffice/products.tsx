@@ -3,29 +3,15 @@ import { Card, CardContent } from "~/components/ui/card";
 import { motion } from "framer-motion";
 import { Link, useLoaderData } from "react-router";
 import { getProducts } from "~/api/httpRequests";
-import { Loader2 } from "lucide-react";
+import formatMoney from "~/lib/format-money";
 
 export const loader = async () => {
     const response = await getProducts();
     return response.data?.products;
 }
 
-export const HydrateFallback = () => (
-    <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 grow-1 mb-5">
-        <div className="flex flex-col items-center space-y-4">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600 dark:text-blue-400" />
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                Loading ....
-            </p>
-        </div>
-    </div>
-)
-
 export default function ProductsPage() {
     const products = useLoaderData() as Product[];
-
-    const formatMoney = (n?: number) =>
-        n === undefined ? "-" : `$${Number(n).toFixed(2)}`;
 
     return (
         <div className="px-6 md:px-20 py-16 bg-gradient-to-b from-white to-gray-100 min-h-screen">
