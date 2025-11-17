@@ -1,13 +1,12 @@
 import Button from "~/components/custom-components/button";
 import { Field, FieldGroup, FieldSeparator } from "~/components/ui/field";
 import type { Route } from "./+types";
-import { getEmailInfo } from "~/api/httpRequests";
+import { getEmailInfo } from "~/api/http-requests";
 import { Form, redirect, useActionData, useNavigation } from "react-router";
 import React from "react";
-import { LoaderCircle } from "lucide-react";
 import CustomField from "~/components/custom-components/field";
 import z from "zod";
-import getUpdatedFormErrors from "~/lib/getUpdatedFormErrors";
+import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 
 const emailFormat = z.email();
 

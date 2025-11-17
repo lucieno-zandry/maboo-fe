@@ -1,7 +1,7 @@
 import React from "react";
-import { redirect, useActionData, type ActionFunctionArgs } from "react-router";
+import { redirect, useActionData, useNavigate, type ActionFunctionArgs } from "react-router";
 import { toast } from "sonner";
-import { attemptEmailVerification, sendEmailVerificationCode } from "~/api/httpRequests";
+import { attemptEmailVerification, sendEmailVerificationCode } from "~/api/http-requests";
 import { EmailVerificationOtp } from "~/components/email-verification-otp";
 import useRedirectAction from "~/hooks/use-redirect-action";
 
@@ -17,16 +17,22 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
         }
     }
 
-    const response = await attemptEmailVerification(otp);
-    if (response.error) return response.error;
+    try {
+        await attemptEmailVerification(otp);
+    } catch (error) {
+        if (error) return error;
+    }
 
-    const { successPathname } = useRedirectAction.getState();
+    const { successPathname, clearSuccessPathname } = useRedirectAction.getState();
+    successPathname && clearSuccessPathname();
 
     return redirect(successPathname || '/')
 }
 
 export default function () {
     const error = useActionData();
+    console.log(error);
+    const navigate = useNavigate();
 
     const handleSendEmailVerificationCode = () => {
         sendEmailVerificationCode()
@@ -38,7 +44,12 @@ export default function () {
                 }
             })
             .catch((error) => {
-                toast.error("An error occured, please, try again!")
+                if (error.status === 403) {
+                    navigate('/');
+                    toast.error('Your email has already been confirmed!');
+                } else {
+                    toast.error("An error occured, please, try again!")
+                }
             })
     }
 

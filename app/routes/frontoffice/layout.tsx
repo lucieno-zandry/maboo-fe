@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, useLoaderData } from "react-router";
-import { getAuthUser, getCartItems } from "~/api/httpRequests";
+import { getAuthUser, getCartItems } from "~/api/http-requests";
 import Footer from "~/components/footer";
 import Navbar from "~/components/navbar";
 import { useRefreshCart } from "~/hooks/use-cart";
@@ -19,7 +19,7 @@ export default function () {
                 }
 
             })
-    }, [setUser]);
+    }, []);
 
     return <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100">
         <Navbar />

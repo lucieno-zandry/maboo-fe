@@ -18,87 +18,21 @@ import {
 } from '~/components/ui/dialog';
 import { useUserStore } from '~/hooks/use-user';
 import LoadingScreen from '~/components/loading-screen';
+import ConfirmEmailChangeDialog from '~/components/confirm-email-change-dialog';
+import { updateAuthUser } from '~/api/http-requests';
+import ProfileTab from '~/components/settings-tabs/profile-tab';
+import SecurityTab from '~/components/settings-tabs/security-tab';
+
+export type SettingsTabProps = {
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 export default function AccountSettings() {
-  const { user, setUser } = useUserStore();
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
-  })
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [passwordForEmail, setPasswordForEmail] = useState("");
-  const [pendingEmail, setPendingEmail] = useState("");
-
-  React.useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name,
-        email: user.email,
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-      })
-    }
-  }, [user])
+  const { user } = useUserStore();
 
   if (!user) {
     return <LoadingScreen />
   }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleProfileUpdate = (e: React.MouseEvent | React.FormEvent) => {
-    e.preventDefault();
-
-    // Check if email has changed
-    if (formData.email !== user.email) {
-      setPendingEmail(formData.email);
-      setShowPasswordDialog(true);
-      return;
-    }
-
-    // If only name changed, update directly
-    setUser({ ...user, name: formData.name });
-    alert("Profile updated successfully!");
-  };
-
-  const confirmEmailChange = () => {
-    if (!passwordForEmail) {
-      alert("Please enter your password");
-      return;
-    }
-
-    // Here you would verify the password with your backend
-    // For demo purposes, we'll just proceed
-    setUser({ ...user, name: formData.name, email: pendingEmail });
-    setShowPasswordDialog(false);
-    setPasswordForEmail("");
-    setPendingEmail("");
-    alert("Profile updated successfully! Please verify your new email address.");
-  };
-
-  const cancelEmailChange = () => {
-    setFormData({ ...formData, email: user.email });
-    setShowPasswordDialog(false);
-    setPasswordForEmail("");
-    setPendingEmail("");
-  };
-
-  const handlePasswordChange = (e: React.MouseEvent | React.FormEvent) => {
-    e.preventDefault();
-    if (formData.newPassword !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-    alert("Password changed successfully!");
-    setFormData({ ...formData, currentPassword: "", newPassword: "", confirmPassword: "" });
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -164,87 +98,8 @@ export default function AccountSettings() {
             <TabsTrigger value="account">Account Info</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="profile" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Update your personal details</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div onSubmit={handleProfileUpdate} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  <Button onClick={handleProfileUpdate}>Save Changes</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="security" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Change Password</CardTitle>
-                <CardDescription>Keep your account secure with a strong password</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div onSubmit={handlePasswordChange} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input
-                      id="currentPassword"
-                      name="currentPassword"
-                      type="password"
-                      value={formData.currentPassword}
-                      onChange={handleInputChange}
-                      placeholder="Enter current password"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      id="newPassword"
-                      name="newPassword"
-                      type="password"
-                      value={formData.newPassword}
-                      onChange={handleInputChange}
-                      placeholder="Enter new password"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      placeholder="Confirm new password"
-                    />
-                  </div>
-                  <Button onClick={handlePasswordChange}>Update Password</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <ProfileTab />
+          <SecurityTab />
 
           <TabsContent value="account" className="space-y-4">
             <Card>
@@ -317,41 +172,6 @@ export default function AccountSettings() {
             </Card>
           </TabsContent>
         </Tabs>
-
-        <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirm Email Change</DialogTitle>
-              <DialogDescription>
-                You're about to change your email to <span className="font-semibold">{pendingEmail}</span>.
-                Please enter your current password to confirm this change.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-2 py-4">
-              <Label htmlFor="passwordConfirm">Current Password</Label>
-              <Input
-                id="passwordConfirm"
-                type="password"
-                value={passwordForEmail}
-                onChange={(e) => setPasswordForEmail(e.target.value)}
-                placeholder="Enter your current password"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    confirmEmailChange();
-                  }
-                }}
-              />
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={cancelEmailChange}>
-                Cancel
-              </Button>
-              <Button onClick={confirmEmailChange}>
-                Confirm Change
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

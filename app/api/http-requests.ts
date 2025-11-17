@@ -1,11 +1,11 @@
-import mockApiRequest from "~/lib/mockApiRequest";
-import appFetch from "./appFetch";
+import mockApiRequest from "~/lib/mock-api-request";
+import appFetch from "./app-fetch";
 
 export function getEmailInfo(email: string) {
     return appFetch.post<{ is_taken: boolean }>('/auth/email/info', { email });
 }
 
-export function logUserIn(data: { email: string, password: string }) {
+export function logInWithEmail(data: { email: FormDataEntryValue, password: FormDataEntryValue }) {
     return appFetch.post<{
         auth: User,
         token: string,
@@ -13,9 +13,9 @@ export function logUserIn(data: { email: string, password: string }) {
 }
 
 export function registerUser(data: {
-    email: string,
-    password: string,
-    password_confirmation: string,
+    email: FormDataEntryValue,
+    password: FormDataEntryValue,
+    password_confirmation: FormDataEntryValue,
     name: string
 }) {
     return appFetch.post<{
@@ -26,6 +26,10 @@ export function registerUser(data: {
 
 export function getAuthUser() {
     return appFetch.get<{ user: User }>('/auth/user/get');
+}
+
+export function updateAuthUser(payload: { name?: string, email?: string, password?: string, password_confirmation?: string, current_password?: string }) {
+    return appFetch.post<{ user: User }>('/auth/user/update', payload);
 }
 
 export function getProducts() {

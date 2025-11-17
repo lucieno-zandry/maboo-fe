@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "../custom-components/button";
-import { removeCartItem, updateCartItem } from "~/api/httpRequests";
+import { removeCartItem, updateCartItem } from "~/api/http-requests";
 import { useRefreshCart } from "~/hooks/use-cart";
 import { toast } from "sonner";
 import formatMoney from "~/lib/format-money";

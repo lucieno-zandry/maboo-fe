@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { addVariantToCart, getProduct } from "~/api/httpRequests";
+import { addVariantToCart, getProduct } from "~/api/http-requests";
 import { useLoaderData, useNavigation, useSubmit, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { Loader2, Minus, Plus, ShoppingCart } from "lucide-react";
 import Button from "~/components/custom-components/button";

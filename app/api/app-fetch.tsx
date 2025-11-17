@@ -1,15 +1,17 @@
-import { API_URL } from "~/env";
 import useRedirectAction from "~/hooks/use-redirect-action";
 import useRouterStore from "~/hooks/use-router-store";
 import isCsr from "~/lib/is-csr";
 import redirectPathnames from "~/lib/redirect-pathnames";
 
+const API_URL = import.meta.env.VITE_API_URL;
+console.log(API_URL);
+
 export class AppFetchException {
-    data: any;
+    errors: any;
     status: number;
 
-    constructor(data: any, status: number) {
-        this.data = data;
+    constructor(errors: any, status: number) {
+        this.errors = errors;
         this.status = status;
     }
 }
@@ -39,12 +41,10 @@ const defaultHeaders = (): HeadersInit => {
 
 const handleActionRedirection = (json: any, request: () => Promise<Response>) => {
     const redirectPathname = redirectPathnames[json.action as keyof typeof redirectPathnames];
-    const { navigate } = useRouterStore.getState();
-    const { setAction } = useRedirectAction.getState();
+    const { redirect } = useRedirectAction.getState();
 
-    if (redirectPathname && navigate) {
-        setAction({ successPathname: location.pathname })
-        navigate(redirectPathname);
+    if (redirectPathname) {
+        redirect(redirectPathname);
     }
 }
 
@@ -74,6 +74,14 @@ async function executeRequest<T>(request: () => Promise<Response>) {
     } catch (e) {
         formatedResponse.error = e;
         formatedResponse.status = 500;
+    }
+
+    if (formatedResponse.error) {
+        if (formatedResponse.error.errors) {
+            throw new AppFetchException(formatedResponse.error.errors, formatedResponse.status);
+        } else {
+            throw { data: formatedResponse.error, status: formatedResponse.status };
+        }
     }
 
     return formatedResponse;

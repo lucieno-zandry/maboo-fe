@@ -1,7 +1,7 @@
 import React from 'react'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { getCartItems } from '~/api/httpRequests'
+import { getCartItems } from '~/api/http-requests'
 
 // Define the Zustand store type
 export interface CartStore {

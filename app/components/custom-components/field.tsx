@@ -1,7 +1,7 @@
 import React from "react";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
-import getValidationError from "~/lib/getValidationError";
+import getValidationError from "~/lib/get-validation-error";
 import type { ZodType } from "zod";
 import type { $ZodTypeInternals } from "zod/v4/core";
 

@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { motion } from "framer-motion";
 import { Link, useLoaderData } from "react-router";
-import { getProducts } from "~/api/httpRequests";
+import { getProducts } from "~/api/http-requests";
 import formatMoney from "~/lib/format-money";
 
 export const loader = async () => {

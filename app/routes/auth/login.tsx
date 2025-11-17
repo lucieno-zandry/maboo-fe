@@ -3,11 +3,13 @@ import { Field, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/f
 import CustomField from "~/components/custom-components/field";
 import z from "zod";
 import type { Route } from "./+types";
-import { Form, redirect, useActionData, useLoaderData, useNavigation } from "react-router";
-import { getEmailInfo, logUserIn } from "~/api/httpRequests";
-import React from "react";
-import getUpdatedFormErrors from "~/lib/getUpdatedFormErrors";
+import { redirect, useLoaderData, useNavigate } from "react-router";
+import { getEmailInfo, logInWithEmail } from "~/api/http-requests";
+import { useMemo, useState, type FocusEvent, type FormEventHandler } from "react";
+import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import useRedirectAction from "~/hooks/use-redirect-action";
+import { toast } from "sonner";
+import { AppFetchException } from "~/api/app-fetch";
 
 const dataFormat = {
   email: z.email(),
@@ -26,57 +28,55 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   return redirect('/auth');
 }
 
-export const clientAction = async ({ request }: Route.ClientActionArgs) => {
-  const formData = await request.formData();
-
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  }
-
-  const response = await logUserIn(data);
-
-  if (response.error) {
-    return response.error;
-  } else if (response.data?.token) {
-    localStorage.setItem("token", response.data?.token)
-  }
-
-  const { successPathname } = useRedirectAction.getState();
-
-  return redirect(successPathname || '/');
-}
-
 export default function () {
-  const email = useLoaderData();
-  const actionData = useActionData();
-  const navigation = useNavigation();
-  const isLoading = React.useMemo(() => navigation.state === "submitting", [navigation.state]);
+  const { successPathname, clearSuccessPathname } = useRedirectAction();
+  const email = useLoaderData<string>();
+  const [formValidationErrors, setFormValidationErrors] = useState<{ email?: string[], password?: string[] } | null>(null);
 
-  const [state, setState] = React.useState({
-    data: {
-      password: "",
-    },
-    formErrors: null as Record<"password", string[]> | null
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
+  const navigate = useNavigate();
 
-  const userCanSubmit = React.useMemo(() => !!(state.data.password && !state.formErrors), [state]);
+  const handleFormValidationChange = (validationErrors: string[] | null, e: FocusEvent<HTMLInputElement, Element>) => {
+    const updatedFormValidationErrors = getUpdatedFormErrors({
+      formErrors: formValidationErrors,
+      name: e.target.name as "email" | "password",
+      validationErrors
+    });
 
-  const handleValidationErrorsChange = React.useCallback((validationErrors: string[] | null, e: React.FocusEvent<HTMLInputElement, Element>) => {
-    const name = e.target.name as "password";
+    setFormValidationErrors(updatedFormValidationErrors);
+  }
 
-    setState(s => {
-      const updatedFormErrors = getUpdatedFormErrors({
-        formErrors: s.formErrors,
-        name,
-        validationErrors
-      })
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    setIsLoading(true);
+    const formData = new FormData(e.currentTarget);
 
-      return { ...s, formErrors: updatedFormErrors, data: { ...s.data, [name]: e.target.value } }
+    logInWithEmail({
+      email: formData.get("email")!,
+      password: formData.get("password")!
     })
-  }, []);
+      .then(response => {
+        toast.success("Log in success!");
 
-  return <Form className="p-6 md:p-8" method="post">
+        if (response.data?.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+
+        successPathname && clearSuccessPathname();
+      })
+      .catch(error => {
+        if (error instanceof AppFetchException) {
+          return setFormValidationErrors(error.errors);
+        }
+
+        toast.error(`Failed to log in : ${error.status}`, { description: error.data.message });
+      })
+      .finally(() => setIsLoading(false));
+  }
+
+  return <form className="p-6 md:p-8" method="post" onSubmit={handleSubmit}>
     <FieldGroup>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Welcome back!</h1>
@@ -92,7 +92,8 @@ export default function () {
         name="email"
         value={email}
         dataFormat={dataFormat.email}
-        validationErrors={actionData?.errors?.email}
+        validationErrors={formValidationErrors?.email}
+        onValidationErrorsChange={handleFormValidationChange}
         readOnly
         required
       />
@@ -102,8 +103,8 @@ export default function () {
         type="password"
         name="password"
         dataFormat={dataFormat.password}
-        onValidationErrorsChange={handleValidationErrorsChange}
-        validationErrors={actionData?.errors?.password}
+        onValidationErrorsChange={handleFormValidationChange}
+        validationErrors={formValidationErrors?.password}
         required>
         <div className="flex items-center">
           <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -119,7 +120,7 @@ export default function () {
       <Field>
         <Button
           type="submit"
-          disabled={!userCanSubmit}
+          disabled={!canSubmit}
           isLoading={isLoading}>Login</Button>
       </Field>
       <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
@@ -146,5 +147,5 @@ export default function () {
         </Button>
       </Field>
     </FieldGroup>
-  </Form>
+  </form>
 }
