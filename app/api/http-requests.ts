@@ -66,3 +66,7 @@ export function updateCartItem(cartItemId: number, payload: { count: number }) {
 export function removeCartItem(cartItemId: number) {
     return appFetch.delete(`/cart/delete?cart_item_ids=${cartItemId}`);
 }
+
+export function sendPasswordResetLink(email: FormDataEntryValue) {
+    return appFetch.post<{ link_sent: boolean }>('/auth/password/forgot', { email });
+}

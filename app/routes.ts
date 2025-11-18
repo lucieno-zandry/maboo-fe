@@ -12,5 +12,6 @@ export default [
         route('login', 'routes/auth/login.tsx'),
         route('register', 'routes/auth/register.tsx'),
         route('verify-email', 'routes/auth/email-verification.tsx'),
+        route('password-forgotten', 'routes/auth/password-forgotten.tsx'),
     ]),
 ] satisfies RouteConfig;

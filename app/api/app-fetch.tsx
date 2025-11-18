@@ -4,7 +4,6 @@ import isCsr from "~/lib/is-csr";
 import redirectPathnames from "~/lib/redirect-pathnames";
 
 const API_URL = import.meta.env.VITE_API_URL;
-console.log(API_URL);
 
 export class AppFetchException {
     errors: any;

@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
 import { TabsContent } from "../ui/tabs";
-import { useUserStore } from "~/hooks/use-user";
 import z from "zod";
 import Field from "../custom-components/field";
+import { updateAuthUser } from "~/api/http-requests";
+import { toast } from "sonner";
+import { AppFetchException } from "~/api/app-fetch";
+import Button from "../custom-components/button";
+import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 
 const dataFormat = {
     passwordFormat: z.string().min(4)
@@ -13,26 +15,63 @@ const dataFormat = {
 
 export default function () {
     const [formData, setFormData] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
+        current_password: "",
+        password: "",
+        password_confirmation: ""
     })
 
-    const canSubmit = useMemo(() => formData.newPassword === formData.confirmPassword, [formData]);
+    const [validationMessages, setValidationMessages] = useState<Record<string, string[]> | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handlePasswordChange: React.FormEventHandler<HTMLFormElement> = (e) => {
+    const canSubmit = useMemo(() => Object.keys(formData).every(key => !!formData[key as keyof typeof formData]) &&
+        formData.password === formData.password_confirmation &&
+        !validationMessages,
+        [formData, validationMessages]);
+
+    console.log(formData);
+
+    console.log(canSubmit);
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
-        if (formData.newPassword !== formData.confirmPassword) {
-            alert("Passwords don't match!");
-            return;
+
+        if (formData.password !== formData.password_confirmation) {
+            return setValidationMessages({ password_confirmation: ["The password confirmation does not match!"] })
         }
-        alert("Password changed successfully!");
-        setFormData({ ...formData, currentPassword: "", newPassword: "", confirmPassword: "" });
+
+        setIsLoading(true);
+        updateAuthUser(formData)
+            .then(() => {
+                toast.success("Password updated successfuly!");
+                setFormData({ ...formData, password: "", password_confirmation: "" });
+            })
+            .catch(error => {
+                if (error instanceof AppFetchException) {
+                    setValidationMessages(error.errors);
+                } else {
+                    toast.error("Failed to update password with status : " + error.status);
+                }
+            })
+            .finally(() => {
+                setIsLoading(false);
+            })
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const handleValidationErrorsChange = (validationErrors: string[] | null, e: React.FocusEvent<HTMLInputElement, Element>) => {
+        setValidationMessages(v => {
+            const updatedValidationMessages = getUpdatedFormErrors({
+                formErrors: v,
+                name: e.target.name,
+                validationErrors,
+            })
+
+            return updatedValidationMessages;
+        })
+    }
 
     return <TabsContent value="security" className="space-y-4">
         <Card>
@@ -41,37 +80,43 @@ export default function () {
                 <CardDescription>Keep your account secure with a strong password</CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handlePasswordChange} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <Field
-                        id="currentPassword"
-                        name="currentPassword"
+                        id="current_password"
+                        name="current_password"
                         type="password"
-                        value={formData.currentPassword}
+                        value={formData.current_password}
                         onChange={handleInputChange}
                         placeholder="Enter current password"
                         label="Current Password"
-                        dataFormat={dataFormat.passwordFormat} />
+                        dataFormat={dataFormat.passwordFormat}
+                        validationErrors={validationMessages?.current_password}
+                        onValidationErrorsChange={handleValidationErrorsChange} />
 
                     <Field
-                        id="newPassword"
-                        name="newPassword"
+                        id="password"
+                        name="password"
                         type="password"
-                        value={formData.newPassword}
+                        value={formData.password}
                         onChange={handleInputChange}
                         placeholder="Enter new password"
                         label="New Password"
-                        dataFormat={dataFormat.passwordFormat} />
+                        dataFormat={dataFormat.passwordFormat}
+                        validationErrors={validationMessages?.password}
+                        onValidationErrorsChange={handleValidationErrorsChange} />
 
                     <Field
-                        id="confirmPassword"
-                        name="confirmPassword"
+                        id="password_confirmation"
+                        name="password_confirmation"
                         type="password"
-                        value={formData.confirmPassword}
+                        value={formData.password_confirmation}
                         onChange={handleInputChange}
                         placeholder="Confirm new password"
                         label="Confirm New Password"
-                        dataFormat={dataFormat.passwordFormat} />
-                    <Button type="submit" disabled={!canSubmit}>Update Password</Button>
+                        dataFormat={dataFormat.passwordFormat}
+                        onValidationErrorsChange={handleValidationErrorsChange} />
+
+                    <Button type="submit" disabled={!canSubmit} isLoading={isLoading}>Update Password</Button>
                 </form>
             </CardContent>
         </Card>

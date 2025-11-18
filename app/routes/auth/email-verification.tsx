@@ -3,7 +3,7 @@ import { redirect, useActionData, useNavigate, type ActionFunctionArgs } from "r
 import { toast } from "sonner";
 import { attemptEmailVerification, sendEmailVerificationCode } from "~/api/http-requests";
 import { EmailVerificationOtp } from "~/components/email-verification-otp";
-import useRedirectAction from "~/hooks/use-redirect-action";
+import { useSuccessRedirect } from "~/hooks/use-redirect-action";
 
 export const clientAction = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
@@ -23,15 +23,12 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
         if (error) return error;
     }
 
-    const { successPathname, clearSuccessPathname } = useRedirectAction.getState();
-    successPathname && clearSuccessPathname();
-
-    return redirect(successPathname || '/')
+    const successRedirect = useSuccessRedirect();
+    return successRedirect();
 }
 
 export default function () {
     const error = useActionData();
-    console.log(error);
     const navigate = useNavigate();
 
     const handleSendEmailVerificationCode = () => {

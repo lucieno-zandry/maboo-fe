@@ -15,7 +15,7 @@ type RedirectActionStore = {
     redirect: (path: string, successPathname?: string) => void;
 }
 
-export default create<RedirectActionStore>()(
+const useRedirectAction = create<RedirectActionStore>()(
     persist(
         set => ({
             successPathname: null,
@@ -39,3 +39,15 @@ export default create<RedirectActionStore>()(
         }
     )
 )
+
+export const useSuccessRedirect = () => {
+    const { successPathname, clearSuccessPathname } = useRedirectAction.getState();
+    const { navigate } = useRouterStore.getState();
+
+    return (fallbackPath: string = '/') => {
+        if (successPathname) clearSuccessPathname();
+        navigate(successPathname || fallbackPath);
+    }
+}
+
+export default useRedirectAction;

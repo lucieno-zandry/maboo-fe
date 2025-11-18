@@ -3,11 +3,11 @@ import { Field, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/f
 import CustomField from "~/components/custom-components/field";
 import z from "zod";
 import type { Route } from "./+types";
-import { redirect, useLoaderData, useNavigate } from "react-router";
+import { Link, redirect, useLoaderData, useNavigate } from "react-router";
 import { getEmailInfo, logInWithEmail } from "~/api/http-requests";
 import { useMemo, useState, type FocusEvent, type FormEventHandler } from "react";
 import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
-import useRedirectAction from "~/hooks/use-redirect-action";
+import useRedirectAction, { useSuccessRedirect } from "~/hooks/use-redirect-action";
 import { toast } from "sonner";
 import { AppFetchException } from "~/api/app-fetch";
 
@@ -29,13 +29,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 }
 
 export default function () {
-  const { successPathname, clearSuccessPathname } = useRedirectAction();
+  const successRedirect = useSuccessRedirect();
   const email = useLoaderData<string>();
   const [formValidationErrors, setFormValidationErrors] = useState<{ email?: string[], password?: string[] } | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
-  const navigate = useNavigate();
 
   const handleFormValidationChange = (validationErrors: string[] | null, e: FocusEvent<HTMLInputElement, Element>) => {
     const updatedFormValidationErrors = getUpdatedFormErrors({
@@ -64,7 +63,7 @@ export default function () {
           localStorage.setItem("token", response.data.token);
         }
 
-        successPathname && clearSuccessPathname();
+        return successRedirect();
       })
       .catch(error => {
         if (error instanceof AppFetchException) {
@@ -108,12 +107,12 @@ export default function () {
         required>
         <div className="flex items-center">
           <FieldLabel htmlFor="password">Password</FieldLabel>
-          <a
-            href="#"
+          <Link
+            to={'/auth/password-forgotten'}
             className="ml-auto text-sm underline-offset-2 hover:underline"
           >
             Forgot your password?
-          </a>
+          </Link>
         </div>
       </CustomField>
 

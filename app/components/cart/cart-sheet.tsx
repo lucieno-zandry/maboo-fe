@@ -31,7 +31,7 @@ export default function CartSheet({ items, onRemove, onCountChange, open, setOpe
                 ) : (
                     <ScrollArea className="h-[70vh] pr-2 mt-4">
                         <div className="flex flex-col gap-4">
-                            {items.map((item) => <CartSheetItem item={item} />)}
+                            {items.map((item, key) => <CartSheetItem key={key} item={item} />)}
                         </div>
                     </ScrollArea>
                 )}
