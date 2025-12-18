@@ -43,6 +43,7 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
 
 export default function ProductPage() {
     const product = useLoaderData<Product | null>();
+    console.log(product);
     const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
     const [count, setCount] = useState<number>(1);

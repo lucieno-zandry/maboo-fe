@@ -6,6 +6,7 @@ export default [
         route('products', 'routes/frontoffice/products.tsx'),
         route('product/:slug', 'routes/frontoffice/product.tsx'),
         route('/settings', 'routes/common/settings.tsx'),
+        route('/addresses', 'routes/frontoffice/addresses.tsx'),
     ]),
     route('/auth', 'routes/auth/layout.tsx', [
         index('routes/auth/index.tsx'),

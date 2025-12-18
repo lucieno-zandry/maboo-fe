@@ -33,7 +33,7 @@ export function updateAuthUser(payload: { name?: string, email?: string, passwor
 }
 
 export function getProducts() {
-    return appFetch.get<{ products: Product[] }>('/product/all?limit=9&with=variants&images');
+    return appFetch.get<{ products: Product[] }>('/product/all?limit=2&with=variants&images');
 }
 
 export function getProduct(slug: string) {
@@ -73,4 +73,20 @@ export function sendPasswordResetLink(email: FormDataEntryValue) {
 
 export function resetPassword(payload: FormData | { password: FormDataEntryValue, password_confirmation: FormDataEntryValue, token: FormDataEntryValue }) {
     return appFetch.post<{ user: User, token: string }>('/auth/password/reset', payload);
+}
+
+export function getAuthAddresses() {
+    return appFetch.get<{ addresses: Address[] }>('/address/all');
+}
+
+export function createAddress(payload: FormData) {
+    return appFetch.post<{ address: Address, user: User }>('/address/create', payload);
+}
+
+export function updateAddress(id: number, payload: FormData) {
+    return appFetch.post<{ address: Address, user: User }>(`/address/update/${id}`, payload);
+}
+
+export function removeAddress(ids: number[]) {
+    return appFetch.delete<{ address: Address, user: User }>(`/address/delete?addresses_ids=${ids.join(',')}`);
 }

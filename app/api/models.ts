@@ -137,3 +137,15 @@ type VariantSnapshot = {
 type VariantOptionsSnapshot = {
   [group: string]: string;
 };
+
+type Address = {
+  id: number,
+  fullname: string,
+  line1: string,
+  line2: string | null,
+  line3: string | null,
+  phone_number: string,
+  user_id: number,
+  created_at: string,
+  updated_at: string,
+}

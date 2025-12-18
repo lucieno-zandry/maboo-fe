@@ -39,6 +39,9 @@ export default function () {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
+                            <Link to={'/addresses'}>Addresses</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
                             <Link to={'/settings'}>Settings</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
