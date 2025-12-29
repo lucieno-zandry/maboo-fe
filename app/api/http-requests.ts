@@ -1,5 +1,7 @@
-import mockApiRequest from "~/lib/mock-api-request";
 import appFetch from "./app-fetch";
+
+type WhereConditions = Record<string, string | number | [string, string | number]>;
+type WhereInConditions = Record<string, (string | number)[]>;
 
 export function getEmailInfo(email: string) {
     return appFetch.post<{ is_taken: boolean }>('/auth/email/info', { email });
@@ -55,8 +57,36 @@ export function addVariantToCart(payload: {
     return appFetch.post<{ cart_item: CartItem }>(`/cart/create/${payload.variant_id}`, { count: payload.count });
 }
 
-export function getCartItems() {
-    return appFetch.get<{ cart_items: CartItem[] }>('/cart/all');
+export function getCartItems({ where, whereIn }: {
+    where?: WhereConditions,
+    whereIn?: WhereInConditions
+} = {}) {
+    // Build "where" clause
+    const whereClause = where
+        ? Object.entries(where)
+            .map(([field, value]) => {
+                if (Array.isArray(value)) {
+                    const [operator, actualValue] = value;
+                    return `${field}${operator}${actualValue}`;
+                }
+                return `${field}=${value}`;
+            })
+            .join(',')
+        : '';
+
+    // Build "whereIn" clause
+    const whereInClause = whereIn
+        ? Object.entries(whereIn)
+            .map(([field, values]) => `${field}:${values.join('|')}`)
+            .join(',')
+        : '';
+
+    // Merge both into one query param
+    const combined = [whereClause, whereInClause].filter(Boolean).join(',');
+
+    const query = combined ? `?where=${encodeURIComponent(combined)}` : '';
+
+    return appFetch.get<{ cart_items: CartItem[] }>(`/cart/all${query}`);
 }
 
 export function updateCartItem(cartItemId: number, payload: { count: number }) {
@@ -87,6 +117,18 @@ export function updateAddress(id: number, payload: FormData) {
     return appFetch.post<{ address: Address, user: User }>(`/address/update/${id}`, payload);
 }
 
-export function removeAddress(ids: number[]) {
-    return appFetch.delete<{ address: Address, user: User }>(`/address/delete?addresses_ids=${ids.join(',')}`);
+export function removeAddresses(ids: number[]) {
+    return appFetch.delete<{ deleted: number }>(`/address/delete?address_ids=${ids.join(',')}`);
+}
+
+export function createOrder(payload: { cart_item_ids: number[], address_id: number, coupon_id?: number }) {
+    return appFetch.post<{ order: Order }>('/order/create', payload);
+}
+
+export function getCouponFromCode(code: string) {
+    return appFetch.get<{ coupon: Coupon }>(`/coupon/get/${code}`);
+}
+
+export function getOrders() {
+    return appFetch.get<{ orders: Order[] }>('/order/all');
 }

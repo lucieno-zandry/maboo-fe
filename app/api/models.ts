@@ -86,9 +86,9 @@ type Promotion = {
   is_active: boolean;
 }
 
-
 type CartItem = {
   id: number;
+  order_uuid: number | null;
 
   // Foreign keys (for integrity & backend analytics)
   user_id: number;
@@ -104,9 +104,9 @@ type CartItem = {
   total: number;                          // final total (count * unit_price - discounts)
 
   // Snapshots (used by frontend — always reliable)
-  product_snapshot: string //ProductSnapshot JSON
-  variant_snapshot: string //VariantSnapshot JSON
-  variant_options_snapshot: string //VariantOptionsSnapshot JSON
+  product_snapshot: ProductSnapshot //ProductSnapshot JSON
+  variant_snapshot: VariantSnapshot //VariantSnapshot JSON
+  variant_options_snapshot: VariantOptionsSnapshot //VariantOptionsSnapshot JSON
 
   // Meta
   created_at: string; // ISO timestamp
@@ -116,6 +116,7 @@ type CartItem = {
   variant?: Variant;
   product?: Product;
   user?: User;
+  order?: Order;
 };
 
 type ProductSnapshot = {
@@ -148,4 +149,36 @@ type Address = {
   user_id: number,
   created_at: string,
   updated_at: string,
+  is_default: boolean,
+}
+
+type Order = {
+  uuid: string,
+  created_at: string,
+  updated_at: string,
+  total: number,
+  user_id: number,
+  address_id: number,
+  coupon_id: number | null,
+  coupon_discount_applied: number,
+  deleted_at: string | null,
+
+  address_snapshot: Address,
+  coupon_snapshot?: Pick<Coupon, "id" | "code" | "type" | "discount" | "min_order_value">,
+  cart_items?: CartItem[],
+}
+
+type Coupon = {
+  id: number,
+  created_at: string,
+  updated_at: string,
+  code: string,
+  type: "FIXED_AMOUNT" | "PERCENTAGE",
+  discount: number,
+  min_order_value: number,
+  max_uses: number,
+  uses_count: number,
+  start_date: string,
+  end_date: string,
+  is_active: boolean,
 }

@@ -13,9 +13,6 @@ export const loader = async () => {
 export default function ProductsPage() {
     const products = useLoaderData() as Product[];
 
-    console.log(products);
-    
-
     return (
         <div className="px-6 md:px-20 py-16 bg-gradient-to-b from-white to-gray-100 min-h-screen">
             <div className="text-center mb-12">

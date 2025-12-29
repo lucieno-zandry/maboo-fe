@@ -28,10 +28,6 @@ export default function () {
         !validationMessages,
         [formData, validationMessages]);
 
-    console.log(formData);
-
-    console.log(canSubmit);
-
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
 

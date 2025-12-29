@@ -50,8 +50,7 @@ export default function () {
     const token = useLoaderData<string>();
     const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
     const isLoading = useMemo(() => navigation.state === "loading", [navigation]);
-
-    console.log(formValidationErrors);
+    
     const error = useActionData();
 
     useEffect(() => {

@@ -1,31 +1,19 @@
 import {
-    Form,
     redirect,
     useActionData,
     useLoaderData,
     useNavigation,
 } from "react-router"
 
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router"
+import type { ActionFunctionArgs } from "react-router"
 import { useEffect, useState } from "react"
 
 import {
     Card,
     CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
 } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "~/components/ui/dialog"
+import { Checkbox } from "~/components/ui/checkbox"
 
 import {
     Plus,
@@ -33,18 +21,29 @@ import {
     Trash2,
     Loader2,
 } from "lucide-react"
-import { createAddress, getAuthAddresses, removeAddress, updateAddress } from "~/api/http-requests"
+
+import { createAddress, getAuthAddresses, removeAddresses, updateAddress } from "~/api/http-requests"
 import AddressDialog from "~/components/address/address-dialog"
 import { toast } from "sonner"
 import AddressCard from "~/components/address/address-card"
 import { useUserStore } from "~/hooks/use-user"
-import type { FormatedResponse } from "~/api/app-fetch"
+import useAddressStore from "~/hooks/use-address-store"
+import ConfirmDeleteDialog from "~/components/address/confirm-delete-dialog"
+import { HttpException, ValidationException, type FormatedResponse } from "~/api/app-fetch"
 
 /* ----------------------------------------
    Loader
 ---------------------------------------- */
 export async function clientLoader() {
+    const { authAddresses, setAuthAddresses } = useAddressStore.getState();
+    if (authAddresses) return authAddresses;
+
     const response = await getAuthAddresses();
+
+    if (response.data?.addresses) {
+        setAuthAddresses(response.data.addresses);
+    }
+
     return response.data?.addresses;
 }
 
@@ -54,51 +53,64 @@ export async function clientLoader() {
 export async function clientAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData()
     const intent = formData.get("_intent");
-    const isDefault = formData.get("is_default");
-    const { setUser } = useUserStore.getState();
+    const { setUser, user } = useUserStore.getState();
+    const { setAuthAddresses, authAddresses } = useAddressStore.getState();
 
-    let response: FormatedResponse<{
-        address: Address;
-        user: User;
-    }>;
+    const isDefault = formData.get('is_default');
 
-    formData.set("is_default", isDefault === "on" ? "1" : "0");
+    if (!isDefault)
+        formData.set("is_default", "0");
 
     try {
-        if (intent === "create") {
-            response = await createAddress(formData);
+        if (intent === "create-address") {
+            const response = await createAddress(formData);
 
-            if (response.data?.user)
+            if (response.data)
                 setUser(response.data.user);
+
+            setAuthAddresses(null);
 
             toast.success("Address created successfully");
             return redirect("/addresses")
         }
 
-        if (intent === "update") {
-            const id = formData.get("id")
+        if (intent === "update-address") {
+            const id = Number(formData.get("id"));
 
-            response = await updateAddress(Number(id), formData);
+            const response = await updateAddress(id, formData);
 
-            if (response.data?.user)
+            if (response.data)
                 setUser(response.data.user);
 
-            toast.success("Address updated successfully");
+            setAuthAddresses(null);
 
+            toast.success("Address updated successfully");
             return redirect("/addresses")
         }
 
         if (intent === "delete") {
-            const id = formData.get("id");
-            response = await removeAddress([Number(id)]);
-            
-            if (response.data?.user)
-                setUser(response.data.user);
+            const id = Number(formData.get("id"));
+            await removeAddresses([id]);
+
+            if (user?.address_id === id)
+                setUser({ ...user, address_id: null });
+
+            setAuthAddresses(null);
 
             toast.success("Address removed successfully");
             return redirect("/addresses")
         }
 
+        if (intent === "bulk-delete") {
+            // form inputs named `ids[]`
+            const ids = formData.getAll("ids[]").map((v) => Number(v));
+            await removeAddresses(ids as number[]);
+
+            setAuthAddresses(null);
+
+            toast.success("Selected addresses removed successfully");
+            return redirect("/addresses")
+        }
     } catch (error) {
         return error;
     }
@@ -112,17 +124,24 @@ export async function clientAction({ request }: ActionFunctionArgs) {
 export default function AddressesPage() {
     const addresses = useLoaderData<Address[]>();
     const navigation = useNavigation()
-    const { user } = useUserStore();
+
+    const selectedAddresses = useAddressStore((s) => s.selectedAddresses);
+    const setSelectedAddresses = useAddressStore((s) => s.setSelectedAddresses);
 
     const [editing, setEditing] = useState<Address>();
-    const actionData = useActionData<{ error?: string }>();
+    const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
+
+    const actionData = useActionData();
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
     useEffect(() => {
         // When navigation goes idle AND no error was returned, close dialog
-        if (navigation.state === "idle" && !actionData?.error) {
+        if (navigation.state === "idle" && !(actionData instanceof HttpException || actionData instanceof ValidationException)) {
             setDialogOpen(false);
+            setConfirmDeleteDialogOpen(false);
+            // clear selections after successful actions
+            setSelectedAddresses([]);
         }
     }, [navigation.state, actionData]);
 
@@ -144,6 +163,37 @@ export default function AddressesPage() {
                 </div>
 
                 {/* List */}
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <Checkbox
+                            checked={selectedAddresses.length > 0 && selectedAddresses.length === addresses.length}
+                            onCheckedChange={(v) => {
+                                if (v) {
+                                    setSelectedAddresses(addresses);
+                                } else {
+                                    setSelectedAddresses([]);
+                                }
+                            }}
+                            aria-label="Select all addresses"
+                        />
+                        <span className="text-sm text-muted-foreground">Select all</span>
+                    </div>
+
+                    {/* Bulk delete confirm dialog */}
+                    <ConfirmDeleteDialog
+                        ids={selectedAddresses.map((a) => a.id)}
+                        open={confirmDeleteDialogOpen}
+                        onOpenChange={setConfirmDeleteDialogOpen}
+                        trigger={
+                            <Button type="button" variant="destructive" disabled={selectedAddresses.length === 0}>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete selected
+                            </Button>
+                        }
+                        isLoading={navigation.state === "submitting"}
+                    />
+                </div>
+
                 <div className="grid gap-4">
                     {addresses.map((address) => (
                         <AddressCard
@@ -153,7 +203,6 @@ export default function AddressesPage() {
                                 setEditing(addr);
                                 setDialogOpen(true);
                             }}
-                            isDefault={user ? address.id === user.address_id : false}
                         />
                     ))}
 

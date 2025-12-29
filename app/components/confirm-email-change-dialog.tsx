@@ -25,7 +25,7 @@ export default function ({
     isLoading,
 }: ConfirmEmailChangeDialogProps) {
     return <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent>
+        <DialogContent aria-describedby="Change email address">
             <form
                 method="post"
                 className="flex flex-col gap-3"

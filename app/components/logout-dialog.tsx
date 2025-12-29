@@ -26,7 +26,7 @@ export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md" aria-describedby="Confirm logout">
                 <DialogHeader>
                     <DialogTitle>Logout?</DialogTitle>
                     <DialogDescription>

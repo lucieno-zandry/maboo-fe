@@ -1,25 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Camera, Mail, Shield, User, Calendar, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
 import { Button } from '~/components/ui/button';
 import { Badge } from '~/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Separator } from '~/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '~/components/ui/dialog';
 import { useUserStore } from '~/hooks/use-user';
 import LoadingScreen from '~/components/loading-screen';
-import ConfirmEmailChangeDialog from '~/components/confirm-email-change-dialog';
-import { updateAuthUser } from '~/api/http-requests';
 import ProfileTab from '~/components/settings-tabs/profile-tab';
 import SecurityTab from '~/components/settings-tabs/security-tab';
 

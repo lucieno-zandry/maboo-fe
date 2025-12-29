@@ -1,0 +1,78 @@
+import { useEffect, useState } from "react";
+import { Card } from "../ui/card";
+import Button from "../custom-components/button";
+import { AddressList } from "../checkout/address-list";
+import AddressDialog from "./address-dialog"; // The component we just updated
+import { getAuthAddresses } from "~/api/http-requests";
+import { Plus } from "lucide-react"; // If you use lucide-icons
+import useAddressStore from "~/hooks/use-address-store";
+import { useUserStore } from "~/hooks/use-user";
+
+export function AddressForm({ onNext }: { onNext: () => void }) {
+    const { authAddresses, setAuthAddresses, selectedAddressId, setSelectedAddressId } = useAddressStore();
+    const { user } = useUserStore();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (authAddresses) return; // Prevent refetching if already loaded
+
+        getAuthAddresses().then(res => {
+            if (res.data?.addresses) {
+                const list = res.data.addresses;
+                setAuthAddresses(list);
+
+                // Auto-select default or the first one found
+                setSelectedAddressId(user?.address_id ?? list[0]?.id ?? null);
+            }
+        });
+    }, [authAddresses]);
+
+    useEffect(() => {
+        if (selectedAddressId || !user?.address_id) return;
+        setSelectedAddressId(user.address_id)
+    }, [selectedAddressId, user]);
+
+    return (
+        <div className="space-y-6">
+            <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-xl font-bold tracking-tight">Shipping Address</h2>
+                        <p className="text-sm text-muted-foreground">Select where you want your items delivered.</p>
+                    </div>
+                    <Button
+                        onClick={() => setIsDialogOpen(true)}
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add New
+                    </Button>
+                </div>
+
+                <AddressList
+                    addresses={authAddresses}
+                    selectedId={selectedAddressId}
+                    onSelect={setSelectedAddressId}
+                />
+
+                <div className="mt-8 border-t pt-6 flex justify-end">
+                    <Button
+                        onClick={onNext}
+                        disabled={!selectedAddressId}
+                        className="px-8"
+                    >
+                        Proceed to Payment
+                    </Button>
+                </div>
+            </Card>
+
+            {/* The Dialog stays separate, so it doesn't hide the list */}
+            <AddressDialog
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+            />
+        </div>
+    );
+}
