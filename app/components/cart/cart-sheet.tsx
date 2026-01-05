@@ -6,11 +6,11 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { CartEmpty } from "./cart-empty";
 import CartSheetItem from "./cart-sheet-item";
 import formatMoney from "~/lib/format-money";
-import { Form, Link, useNavigate } from "react-router";
+import { Form, useNavigate } from "react-router";
 import useCheckoutStore from "~/hooks/use-checkout-store";
-import { useRefreshCart } from "~/hooks/use-cart";
 import { toast } from "sonner";
-import { removeCartItem, updateCartItem } from "~/api/http-requests";
+import { removeCartItem } from "~/api/http-requests";
+import { useRefreshCart } from "~/hooks/use-cart";
 
 interface CartSheetProps {
     items: CartItem[];
@@ -21,6 +21,7 @@ interface CartSheetProps {
 export default function CartSheet({ items, open, setOpen }: CartSheetProps) {
     const navigate = useNavigate();
     const { setCartItemsIds } = useCheckoutStore();
+    const refreshCart = useRefreshCart();
 
     // 1. Manage checked state locally (assuming item.id is unique)
     const [checkedIds, setCheckedIds] = useState<Set<number>>(
@@ -71,20 +72,7 @@ export default function CartSheet({ items, open, setOpen }: CartSheetProps) {
         navigate('/checkout');
     }, [checkedIds, setCartItemsIds, setOpen, navigate]);
 
-    const refreshCart = useRefreshCart();
-
-    const handleCountChange = async (itemId: number, newCount: number) => {
-        const loadingToast = toast.loading('Updating cart item...');
-
-        await updateCartItem(itemId, { count: newCount });
-        refreshCart()
-            .then(() => {
-                toast.dismiss(loadingToast);
-                toast.success('Cart item updated.');
-            });
-    }
-
-    const handleRemove = useCallback((itemId: number) => {
+    const onRemove = useCallback((itemId: number) => {
         const loadingToast = toast.loading('Removing cart item...');
 
         removeCartItem(itemId)
@@ -141,8 +129,8 @@ export default function CartSheet({ items, open, setOpen }: CartSheetProps) {
                                             <div className="flex-1">
                                                 <CartSheetItem
                                                     item={item}
-                                                    onCountChange={handleCountChange}
-                                                    onRemove={handleRemove} />
+                                                    onRemove={onRemove}
+                                                    refreshCart={refreshCart} />
                                             </div>
                                         </div>
                                     ))}

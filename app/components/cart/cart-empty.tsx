@@ -25,7 +25,7 @@ export function CartEmpty({ onClose }: { onClose: () => void }) {
       </EmptyHeader>
 
       <EmptyContent>
-        <Button variant="outline" size="sm" onClick={onClose}>
+        <Button variant="outline" size="sm" onClick={onClose} type="button">
           Continue Shopping
         </Button>
       </EmptyContent>

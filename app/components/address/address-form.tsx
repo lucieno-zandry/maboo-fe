@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "../ui/card";
 import Button from "../custom-components/button";
 import { AddressList } from "../checkout/address-list";
@@ -7,11 +7,16 @@ import { getAuthAddresses } from "~/api/http-requests";
 import { Plus } from "lucide-react"; // If you use lucide-icons
 import useAddressStore from "~/hooks/use-address-store";
 import { useUserStore } from "~/hooks/use-user";
+import { useActionData } from "react-router";
+import { toast } from "sonner";
 
 export function AddressForm({ onNext }: { onNext: () => void }) {
     const { authAddresses, setAuthAddresses, selectedAddressId, setSelectedAddressId } = useAddressStore();
-    const { user } = useUserStore();
+    const { user, setUser } = useUserStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const actionData = useActionData();
+
+    const canNext = useMemo(() => !(!selectedAddressId || !authAddresses || authAddresses.length === 0), [selectedAddressId, authAddresses]);
 
     useEffect(() => {
         if (authAddresses) return; // Prevent refetching if already loaded
@@ -32,6 +37,32 @@ export function AddressForm({ onNext }: { onNext: () => void }) {
         setSelectedAddressId(user.address_id)
     }, [selectedAddressId, user]);
 
+
+    useEffect(() => {
+        if (!actionData?.address || !actionData?.user) return;
+
+        setAuthAddresses(prev => {
+            if (!prev) return [actionData.address];
+            if (prev.some(a => a.id === actionData.address.id)) return prev;
+            return [...prev, actionData.address];
+        });
+
+        setUser(actionData.user);
+        setSelectedAddressId(actionData.address.id);
+        setIsDialogOpen(false);
+
+        toast.success("Address saved successfully!");
+    }, [actionData, setAuthAddresses, setUser, setSelectedAddressId]);
+
+    const handleNext = () => {
+        if (!canNext) return;
+        onNext();
+    }
+
+    const onAddNewClick = () => {
+        setIsDialogOpen(true)
+    }
+
     return (
         <div className="space-y-6">
             <Card className="p-6">
@@ -41,7 +72,7 @@ export function AddressForm({ onNext }: { onNext: () => void }) {
                         <p className="text-sm text-muted-foreground">Select where you want your items delivered.</p>
                     </div>
                     <Button
-                        onClick={() => setIsDialogOpen(true)}
+                        onClick={onAddNewClick}
                         variant="outline"
                         size="sm"
                         className="gap-2"
@@ -55,12 +86,13 @@ export function AddressForm({ onNext }: { onNext: () => void }) {
                     addresses={authAddresses}
                     selectedId={selectedAddressId}
                     onSelect={setSelectedAddressId}
+                    onAddNewClick={onAddNewClick}
                 />
 
                 <div className="mt-8 border-t pt-6 flex justify-end">
                     <Button
-                        onClick={onNext}
-                        disabled={!selectedAddressId}
+                        onClick={handleNext}
+                        disabled={!canNext}
                         className="px-8"
                     >
                         Proceed to Payment

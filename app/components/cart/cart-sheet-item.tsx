@@ -1,18 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "../custom-components/button";
 import { removeCartItem, updateCartItem } from "~/api/http-requests";
 import { toast } from "sonner";
 import formatMoney from "~/lib/format-money";
+import { useRefreshCart } from "~/hooks/use-cart";
 
 export type CartSheetItemProps = {
     item: CartItem;
-    onCountChange: (itemId: number, newCount: number) => Promise<void>;
     onRemove: (itemId: number) => void;
+    refreshCart: () => Promise<unknown>
 }
 
 let timeout: NodeJS.Timeout | null;
 
-export default function ({ item, onCountChange: handleCountChange, onRemove: handleRemove }: CartSheetItemProps) {
+export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
     const [count, setCount] = React.useState(item.count);
 
     const subtotal = React.useMemo(() => {
@@ -25,11 +26,22 @@ export default function ({ item, onCountChange: handleCountChange, onRemove: han
         setCount(newCount);
         if (timeout) clearTimeout(timeout);
 
-        timeout = setTimeout(() => {
-            handleCountChange(item.id, newCount)
+        timeout = setTimeout(async () => {
+            const loadingToast = toast.loading('Updating cart item...');
+
+            await updateCartItem(item.id, { count: newCount });
+            refreshCart()
+                .then(() => {
+                    toast.dismiss(loadingToast);
+                    toast.success('Cart item updated.');
+                })
                 .finally(() => { timeout = null });
         }, 500);
     }, [item.id]);
+
+    useEffect(() => {
+        setCount(item.count);
+    }, [item.count]);
 
     return (
         <div key={item.id} className="flex gap-3 rounded-xl border p-3">
@@ -86,7 +98,7 @@ export default function ({ item, onCountChange: handleCountChange, onRemove: han
                     variant="ghost"
                     className="text-red-500 mt-2 px-0"
                     type="button"
-                    onClick={() => handleRemove(item.id)}>
+                    onClick={() => onRemove(item.id)}>
                     Remove
                 </Button>
             </div>

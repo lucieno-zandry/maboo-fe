@@ -5,9 +5,10 @@ import Button from "../custom-components/button";
 import { CreditCard, Wallet, Lock } from "lucide-react"; // Or use your own icons
 import { cn } from "~/lib/utils";
 import { useState } from "react";
+import useCheckoutStore from "~/hooks/use-checkout-store";
 
 export function PaymentMethod({ onNext }: { onNext: () => void }) {
-    const [method, setMethod] = useState("card");
+    const { method, setMethod } = useCheckoutStore();
 
     return (
         <Card className="w-full">
@@ -33,7 +34,7 @@ export function PaymentMethod({ onNext }: { onNext: () => void }) {
                     {/* Credit/Debit Card Option */}
                     <div>
                         <RadioGroupItem
-                            value="card"
+                            value="VISA"
                             id="card"
                             className="peer sr-only"
                         />
@@ -41,7 +42,7 @@ export function PaymentMethod({ onNext }: { onNext: () => void }) {
                             htmlFor="card"
                             className={cn(
                                 "flex flex-col md:flex-row items-start md:items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-muted/50",
-                                method === "card" ? "border-primary bg-primary/5" : "border-muted"
+                                method === "VISA" ? "border-primary bg-primary/5" : "border-muted"
                             )}
                         >
                             <div className="flex items-center gap-4">
@@ -65,7 +66,7 @@ export function PaymentMethod({ onNext }: { onNext: () => void }) {
                     {/* PayPal Option */}
                     <div>
                         <RadioGroupItem
-                            value="paypal"
+                            value="PAYPAL"
                             id="paypal"
                             className="peer sr-only"
                         />
@@ -73,7 +74,7 @@ export function PaymentMethod({ onNext }: { onNext: () => void }) {
                             htmlFor="paypal"
                             className={cn(
                                 "flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-muted/50",
-                                method === "paypal" ? "border-primary bg-primary/5" : "border-muted"
+                                method === "PAYPAL" ? "border-primary bg-primary/5" : "border-muted"
                             )}
                         >
                             <div className="flex items-center gap-4">

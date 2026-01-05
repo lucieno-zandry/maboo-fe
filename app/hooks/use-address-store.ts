@@ -4,22 +4,28 @@ type AddressStore = {
     selectedAddresses: Address[],
     setSelectedAddresses: (addresses: AddressStore['selectedAddresses']) => void,
     authAddresses: Address[] | null,
-    setAuthAddresses: (addresses: Address[] | null) => void,
+    setAuthAddresses: (
+        updater: Address[] | null | ((prev: Address[] | null) => Address[] | null)
+    ) => void;
     selectedAddressId: number | null,
     setSelectedAddressId: (selectedAddressId: AddressStore['selectedAddressId']) => void,
 }
 
-const useAddressStore = create<AddressStore>(set => ({
+const useAddressStore = create<AddressStore>((set) => ({
     selectedAddresses: [],
-    setSelectedAddresses: (addresses) => {
-        set({ selectedAddresses: addresses })
-    },
+    setSelectedAddresses: (addresses) => set({ selectedAddresses: addresses }),
+
     authAddresses: null,
-    setAuthAddresses: (addresses) => {
-        set({ authAddresses: addresses })
-    },
+    setAuthAddresses: (updater) =>
+        set((state) => ({
+            authAddresses:
+                typeof updater === "function"
+                    ? updater(state.authAddresses)
+                    : updater,
+        })),
+
     selectedAddressId: null,
     setSelectedAddressId: (selectedAddressId) => set({ selectedAddressId }),
-}))
+}));
 
 export default useAddressStore;

@@ -1,25 +1,22 @@
 import { useState, useMemo, useEffect } from "react";
-import { Card } from "~/components/ui/card";
 import { AddressForm } from "~/components/address/address-form";
 import { PaymentMethod } from "~/components/checkout/payment-method";
 import { OrderReview } from "~/components/checkout/order-review";
 import Button from "~/components/custom-components/button";
 import StepWrapper from "~/components/custom-components/step-wrapper";
 import { redirect, useLoaderData, useNavigate, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
-import formatMoney from "~/lib/format-money";
-import { createAddress, createOrder, getCartItems } from "~/api/http-requests";
+import { createAddress, createOrder, createTransaction, getCartItems } from "~/api/http-requests";
 import useAddressStore from "~/hooks/use-address-store";
 import { toast } from "sonner";
-import { useUserStore } from "~/hooks/use-user";
 import useCheckoutStore from "~/hooks/use-checkout-store";
 import OrderSummary from "~/components/checkout/order-summary";
-import useCartStore from "~/hooks/use-cart";
+import { useRefreshCart } from "~/hooks/use-cart";
+import { HttpException, ValidationException } from "~/api/app-fetch";
 
 type Step = "address" | "payment" | "review";
 
 export const clientLoader = async ({ }: LoaderFunctionArgs) => {
     const { cartItemsIds } = useCheckoutStore.getState();
-    if (cartItemsIds.length === 0) return redirect('/');
     const cartItems = await getCartItems({ whereIn: { id: cartItemsIds } });
     return cartItems.data?.cart_items;
 }
@@ -27,32 +24,21 @@ export const clientLoader = async ({ }: LoaderFunctionArgs) => {
 export const clientAction = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const intent = formData.get('_intent');
-    const module = formData.get('_module');
 
     try {
-        if (module === 'address') {
-            const isDefault = formData.get('is_default');
-            const { setAuthAddresses, authAddresses } = useAddressStore.getState();
-            const { setUser } = useUserStore();
-
-            if (!isDefault)
-                formData.set('is_default', '0');
-
-            if (intent === 'create-address') {
-                const response = await createAddress(formData);
-
-                if (authAddresses && response.data) {
-                    setAuthAddresses([...authAddresses, response.data.address]);
-                    setUser(response.data.user);
-                }
-
-                toast.success("Address saved successfully!")
-            }
+        if (intent === 'create-address') {
+            const response = await createAddress(formData);
+            return {
+                address: response.data!.address,
+                user: response.data!.user,
+            };
         }
     } catch (e) {
         return e;
     }
-}
+
+    return null;
+};
 
 export default function CheckoutPage() {
     const [activeStep, setActiveStep] = useState<Step>("address");
@@ -62,28 +48,34 @@ export default function CheckoutPage() {
         review: false,
     });
     const [loading, setLoading] = useState(false);
+    const loaderCartItems = useLoaderData<CartItem[]>();
 
-    const cartItems = useLoaderData<CartItem[]>();
     const { selectedAddressId } = useAddressStore();
-    const { cartItemsIds, appliedCoupon, setAppliedCoupon, setCartItemsIds } = useCheckoutStore();
-    const { setItems } = useCartStore();
+    const { appliedCoupon, setAppliedCoupon, setCartItemsIds, method } = useCheckoutStore();
+    const { cartItems, setCartItems } = useCheckoutStore();
+
+    const cartItemsIds = useMemo(() => cartItems.map((item) => item.id) || [], [cartItems]);
 
     const navigate = useNavigate();
+    const refreshCart = useRefreshCart();
 
     const subtotal = useMemo(() => {
         if (!cartItems || cartItems.length === 0) return 0;
         return cartItems.reduce((sum, it) => sum + (it.total || 0), 0);
     }, [cartItems]);
 
+    const discountAmount = appliedCoupon
+        ? appliedCoupon.type === "FIXED_AMOUNT"
+            ? appliedCoupon.discount
+            : (subtotal * appliedCoupon.discount) / 100
+        : 0;
+
+    const total = Math.max(0, subtotal - discountAmount);
+
     const itemsCount = useMemo(() => {
         if (!cartItems || cartItems.length === 0) return 0;
         return cartItems.reduce((sum, it) => sum + (it.count || 0), 0);
     }, [cartItems]);
-
-    const cleanupFunction = () => {
-        setAppliedCoupon(null);
-        setCartItemsIds([]);
-    }
 
     const handleStepComplete = (current: Step, next: Step) => {
         setCompleted(prev => ({ ...prev, [current]: true }));
@@ -91,23 +83,54 @@ export default function CheckoutPage() {
     };
 
     const handlePlaceOrder = () => {
-        if (!selectedAddressId || cartItemsIds.length === 0) return;
+        if (!selectedAddressId || cartItemsIds.length === 0 || !method) return;
         setLoading(true);
+
         createOrder({ address_id: selectedAddressId, cart_item_ids: cartItemsIds, coupon_id: appliedCoupon?.id })
-            .then(() => {
-                cleanupFunction();
-                setItems(null);
-                navigate('/orders');
+            .then(async (response) => {
+                if (response.data?.order) {
+                    try {
+                        throw { status: 500, message: "Failed to create transaction" };
+                        const transactionResponse = await createTransaction({
+                            method,
+                            order_uuid: response.data.order.uuid,
+                            amount: total,
+                        });
+
+                        if (transactionResponse.data?.transaction.payment_url) {
+                            location.href = transactionResponse.data.transaction.payment_url;
+                        }
+                    } catch (e) {
+                        if (e instanceof HttpException || e instanceof ValidationException)
+                            toast.error(`Failed to initiate transaction with status : ${e.status}`);
+
+                        setCartItems([]);
+                        navigate(`/order/${response.data.order.uuid}`);
+                    }
+
+                }
             })
             .catch((error) => {
-                toast.error(`Failed to create order with status: ${error.message} `)
+                toast.error(`Failed to create order with status: ${error.message || error.status} `)
             })
             .finally(() => {
                 setLoading(false);
             });
     }
 
-    useEffect(() => cleanupFunction, [])
+    useEffect(() => {
+        if (loaderCartItems) {
+            setCartItems(loaderCartItems);
+        }
+
+        return () => {
+            setAppliedCoupon(null);
+            setCartItemsIds([]);
+            refreshCart();
+        }
+    }, [loaderCartItems, setCartItems]);
+
+    console.log(method);
 
     return (
         <div className="container max-w-4xl mx-auto p-4 md:p-8">
@@ -147,7 +170,7 @@ export default function CheckoutPage() {
                         isCompleted={completed.review}
                     >
                         {cartItems && (
-                            <OrderReview cartItems={cartItems}>
+                            <OrderReview>
                                 <Button className="w-full h-12 text-lg" type="button" isLoading={loading} onClick={handlePlaceOrder}>Place Order</Button>
                             </OrderReview>
                         )}
@@ -155,9 +178,15 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Sticky Order Summary Sidebar */}
-                <div className="lg:col-span-1">
-                    <OrderSummary cartItems={cartItems} itemsCount={itemsCount} subtotal={subtotal} />
-                </div>
+                {cartItems &&
+                    <div className="lg:col-span-1">
+                        <OrderSummary
+                            cartItems={cartItems}
+                            itemsCount={itemsCount}
+                            subtotal={subtotal}
+                            discountAmount={discountAmount}
+                            total={total} />
+                    </div>}
             </div>
         </div>
     );

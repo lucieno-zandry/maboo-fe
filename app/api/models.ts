@@ -166,6 +166,8 @@ type Order = {
   address_snapshot: Address,
   coupon_snapshot?: Pick<Coupon, "id" | "code" | "type" | "discount" | "min_order_value">,
   cart_items?: CartItem[],
+  shipments?: Shipment[],
+  transactions?: Transaction[],
 }
 
 type Coupon = {
@@ -181,4 +183,31 @@ type Coupon = {
   start_date: string,
   end_date: string,
   is_active: boolean,
+}
+
+type Shipment = {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  status: "PROCESSING" | "SHIPPED" | "DELIVERED";
+  description: string;
+  order_uuid: string;
+
+  order?: Order;
+}
+
+type Transaction = {
+  id: number,
+  created_at: string,
+  updated_at: string,
+  status: 'FAILED' | 'PENDING' | 'SUCCESS',
+  informations: Object,
+  user_id: number,
+  order_uuid: string,
+  deleted_at: string | null,
+  method: 'VISA' | 'MASTERCARD' | 'ORANGEMONEY' | 'AIRTELMONEY' | 'MVOLA' | 'PAYPAL',
+  payment_url: string | null,
+  user?: User,
+  order?: Order,
+  amount: number,
 }

@@ -35,7 +35,7 @@ export function updateAuthUser(payload: { name?: string, email?: string, passwor
 }
 
 export function getProducts() {
-    return appFetch.get<{ products: Product[] }>('/product/all?limit=2&with=variants&images');
+    return appFetch.get<{ products: Product[] }>('/product/all?with=variants&images');
 }
 
 export function getProduct(slug: string) {
@@ -130,5 +130,13 @@ export function getCouponFromCode(code: string) {
 }
 
 export function getOrders() {
-    return appFetch.get<{ orders: Order[] }>('/order/all');
+    return appFetch.get<{ orders: Order[] }>('/order/all?with=cart_items,transactions&order_by=updated_at&direction=DESC');
+}
+
+export function getOrder(uuid: string) {
+    return appFetch.get<{ order: Order }>(`/order/get/${uuid}?with=cart_items,transactions`);
+}
+
+export function createTransaction(data: Pick<Transaction, 'method' | 'order_uuid' | 'amount'>) {
+    return appFetch.post<{ transaction: Transaction }>('/transaction/create', data)
 }

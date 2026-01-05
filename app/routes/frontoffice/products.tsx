@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Link, useLoaderData } from "react-router";
 import { getProducts } from "~/api/http-requests";
 import formatMoney from "~/lib/format-money";
+import { Badge } from "~/components/ui/badge";
+import { ShoppingBag, ArrowRight, Tag } from "lucide-react";
 
 export const loader = async () => {
     const response = await getProducts();
@@ -14,19 +16,26 @@ export default function ProductsPage() {
     const products = useLoaderData() as Product[];
 
     return (
-        <div className="px-6 md:px-20 py-16 bg-gradient-to-b from-white to-gray-100 min-h-screen">
-            <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-3">Our Products</h2>
-                <p className="text-gray-600 max-w-xl mx-auto">
-                    Browse our curated selection of quality products tailored for your lifestyle.
-                </p>
-            </div>
+        <div className="container mx-auto px-4 md:px-6 py-12 space-y-10">
+            {/* Header Section */}
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8">
+                <div className="space-y-2">
+                    <h1 className="text-4xl font-extrabold tracking-tight">Our Collection</h1>
+                    <p className="text-muted-foreground text-lg max-w-2xl">
+                        Discover quality variants tailored for your professional and lifestyle needs.
+                    </p>
+                </div>
+                <div className="flex gap-2">
+                    <Badge variant="secondary" className="px-4 py-1.5 h-fit text-sm">
+                        {products.length} Products Found
+                    </Badge>
+                </div>
+            </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            {/* Grid Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {products.map((product, i) => {
                     const variantCount = product.variants?.length || 0;
-
-                    // compute minimum normal price & minimum special price (if any)
                     const prices = (product.variants || []).map((v) => v.price);
                     const specialPrices = (product.variants || [])
                         .map((v) => v.special_price)
@@ -34,62 +43,77 @@ export default function ProductsPage() {
 
                     const minPrice = prices.length ? Math.min(...prices) : undefined;
                     const minSpecial = specialPrices.length ? Math.min(...specialPrices) : undefined;
-
-                    // choose display price:
-                    // prefer minSpecial if exists otherwise minPrice
                     const displayPrice = minSpecial ?? minPrice;
-                    // show original price for strike-through (use minPrice)
                     const originalPrice = minPrice;
 
-                    // image fallback
+                    const hasSale = minSpecial != null && originalPrice != null && originalPrice > minSpecial;
+                    const discountPercent = hasSale ? Math.round(((originalPrice! - minSpecial!) / originalPrice!) * 100) : 0;
+
                     const variant = product.variants?.[0];
                     const imgSrc = (variant?.image as string) || product.images?.[0]?.filename;
 
                     return (
                         <motion.div
                             key={product.id}
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05, duration: 0.35 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05, duration: 0.4 }}
                         >
-                            <Card className="overflow-hidden hover:shadow-xl transition-all">
-                                <img
-                                    src={imgSrc}
-                                    alt={product.title}
-                                    className="w-full h-56 object-cover"
-                                />
-                                <CardContent className="p-6 flex flex-col justify-between h-48">
-                                    <div>
-                                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                                            {product.title}
-                                        </h3>
+                            <Card className="group relative h-full overflow-hidden border-none shadow-none hover:shadow-2xl transition-all duration-500 bg-transparent">
+                                {/* Image Container */}
+                                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
+                                    <Link to={`/product/${product.slug}`}>
+                                        <img
+                                            src={imgSrc}
+                                            alt={product.title}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
+                                    </Link>
 
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <p className="text-gray-600 text-sm line-clamp-2">
-                                                {product.description}
-                                            </p>
-
-                                            {/* variant count pill */}
-                                            <span className="ml-auto inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-                                                {variantCount} {variantCount > 1 ? "variants" : "variant"}
-                                            </span>
-                                        </div>
+                                    {/* Badges */}
+                                    <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                        {hasSale && (
+                                            <Badge className="bg-emerald-500 hover:bg-emerald-600 border-none px-3 py-1 font-bold">
+                                                -{discountPercent}% OFF
+                                            </Badge>
+                                        )}
+                                        <Badge variant="outline" className="bg-background/80 backdrop-blur-md border-none px-3 py-1 text-xs">
+                                            {variantCount > 1 ? `${variantCount} Options` : 'Single Item'}
+                                        </Badge>
                                     </div>
 
-                                    <div className="flex items-center justify-between mt-auto">
-                                        <div className="text-lg font-bold text-blue-600">
-                                            {variantCount > 1 ? <span className="text-sm mr-1 text-gray-500">From</span> : null}
-                                            {displayPrice ? formatMoney(displayPrice) : "—"}
-                                            {minSpecial != null && originalPrice != null && originalPrice > minSpecial && (
-                                                <span className="text-gray-400 line-through text-sm ml-2">
-                                                    {formatMoney(originalPrice)}
+                                    {/* Quick Hover Action */}
+                                    <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                        <Button className="w-full shadow-xl bg-primary text-primary-foreground font-bold" asChild>
+                                            <Link to={`/product/${product.slug}`}>
+                                                Quick View <ArrowRight className="ml-2 w-4 h-4" />
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <CardContent className="pt-4 px-1 pb-2">
+                                    <div className="space-y-1">
+                                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+                                            {product.category?.title || 'General'}
+                                        </p>
+                                        <Link to={`/product/${product.slug}`} className="block">
+                                            <h3 className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-1">
+                                                {product.title}
+                                            </h3>
+                                        </Link>
+
+                                        <div className="flex items-center gap-2 pt-1">
+                                            <span className="text-xl font-extrabold text-foreground">
+                                                {displayPrice ? formatMoney(displayPrice) : "—"}
+                                            </span>
+                                            {hasSale && (
+                                                <span className="text-sm text-muted-foreground line-through">
+                                                    {formatMoney(originalPrice!)}
                                                 </span>
                                             )}
                                         </div>
-
-                                        <Button className="bg-blue-600 text-white hover:bg-blue-700" asChild>
-                                            <Link to={`/product/${product.slug}`}>View</Link>
-                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>

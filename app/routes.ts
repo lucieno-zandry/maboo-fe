@@ -9,6 +9,7 @@ export default [
         route('/addresses', 'routes/frontoffice/addresses.tsx'),
         route('/checkout', 'routes/frontoffice/checkout.tsx'),
         route('/orders', 'routes/frontoffice/orders.tsx'),
+        route('/order/:uuid', 'routes/frontoffice/order-details.tsx'),
     ]),
     route('/auth', 'routes/auth/layout.tsx', [
         index('routes/auth/index.tsx'),

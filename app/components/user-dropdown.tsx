@@ -44,6 +44,9 @@ export default function () {
                         <DropdownMenuItem asChild>
                             <Link to={'/settings'}>Settings</Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link to={'/orders'}>Orders</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem>
                             Billing
                         </DropdownMenuItem>

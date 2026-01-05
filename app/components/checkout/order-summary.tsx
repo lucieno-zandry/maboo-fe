@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getCouponFromCode } from "~/api/http-requests";
 import formatMoney from "~/lib/format-money";
@@ -12,12 +12,16 @@ type OrderSummaryContainerProps = {
     cartItems: CartItem[];
     itemsCount: number;
     subtotal: number;
+    discountAmount: number;
+    total: number;
 };
 
 export default function ({
     cartItems,
     itemsCount,
     subtotal,
+    discountAmount,
+    total
 }: OrderSummaryContainerProps) {
 
     const { appliedCoupon, setAppliedCoupon } = useCheckoutStore();
@@ -26,13 +30,7 @@ export default function ({
     const [isLoading, setIsLoading] = useState(false);
 
     // Discount calculation
-    const discountAmount = appliedCoupon
-        ? appliedCoupon.type === "FIXED_AMOUNT"
-            ? appliedCoupon.discount
-            : (subtotal * appliedCoupon.discount) / 100
-        : 0;
 
-    const total = Math.max(0, subtotal - discountAmount);
 
     const handleApplyCoupon = async () => {
         if (!couponCode.trim()) return;
@@ -66,6 +64,25 @@ export default function ({
         setAppliedCoupon(null);
         toast.info("Coupon removed.");
     };
+
+    useEffect(() => {
+        if (!appliedCoupon) return;
+
+        const noLongerValid =
+            appliedCoupon.min_order_value &&
+            subtotal < appliedCoupon.min_order_value;
+
+        if (noLongerValid) {
+            setAppliedCoupon(null);
+
+            toast.warning(
+                `Coupon "${appliedCoupon.code}" was removed because your order no longer meets the minimum value of ${formatMoney(
+                    appliedCoupon.min_order_value
+                )}.`
+            );
+        }
+    }, [subtotal, appliedCoupon, setAppliedCoupon]);
+
 
     return (
         <OrderSummary

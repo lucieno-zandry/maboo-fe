@@ -7,7 +7,7 @@ import { useRefreshCart } from "~/hooks/use-cart";
 import { useUserStore } from "~/hooks/use-user";
 
 export default function () {
-    const { setUser } = useUserStore();
+    const { setUser, clearUser } = useUserStore();
     const refreshCart = useRefreshCart();
 
     React.useEffect(() => {
@@ -18,7 +18,7 @@ export default function () {
                     refreshCart();
                 }
 
-            }).catch(() => { });
+            }).catch(clearUser);
     }, []);
 
     return <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100">

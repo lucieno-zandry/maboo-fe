@@ -5,7 +5,7 @@ import useCartStore from "~/hooks/use-cart";
 import CartSheet from "./cart-sheet";
 import React from "react";
 
-export default function () {
+export default React.memo(function () {
     const { items } = useCartStore();
     const [open, setOpen] = React.useState(false);
 
@@ -17,4 +17,4 @@ export default function () {
                 open={open}
                 setOpen={setOpen} />}
     </>
-}
+});

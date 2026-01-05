@@ -9,8 +9,8 @@ const NotFound = () => {
 
     return (
         // Responsive container filling the screen height
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans text-gray-800">
-            <div className="flex flex-col items-center text-center bg-white p-6 sm:p-10 md:p-16 rounded-3xl shadow-2xl border border-gray-100 max-w-xl w-full">
+        <div className="min-h-screen flex items-center justify-center p-4 font-sans text-gray-800">
+            <div className="flex flex-col items-center text-center p-6 sm:p-10 md:p-16 rounded-3xl border border-gray-100 max-w-xl w-full">
 
                 {/* Placeholder for Flaticon Image */}
                 {/*
