@@ -1,15 +1,23 @@
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { motion } from "framer-motion";
-import { Link, useLoaderData } from "react-router";
+import { Link, redirect, useLoaderData } from "react-router";
 import { getProducts } from "~/api/http-requests";
 import formatMoney from "~/lib/format-money";
 import { Badge } from "~/components/ui/badge";
 import { ShoppingBag, ArrowRight, Tag } from "lucide-react";
+import { HttpException } from "~/api/app-fetch";
+import handleHttpExceptionError from "~/lib/handle-http-exception-error";
 
 export const loader = async () => {
-    const response = await getProducts();
-    return response.data?.products;
+    try {
+        const response = await getProducts();
+        return response.data?.products;
+    } catch (error) {
+        if (error instanceof HttpException) {
+            return handleHttpExceptionError({ status: error.status, navigate: redirect })
+        }
+    }
 }
 
 export default function ProductsPage() {

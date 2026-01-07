@@ -176,3 +176,7 @@ export function markNotificationAsRead(id: string) {
         notification: AppNotification
     }>(`/notifications/${id}/read`, {});
 }
+
+export function searchProducts(keywords: string) {
+    return appFetch.get<{ products: Product[] }>(`/product/search/${keywords}?with=category,variants,images`);
+}
