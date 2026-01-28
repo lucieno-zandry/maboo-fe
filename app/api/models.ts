@@ -6,10 +6,15 @@ type User = {
   approved_at: string;
   role: "admin" | "manager" | "client";
   image?: string | null;
-  address_id?: number | null;
-  client_code_id?: number | null;
+  address_id?: number;
   created_at: string;
   updated_at: string;
+  client_code_id?: number;
+  client_code?: ClientCode;
+
+  permissions?: {
+    can_use_special_prices: boolean;
+  };
 }
 
 type Product = {
@@ -190,11 +195,18 @@ type Shipment = {
   created_at: string;
   updated_at: string;
   status: "PROCESSING" | "SHIPPED" | "DELIVERED";
-  description: string;
+  data?: ShipmentData;
   order_uuid: string;
 
   order?: Order;
 }
+
+type ShipmentData = {
+  carrier?: string;
+  tracking_number?: string;
+  estimated_delivery?: string;
+  shipped_date?: string;
+};
 
 type Transaction = {
   id: number,
@@ -231,6 +243,7 @@ type OtherNotificationData = {
 
 type NotificationData =
   | TransactionNotificationData
+  | ShipmentNotificationData
   | OtherNotificationData;
 
 type AppNotification = {
@@ -240,4 +253,25 @@ type AppNotification = {
   read_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+type ShipmentNotificationData = {
+  notification_type: "shipment";
+  shipment_id: number;
+  order_uuid: string;
+  status: 'PROCESSING' | 'SHIPPED' | 'DELIVERED';
+  message: string;
+  shipment_data?: {
+    carrier?: string;
+    tracking_number?: string;
+    estimated_delivery?: string;
+  };
+};
+
+type ClientCode = {
+  id: number;
+  code: string;       // e.g., "PARTNER2026"
+  is_active: boolean;
+  max_uses?: number;   // Optional: how many users can use this code
+  created_at: string;
 };

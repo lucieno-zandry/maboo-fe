@@ -19,6 +19,7 @@ import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 import useCheckoutStore from "~/hooks/use-checkout-store";
+import { useUserStore } from "~/hooks/use-user"; // 1. Import your store
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const { slug } = params;
@@ -57,26 +58,34 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
     return { status: 422 };
 }
 
+
 export default function ProductPage() {
+    const { user } = useUserStore(); // 2. Get user permissions
     const product = useLoaderData<Product | null>();
     const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
     const [count, setCount] = useState<number>(1);
 
-    // We use fetcher instead of submit to keep the user on the page 
-    // without a full page reload unless we redirect (Buy Now)
     const fetcher = useFetcher();
     const navigation = useNavigation();
-    const refreshCart = useRefreshCart();
 
     const isSubmitting = fetcher.state !== "idle" || navigation.state !== "idle";
 
-    // 🧮 Subtotal computation
-    const subtotal = useMemo(() => {
-        if (!selectedVariant) return 0;
-        const unitPrice = selectedVariant.special_price || selectedVariant.price;
-        return unitPrice * count;
-    }, [selectedVariant, count]);
+    // 3. Permission-aware price logic
+    const canSeeSpecial = user?.permissions?.can_use_special_prices ?? false;
+
+    // Helper to determine the price for the current context
+    const getEffectivePrice = (variant: Variant | null) => {
+        if (!variant) return 0;
+        return (canSeeSpecial && variant.special_price !== null)
+            ? variant.special_price
+            : variant.price;
+    };
+
+    const unitPrice = useMemo(() => getEffectivePrice(selectedVariant), [selectedVariant, canSeeSpecial]);
+
+    // 🧮 Subtotal computation using the effective unit price
+    const subtotal = useMemo(() => unitPrice * count, [unitPrice, count]);
 
     if (!product) return <NotFound />;
 
@@ -127,9 +136,10 @@ export default function ProductPage() {
                                     transition={{ duration: 0.3 }}
                                 />
                             </AnimatePresence>
-                            {selectedVariant?.special_price && (
-                                <Badge className="absolute top-6 left-6 bg-emerald-500 text-white border-none px-4 py-1.5 text-sm font-bold shadow-lg">
-                                    SALE
+
+                            {canSeeSpecial && selectedVariant?.special_price && (
+                                <Badge className="absolute top-6 left-6 bg-green-600 text-white border-none px-4 py-1.5 text-sm font-bold shadow-lg">
+                                    PARTNER PRICING
                                 </Badge>
                             )}
                         </div>
@@ -156,9 +166,10 @@ export default function ProductPage() {
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-3xl font-bold text-gray-900">
-                                            {formatMoney(selectedVariant?.special_price || selectedVariant?.price || 0)}
+                                            {formatMoney(unitPrice)}
                                         </span>
-                                        {selectedVariant?.special_price && (
+                                        {/* Show strike-through only if user has special price permissions */}
+                                        {canSeeSpecial && selectedVariant?.special_price && (
                                             <span className="text-xl text-gray-400 line-through">
                                                 {formatMoney(selectedVariant.price)}
                                             </span>
@@ -264,6 +275,13 @@ export default function ProductPage() {
                                         Buy it now
                                     </Button>
                                 </div>
+
+                                {/* 4. Add a subtle reminder of the benefit */}
+                                {canSeeSpecial && selectedVariant?.special_price && (
+                                    <p className="text-center text-xs text-green-600 font-medium italic">
+                                        Partner discount of {formatMoney(selectedVariant.price - selectedVariant.special_price)} applied
+                                    </p>
+                                )}
                             </div>
 
                             {/* Extra Trust Info */}

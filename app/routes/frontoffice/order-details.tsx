@@ -12,6 +12,7 @@ import { getOrderStatusConfig } from "~/lib/get-order-status-config";
 import { ShippingAddress } from "~/components/order-details/shipping-address";
 import PaymentMethodSelector from "~/components/order-details/payment-method-selector";
 import PaymentIncompleteAlert from "~/components/order-details/payment-incomplete-alert";
+import ShipmentStatus from "~/components/order-details/shipment-status";
 
 export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
     if (!params.uuid) return redirect('/403');
@@ -43,6 +44,10 @@ export default function OrderDetails() {
                 {/* Sidebar Column (Details & Summary) */}
                 <div className="space-y-6">
                     <ShippingAddress address={order.address_snapshot} />
+
+                    {order.shipments && order.shipments.length > 0 && (
+                        <ShipmentStatus shipments={order.shipments} />
+                    )}
 
                     {statusConfig.showCTA && (
                         <PaymentMethodSelector

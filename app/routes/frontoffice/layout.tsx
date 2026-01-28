@@ -7,6 +7,7 @@ import Navbar from "~/components/navbar";
 import { useRefreshCart } from "~/hooks/use-cart";
 import { useUserStore } from "~/hooks/use-user";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
+import { ClientCodeDialog } from "./client-code-dialog";
 
 export default function () {
     const { setUser, clearUser } = useUserStore();
@@ -33,5 +34,6 @@ export default function () {
         <Navbar />
         <Outlet />
         <Footer />
+        <ClientCodeDialog />
     </div>
 }

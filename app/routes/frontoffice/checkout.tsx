@@ -11,14 +11,29 @@ import { toast } from "sonner";
 import useCheckoutStore from "~/hooks/use-checkout-store";
 import OrderSummary from "~/components/checkout/order-summary";
 import { useRefreshCart } from "~/hooks/use-cart";
-import { HttpException, ValidationException } from "~/api/app-fetch";
+import { HttpException, ValidationException, type FormatedResponse } from "~/api/app-fetch";
 
 type Step = "address" | "payment" | "review";
 
-export const clientLoader = async ({ }: LoaderFunctionArgs) => {
+export const clientLoader = async ({ request }: LoaderFunctionArgs) => {
     const { cartItemsIds } = useCheckoutStore.getState();
-    const cartItems = await getCartItems({ whereIn: { id: cartItemsIds } });
-    return cartItems.data?.cart_items;
+
+    let response: FormatedResponse<{
+        cart_items: CartItem[];
+    }>
+
+    if (cartItemsIds.length === 0) {
+        response = await getCartItems();
+    } else {
+        response = await getCartItems({ whereIn: { id: cartItemsIds } });
+    }
+
+    if (response.data?.cart_items.length === 0) {
+        toast.error("Your cart is empty. Please add items to your cart before proceeding to checkout.");
+        return redirect('/orders');
+    }
+
+    return response.data?.cart_items;
 }
 
 export const clientAction = async ({ request }: ActionFunctionArgs) => {
@@ -93,7 +108,7 @@ export default function CheckoutPage() {
                         const transactionResponse = await createTransaction({
                             method,
                             order_uuid: response.data.order.uuid,
-                            amount: total,
+                            amount: response.data.order.total,
                         });
 
                         if (transactionResponse.data?.transaction.payment_url) {
@@ -128,12 +143,6 @@ export default function CheckoutPage() {
             refreshCart();
         }
     }, [loaderCartItems, setCartItems]);
-
-    useEffect(() => {
-        if (itemsCount === 0) {
-            navigate('/orders');
-        }
-    }, [itemsCount]);
 
     return (
         <div className="container max-w-4xl mx-auto p-4 md:p-8">

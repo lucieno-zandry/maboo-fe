@@ -6,7 +6,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "~/lib/utils";
 import NotificationsEmpty from "./notifications-empty";
 import { Button } from "../ui/button";
-import { SystemItem, TransactionItem } from "./notification-item";
+import { ShipmentItem, SystemItem, TransactionItem } from "./notification-item";
 
 type Props = {
     notifications: AppNotification[] | null;
@@ -30,7 +30,7 @@ export function NotificationsPopover({
         onMarkAsRead?.(n.id);
 
         // 2. Handle Navigation based on type
-        if (n.data.notification_type === "transaction") {
+        if (n.data.notification_type === "transaction" || n.data.notification_type === "shipment") {
             navigate(`/order/${n.data.order_uuid}`);
         }
     };
@@ -78,13 +78,26 @@ export function NotificationsPopover({
                                     !n.read_at && "bg-blue-50/30 dark:bg-blue-900/10"
                                 )}
                             >
-                                {n.data.notification_type === "transaction" ? (
+                                {n.data.notification_type === "transaction" && (
                                     <TransactionItem
                                         data={n.data}
                                         isUnread={!n.read_at}
                                         onRemove={() => onRemove?.(n.id)}
                                     />
-                                ) : (
+                                )}
+
+
+                                {n.data.notification_type === "shipment" && (
+                                    <ShipmentItem
+                                        data={n.data}
+                                        isUnread={!n.read_at}
+                                        onRemove={() => onRemove?.(n.id)}
+                                    />
+                                )}
+
+
+
+                                {n.data.notification_type === "system" && (
                                     <SystemItem data={n.data} />
                                 )}
 

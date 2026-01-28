@@ -20,7 +20,10 @@ export default function ({ status, navigate = defaultNavigate }: Props) {
         case 404:
             return navigate('/404');
 
-        default:
+        case 500:
             return navigate('/500');
+
+        default:
+            break;
     }
 }

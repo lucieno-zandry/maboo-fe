@@ -29,7 +29,14 @@ export function getAuthUser() {
     return appFetch.get<{ user: User }>('/auth/user/get');
 }
 
-export function updateAuthUser(payload: { name?: string, email?: string, password?: string, password_confirmation?: string, current_password?: string }) {
+export function updateAuthUser(payload: {
+    name?: string,
+    email?: string,
+    password?: string,
+    password_confirmation?: string,
+    current_password?: string,
+    client_code_id?: number,
+}) {
     return appFetch.post<{ user: User }>('/auth/user/update', payload);
 }
 
@@ -41,7 +48,6 @@ export function getProducts(params?: ProductQueryParams) {
         }),
     });
 }
-
 
 export function getProduct(slug: string) {
     return appFetch.get<{ product: Product }>(`/product/get/${slug}`);
@@ -121,7 +127,7 @@ export function getOrders() {
 }
 
 export function getOrder(uuid: string) {
-    return appFetch.get<{ order: Order }>(`/order/get/${uuid}?with=cart_items,transactions`);
+    return appFetch.get<{ order: Order }>(`/order/get/${uuid}?with=cart_items,transactions,shipments`);
 }
 
 export function createTransaction(data: Pick<Transaction, 'method' | 'order_uuid' | 'amount'>) {
@@ -174,4 +180,8 @@ export function deleteOrder(uuid: string) {
 
 export function getCategories() {
     return appFetch.get<{ categories: Category[] }>('/category/all');
+}
+
+export function getClientCode(code: string) {
+    return appFetch.get<{ client_code: ClientCode | null }>(`/client-code/get/${code}`);
 }

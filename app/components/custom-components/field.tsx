@@ -49,6 +49,6 @@ export default function ({ validationErrors, label, dataFormat, children, onVali
             {...inputProps}
         />
         {stateValidationErrors &&
-            <FieldError>{stateValidationErrors}</FieldError>}
+            <FieldError>{stateValidationErrors.join('. ')}</FieldError>}
     </Field>
 }
