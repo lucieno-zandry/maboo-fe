@@ -36,7 +36,7 @@ export default function () {
                     <Button variant="ghost">
                         <UserAvatar
                             avatarFallBack={user.name.substring(0, 2)}
-                            avatarImageUrl={user.image || undefined} />
+                            avatarImageUrl={user.avatar_image?.url || undefined} />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="start">

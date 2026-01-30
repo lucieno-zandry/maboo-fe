@@ -32,7 +32,9 @@ export default function () {
 
     return <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100">
         <Navbar />
-        <Outlet />
+        <main className="flex-1">
+            <Outlet />
+        </main>
         <Footer />
         <ClientCodeDialog />
     </div>

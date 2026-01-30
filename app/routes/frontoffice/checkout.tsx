@@ -16,19 +16,12 @@ import { HttpException, ValidationException, type FormatedResponse } from "~/api
 type Step = "address" | "payment" | "review";
 
 export const clientLoader = async ({ request }: LoaderFunctionArgs) => {
-    const { cartItemsIds } = useCheckoutStore.getState();
+    const url = new URL(request.url);
+    const cartItemsIds = url.searchParams.get('cartItemIds')?.split(',')?.map(Number) ?? [];
 
-    let response: FormatedResponse<{
-        cart_items: CartItem[];
-    }>
+    const response = cartItemsIds.length > 0 && await getCartItems({ whereIn: { id: cartItemsIds } });
 
-    if (cartItemsIds.length === 0) {
-        response = await getCartItems();
-    } else {
-        response = await getCartItems({ whereIn: { id: cartItemsIds } });
-    }
-
-    if (response.data?.cart_items.length === 0) {
+    if (!response) {
         toast.error("Your cart is empty. Please add items to your cart before proceeding to checkout.");
         return redirect('/orders');
     }

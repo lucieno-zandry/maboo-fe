@@ -1,33 +1,153 @@
+import { useRef, useState } from "react";
 import getInitials from "~/lib/get-initials";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Camera, CheckCircle2, Mail } from "lucide-react";
+import { Camera, CheckCircle2, Mail, Loader2 } from "lucide-react";
 import Button from "../custom-components/button";
-import { useUserStore } from "~/hooks/use-user";
+import { useUserStore } from "~/hooks/use-user";// adjust import path as needed
+import { toast } from "sonner"; // or your toast library
+import { updateAuthUser } from "~/api/http-requests";
+import { ValidationException } from "~/api/app-fetch";
+import { cn } from "~/lib/utils";
 
 export default function AccountCard() {
     const user = useUserStore((state) => state.user!);
-    
-    return <Card>
-        <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-            <Avatar className="h-20 w-20">
-                <AvatarImage src={user.image || undefined} />
-                <AvatarFallback className="text-xl">{getInitials(user.name)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-                <CardTitle className="text-2xl">{user.name}</CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1">
-                    <Mail className="h-4 w-4" />
-                    {user.email}
-                    {user.email_verified_at && (
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+    const setUser = useUserStore((state) => state.setUser); // assuming you have this
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const handlePhotoClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please select an image file');
+            return;
+        }
+
+        // Validate file size (e.g., 5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Image size should be less than 5MB');
+            return;
+        }
+
+        // Create preview
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+
+        // Upload
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('avatar_image', file);
+
+            const response = await updateAuthUser(formData);
+            // Update user store
+            setUser(response.data!.user);
+
+            toast.success('Profile photo updated successfully');
+            setPreviewUrl(null);
+        } catch (error) {
+            if (error instanceof ValidationException) {
+                toast.error(`${error.errors.avatar_image?.[0] || 'Invalid image file'}`);
+            }
+
+            setPreviewUrl(null);
+        } finally {
+            setIsUploading(false);
+            // Reset input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    const currentAvatarUrl = previewUrl || user.avatar_image?.url || undefined;
+
+    return (
+        <Card className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center gap-6 space-y-0 p-6">
+                {/* Avatar with hover effect */}
+                <div className="relative group">
+                    <Avatar className="h-24 w-24 border-2 border-border transition-all group-hover:border-primary/50">
+                        <AvatarImage
+                            src={currentAvatarUrl}
+                            className={cn("object-cover", isUploading && "opacity-50")}
+                        />
+                        <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-primary/10 to-primary/5">
+                            {getInitials(user.name)}
+                        </AvatarFallback>
+                    </Avatar>
+
+                    {/* Loading overlay */}
+                    {isUploading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
+                            <Loader2 className="h-6 w-6 text-white animate-spin" />
+                        </div>
                     )}
-                </CardDescription>
-            </div>
-            <Button variant="outline" size="sm">
-                <Camera className="h-4 w-4 mr-2" />
-                Change Photo
-            </Button>
-        </CardHeader>
-    </Card>
+
+                    {/* Hover overlay */}
+                    {!isUploading && (
+                        <button
+                            onClick={handlePhotoClick}
+                            className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                        >
+                            <Camera className="h-6 w-6 text-white" />
+                        </button>
+                    )}
+                </div>
+
+                {/* User Info */}
+                <div className="flex-1 min-w-0">
+                    <CardTitle className="text-2xl font-bold tracking-tight">
+                        {user.name}
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-2 mt-2 text-base">
+                        <Mail className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{user.email}</span>
+                        {user.email_verified_at && (
+                            <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        )}
+                    </CardDescription>
+                </div>
+
+                {/* Change Photo Button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePhotoClick}
+                    disabled={isUploading}
+                    className="hidden sm:flex items-center gap-2 hover:bg-primary/5 hover:border-primary/50 transition-colors"
+                >
+                    {isUploading ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Uploading...
+                        </>
+                    ) : (
+                        <>
+                            <Camera className="h-4 w-4" />
+                            Change Photo
+                        </>
+                    )}
+                </Button>
+
+                {/* Hidden file input */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    disabled={isUploading}
+                />
+            </CardHeader>
+        </Card>
+    );
 }

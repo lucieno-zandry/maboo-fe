@@ -18,8 +18,8 @@ import formatMoney from "~/lib/format-money";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import useCheckoutStore from "~/hooks/use-checkout-store";
 import { useUserStore } from "~/hooks/use-user"; // 1. Import your store
+import navigateToCheckout from "~/lib/navigate-to-checkout";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const { slug } = params;
@@ -43,9 +43,7 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
         if (response.data?.cart_item) {
             // Logic: If "Buy Now" was clicked, skip the toast and go to checkout
             if (isBuyNow) {
-                const { setCartItemsIds } = useCheckoutStore.getState();
-                setCartItemsIds([response.data.cart_item.id]);
-                return redirect("/checkout");
+                return navigateToCheckout([response.data.cart_item.id], redirect);
             }
 
             await refreshCart();
@@ -127,7 +125,7 @@ export default function ProductPage() {
                             <AnimatePresence mode="wait">
                                 <motion.img
                                     key={selectedVariant?.id || 'default'}
-                                    src={selectedVariant?.image || product.images?.[0]?.filename || "/placeholder.png"}
+                                    src={selectedVariant?.image?.url || product.images?.[0]?.url || "/placeholder.png"}
                                     alt={product.title}
                                     className="h-full w-full object-cover"
                                     initial={{ opacity: 0 }}

@@ -5,7 +5,7 @@ type User = {
   email_verified_at: string;
   approved_at: string;
   role: "admin" | "manager" | "client";
-  image?: string | null;
+  avatar_image_id: number | null;
   address_id?: number;
   created_at: string;
   updated_at: string;
@@ -15,6 +15,8 @@ type User = {
   permissions?: {
     can_use_special_prices: boolean;
   };
+
+  avatar_image?: AppImage;
 }
 
 type Product = {
@@ -27,7 +29,7 @@ type Product = {
   category_id: number;
   category?: Category;
   variants?: Variant[];
-  images?: ProductImage[];
+  images?: AppImage[];
   variant_groups?: VariantGroup[];
 };
 
@@ -48,10 +50,12 @@ type Variant = {
   price: number;
   special_price: number | null;
   stock: number;
-  image: string | null;
+  image_id: string | null;
+  
   product?: Product;
   variant_options?: VariantOption[];
   promotions?: Promotion[];
+  image?: AppImage;
 };
 
 type VariantGroup = {
@@ -63,12 +67,12 @@ type VariantGroup = {
   variant_options?: VariantOption[];
 };
 
-type ProductImage = {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  filename: string;
-};
+type AppImage = {
+  id: number,
+  url: string,
+  width: number,
+  height: number
+}
 
 type VariantOption = {
   id: number;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Camera, Mail, Shield, User, Calendar, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { Button } from '~/components/ui/button';
@@ -15,16 +15,21 @@ import getRoleBadgeColor from '~/lib/get-role-badge-color';
 import getInitials from '~/lib/get-initials';
 import AccountCard from '~/components/settings/account-card';
 import { PartnerCodeSettings } from '~/components/settings/partner-code-card';
+import { useNavigate } from 'react-router';
+import NotFound from '~/components/not-found';
 
 export type SettingsTabProps = {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function AccountSettings() {
-  const { user } = useUserStore();
-
+  const { user, authStatus } = useUserStore();
+  
   if (!user) {
-    return <LoadingScreen />
+    if (authStatus === 'unknown')
+      return <LoadingScreen />
+
+    return <NotFound />
   }
 
   return (

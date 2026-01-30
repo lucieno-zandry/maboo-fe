@@ -25,7 +25,7 @@ export function ProductCard({ product }: { product: Product }) {
     const showsSpecialPrice = canSeeSpecial && product.variants?.some(v => v.special_price !== null);
     const hasDiscount = originalPrice && lowestPrice && lowestPrice < originalPrice;
 
-    const mainImage = product.images?.[0]?.filename || '';
+    const mainImage = product.images?.[0]?.url;
 
     return (
         <Link to={`/product/${product.slug}`}>

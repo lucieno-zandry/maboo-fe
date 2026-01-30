@@ -7,10 +7,10 @@ import { CartEmpty } from "./cart-empty";
 import CartSheetItem from "./cart-sheet-item";
 import formatMoney from "~/lib/format-money";
 import { Form, useNavigate } from "react-router";
-import useCheckoutStore from "~/hooks/use-checkout-store";
 import { toast } from "sonner";
 import { removeCartItem } from "~/api/http-requests";
 import { useRefreshCart } from "~/hooks/use-cart";
+import navigateToCheckout from "~/lib/navigate-to-checkout";
 
 interface CartSheetProps {
     items: CartItem[];
@@ -19,9 +19,8 @@ interface CartSheetProps {
 }
 
 export default function CartSheet({ items, open, setOpen }: CartSheetProps) {
-    const navigate = useNavigate();
-    const { setCartItemsIds } = useCheckoutStore();
     const refreshCart = useRefreshCart();
+    const navigate = useNavigate();
 
     // 1. Manage checked state locally (assuming item.id is unique)
     const [checkedIds, setCheckedIds] = useState<Set<number>>(
@@ -67,10 +66,9 @@ export default function CartSheet({ items, open, setOpen }: CartSheetProps) {
     const canCheckout = useMemo(() => checkedItemsCount > 0, [checkedItemsCount]);
 
     const handleCheckout = useCallback(() => {
-        setCartItemsIds(Array.from(checkedIds))
         setOpen(false);
-        navigate('/checkout');
-    }, [checkedIds, setCartItemsIds, setOpen, navigate]);
+        navigateToCheckout(Array.from(checkedIds), navigate);
+    }, [checkedIds, setOpen]);
 
     const onRemove = useCallback((itemId: number) => {
         const loadingToast = toast.loading('Removing cart item...');

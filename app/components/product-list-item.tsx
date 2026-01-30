@@ -23,7 +23,7 @@ export function ProductListItem({ product }: { product: Product }) {
     // To show a "strike-through" original price if they are getting a deal
     const hasDiscount = canSeeSpecial && product.variants?.some(v => v.special_price !== null);
 
-    const mainImage = product.images?.[0]?.filename || '';
+    const mainImage = product.images?.[0]?.url;
 
     return (
         <Link to={`/product/${product.slug}`}>

@@ -36,7 +36,7 @@ export function updateAuthUser(payload: {
     password_confirmation?: string,
     current_password?: string,
     client_code_id?: number,
-}) {
+} | FormData) {
     return appFetch.post<{ user: User }>('/auth/user/update', payload);
 }
 
