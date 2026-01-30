@@ -39,7 +39,7 @@ export function ProductImage({
 
             <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <Button className="w-full shadow-xl bg-primary text-primary-foreground font-bold" asChild>
-                    <Link to={`/product/${slug}`}>
+                    <Link to={`product/${slug}`}>
                         Quick View <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                 </Button>

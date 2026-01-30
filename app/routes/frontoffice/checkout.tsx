@@ -23,7 +23,7 @@ export const clientLoader = async ({ request }: LoaderFunctionArgs) => {
 
     if (!response) {
         toast.error("Your cart is empty. Please add items to your cart before proceeding to checkout.");
-        return redirect('/orders');
+        return redirect('orders');
     }
 
     return response.data?.cart_items;
@@ -112,7 +112,7 @@ export default function CheckoutPage() {
                             toast.error(`Failed to initiate transaction with status : ${e.status}`);
 
                         setCartItems([]);
-                        navigate(`/order/${response.data.order.uuid}`);
+                        navigate(`order/${response.data.order.uuid}`);
                     }
 
                 }

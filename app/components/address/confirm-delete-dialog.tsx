@@ -17,7 +17,7 @@ type ConfirmDeleteDialogProps = {
     title?: string;
     description?: string;
     isLoading: boolean;
-    open: boolean;
+    open?: boolean;
     onOpenChange?: (open: boolean) => void;
 };
 

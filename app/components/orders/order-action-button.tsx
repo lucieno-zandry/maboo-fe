@@ -12,7 +12,7 @@ export function OrderActionButton({ orderUuid, requiresReview }: OrderActionButt
     if (requiresReview) {
         return (
             <Button size="sm" className="w-full text-xs gap-2 group" asChild>
-                <Link to={`/order/${orderUuid}`}>
+                <Link to={`order/${orderUuid}`}>
                     Review & Pay
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                 </Link>
@@ -22,7 +22,7 @@ export function OrderActionButton({ orderUuid, requiresReview }: OrderActionButt
 
     return (
         <Button variant="outline" size="sm" className="w-full text-xs text-muted-foreground" asChild>
-            <Link to={`/order/${orderUuid}`}>View Order</Link>
+            <Link to={`order/${orderUuid}`}>View Order</Link>
         </Button>
     );
 }

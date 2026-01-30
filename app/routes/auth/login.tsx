@@ -26,7 +26,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     return email;
   }
 
-  return redirect('/auth');
+  return redirect('auth');
 }
 
 export default function () {

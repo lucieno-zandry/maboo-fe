@@ -40,7 +40,7 @@ export default function () {
                         variant="outline"
                         onClick={() => {
                             // Add your logout/switch logic here
-                            navigate("/login");
+                            navigate("auth/login");
                         }}
                         className="gap-2 px-8"
                     >

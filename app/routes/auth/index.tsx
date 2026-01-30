@@ -11,14 +11,16 @@ import BackButton from "~/components/back-button";
 
 const emailFormat = z.email();
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function clientAction({ request, params }: Route.ClientActionArgs) {
+    const { lang = 'en' } = params;
+
     let formData = await request.formData();
     const email = formData.get('email') as string;
 
     const response = await getEmailInfo(email);
 
     if (response.data) {
-        return response.data.is_taken ? redirect('/auth/login?email=' + email) : redirect('/auth/register?email=' + email);
+        return response.data.is_taken ? redirect(`/${lang}/auth/login?email=` + email) : redirect(`/${lang}/auth/register?email=` + email);
     }
 
     return response.error;

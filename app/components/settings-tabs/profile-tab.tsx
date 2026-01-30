@@ -91,7 +91,7 @@ export default function () {
                 if (response.data?.user) {
                     setUser(response.data.user);
                     toast.success("Profile updated successfully!");
-                    return redirect('/auth/verify-email');
+                    return redirect('auth/verify-email');
                 }
             })
             .catch(error => {

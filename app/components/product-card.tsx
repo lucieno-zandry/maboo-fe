@@ -28,7 +28,7 @@ export function ProductCard({ product }: { product: Product }) {
     const mainImage = product.images?.[0]?.url;
 
     return (
-        <Link to={`/product/${product.slug}`}>
+        <Link to={`product/${product.slug}`}>
             <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full relative group">
                 {/* Visual indicator for Partner Pricing */}
                 {showsSpecialPrice && (

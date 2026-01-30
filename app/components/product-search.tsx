@@ -81,13 +81,13 @@ export function ProductSearch() {
 
     const onSelectProduct = (slug: string) => {
         setOpen(false);
-        navigate(`/product/${slug}`);
+        navigate(`product/${slug}`);
     };
 
     const navigateToSearchResults = () => {
         if (query.trim()) {
             setOpen(false);
-            navigate(`/search/${encodeURIComponent(query.trim())}`);
+            navigate(`search/${encodeURIComponent(query.trim())}`);
         }
     };
 

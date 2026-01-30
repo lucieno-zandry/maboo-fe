@@ -12,6 +12,7 @@ import "./app.css";
 import RouterContextInjector from "./lib/router-context-injector";
 import { Toaster } from "./components/ui/sonner";
 import { RouteProgress } from "./components/route-progress";
+import './i18n/i18n';
 
 
 export const links: Route.LinksFunction = () => [
@@ -49,7 +50,7 @@ export default function App() {
   return <>
     <RouteProgress />
     <RouterContextInjector />
-    <Toaster position="top-center"/>
+    <Toaster position="top-center" />
     <Outlet />
   </>
 }

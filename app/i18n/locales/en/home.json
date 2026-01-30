@@ -1,0 +1,31 @@
+{
+    "hero": {
+        "title": "Your favorite products, delivered to your doorstep",
+        "subtitle": "Discover a world of premium quality items with fast delivery and secure payment options.",
+        "primaryCta": "Start Shopping",
+        "secondaryCta": "Learn More",
+        "imageAlt": "E-commerce hero section"
+    },
+    "features": {
+        "title": "Why Shop with Us?",
+        "items": {
+            "fastDelivery": {
+                "title": "Fast Delivery",
+                "desc": "Get your orders delivered within days, not weeks."
+            },
+            "topQuality": {
+                "title": "Top Quality",
+                "desc": "We only offer the best products from trusted brands."
+            },
+            "securePayments": {
+                "title": "Secure Payments",
+                "desc": "Your payment info is encrypted and 100% safe."
+            }
+        }
+    },
+    "cta": {
+        "title": "Join thousands of happy customers today!",
+        "subtitle": "Enjoy an effortless shopping experience and get exclusive discounts by signing up.",
+        "button": "Get Started"
+    }
+}

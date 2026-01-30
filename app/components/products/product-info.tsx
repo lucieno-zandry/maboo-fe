@@ -26,7 +26,7 @@ export function ProductInfo({
                 <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
                     {categoryTitle || 'General'}
                 </p>
-                <Link to={`/product/${slug}`} className="block">
+                <Link to={`product/${slug}`} className="block">
                     <h3 className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-1">
                         {title}
                     </h3>

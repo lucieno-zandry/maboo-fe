@@ -26,7 +26,7 @@ export function ProductListItem({ product }: { product: Product }) {
     const mainImage = product.images?.[0]?.url;
 
     return (
-        <Link to={`/product/${product.slug}`}>
+        <Link to={`product/${product.slug}`}>
             <Card className="overflow-hidden hover:shadow-md transition-shadow relative">
                 {hasDiscount && (
                     <Badge className="absolute top-2 left-2 z-10 bg-green-600 hover:bg-green-700">

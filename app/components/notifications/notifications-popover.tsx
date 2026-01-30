@@ -31,7 +31,7 @@ export function NotificationsPopover({
 
         // 2. Handle Navigation based on type
         if (n.data.notification_type === "transaction" || n.data.notification_type === "shipment") {
-            navigate(`/order/${n.data.order_uuid}`);
+            navigate(`order/${n.data.order_uuid}`);
         }
     };
 

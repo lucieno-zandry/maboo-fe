@@ -71,7 +71,7 @@ export async function clientAction({ request }: ActionFunctionArgs) {
             setAuthAddresses(null);
 
             toast.success("Address created successfully");
-            return redirect("/addresses")
+            return redirect("addresses")
         }
 
         if (intent === "update-address") {
@@ -85,7 +85,7 @@ export async function clientAction({ request }: ActionFunctionArgs) {
             setAuthAddresses(null);
 
             toast.success("Address updated successfully");
-            return redirect("/addresses")
+            return redirect("addresses")
         }
 
         if (intent === "delete") {
@@ -98,7 +98,7 @@ export async function clientAction({ request }: ActionFunctionArgs) {
             setAuthAddresses(null);
 
             toast.success("Address removed successfully");
-            return redirect("/addresses")
+            return redirect("addresses")
         }
 
         if (intent === "bulk-delete") {
@@ -109,7 +109,7 @@ export async function clientAction({ request }: ActionFunctionArgs) {
             setAuthAddresses(null);
 
             toast.success("Selected addresses removed successfully");
-            return redirect("/addresses")
+            return redirect("addresses")
         }
     } catch (error) {
         return error;

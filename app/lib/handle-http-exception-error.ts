@@ -15,13 +15,13 @@ const defaultNavigate = (pathname: string) => {
 export default function ({ status, navigate = defaultNavigate }: Props) {
     switch (status) {
         case 403:
-            return navigate('/403');
+            return navigate('403');
 
         case 404:
-            return navigate('/404');
+            return navigate('404');
 
         case 500:
-            return navigate('/500');
+            return navigate('500');
 
         default:
             break;

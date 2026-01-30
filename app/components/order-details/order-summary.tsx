@@ -36,7 +36,7 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
     }
 
     const handleDeleteSuccess = () => {
-        navigate("/orders");
+        navigate("orders");
     };
 
     return (

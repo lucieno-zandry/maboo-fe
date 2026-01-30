@@ -15,7 +15,7 @@ import PaymentIncompleteAlert from "~/components/order-details/payment-incomplet
 import ShipmentStatus from "~/components/order-details/shipment-status";
 
 export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
-    if (!params.uuid) return redirect('/403');
+    if (!params.uuid) return redirect('403');
     const response = await getOrder(params.uuid);
     return response.data;
 }

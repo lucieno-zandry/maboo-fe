@@ -43,19 +43,19 @@ export default function () {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
-                            <Link to={'/addresses'} className="flex items-center">
+                            <Link to={'addresses'} className="flex items-center">
                                 <MapPin className="mr-2 h-4 w-4" />
                                 <span>Addresses</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={'/settings'} className="flex items-center">
+                            <Link to={'settings'} className="flex items-center">
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Settings</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={'/orders'} className="flex items-center">
+                            <Link to={'orders'} className="flex items-center">
                                 <Package className="mr-2 h-4 w-4" />
                                 <span>Orders</span>
                             </Link>

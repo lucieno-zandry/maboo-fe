@@ -25,7 +25,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     return email;
   }
 
-  return redirect('/auth');
+  return redirect('auth');
 }
 
 export default function () {
@@ -77,7 +77,7 @@ export default function () {
           localStorage.setItem("token", response.data.token);
         }
 
-        navigate('/auth/verify-email');
+        navigate('auth/verify-email');
       })
       .catch(error => {
         if (error instanceof ValidationException) {

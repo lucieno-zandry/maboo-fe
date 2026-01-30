@@ -57,7 +57,7 @@ export function OrderCardHeader({ order, statusConfig, onDelete }: OrderCardHead
                             <Trash2 className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" asChild>
-                            <Link to={`/order/${order.uuid}`}>
+                            <Link to={`order/${order.uuid}`}>
                                 <ChevronRight className="w-5 h-5" />
                             </Link>
                         </Button>

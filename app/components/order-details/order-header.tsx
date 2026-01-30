@@ -7,7 +7,7 @@ function OrderHeader({ order, statusConfig }: { order: Order; statusConfig: any 
     return (
         <div className="flex flex-col gap-4">
             <Button variant="ghost" size="sm" asChild className="w-fit -ml-2 text-muted-foreground">
-                <Link to="/orders"><ChevronLeft className="w-4 h-4 mr-1" /> Back to Orders</Link>
+                <Link to="orders"><ChevronLeft className="w-4 h-4 mr-1" /> Back to Orders</Link>
             </Button>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

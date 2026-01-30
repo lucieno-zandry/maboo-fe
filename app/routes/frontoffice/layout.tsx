@@ -7,7 +7,7 @@ import Navbar from "~/components/navbar";
 import { useRefreshCart } from "~/hooks/use-cart";
 import { useUserStore } from "~/hooks/use-user";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
-import { ClientCodeDialog } from "./client-code-dialog";
+import { ClientCodeDialog } from "../../components/client-code-dialog";
 
 export default function () {
     const { setUser, clearUser } = useUserStore();

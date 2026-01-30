@@ -10,7 +10,7 @@ export function EmptyOrdersState() {
             <h2 className="text-2xl font-bold">No orders yet</h2>
             <p className="text-muted-foreground">When you buy items, they will appear here.</p>
             <Button asChild>
-                <Link to="/products">Start Shopping</Link>
+                <Link to="products">Start Shopping</Link>
             </Button>
         </div>
     );

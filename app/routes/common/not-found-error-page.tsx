@@ -50,13 +50,13 @@ export default function () {
           </p>
           <div className="grid grid-cols-2 gap-4">
             <button
-              onClick={() => navigate("/support")}
+              onClick={() => navigate("support")}
               className="text-sm text-left hover:text-primary transition-colors font-medium"
             >
               Contact Support
             </button>
             <button
-              onClick={() => navigate("/orders")}
+              onClick={() => navigate("orders")}
               className="text-sm text-left hover:text-primary transition-colors font-medium"
             >
               View Recent Orders
