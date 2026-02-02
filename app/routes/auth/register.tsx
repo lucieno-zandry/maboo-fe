@@ -2,7 +2,7 @@ import Button from "~/components/custom-components/button"
 import { Field, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/field"
 import CustomField from "~/components/custom-components/field";
 import z from "zod";
-import { redirect, useLoaderData, useNavigate } from "react-router";
+import { redirect, useLoaderData, useNavigate, useParams } from "react-router";
 import type { Route } from "./+types";
 import { getEmailInfo, registerUser } from "~/api/http-requests";
 import React, { useMemo, useState, type FormEventHandler } from "react";
@@ -41,6 +41,7 @@ export default function () {
   const [isLoading, setIsLoading] = useState(false);
   const canSubmit = useMemo(() => !formValidationErrors && data.password && data.password === data.password_confirmation, [formValidationErrors, data]);
   const navigate = useNavigate();
+  const { lang = 'en' } = useParams();
 
   const handleValidationErrorsChange = React.useCallback((validationErrors: string[] | null, e: React.FocusEvent<HTMLInputElement, Element>) => {
     const name = e.target.name as "password" | "password_confirmation";
@@ -77,7 +78,7 @@ export default function () {
           localStorage.setItem("token", response.data.token);
         }
 
-        navigate('auth/verify-email');
+        navigate(`/${lang}/auth/verify-email`);
       })
       .catch(error => {
         if (error instanceof ValidationException) {

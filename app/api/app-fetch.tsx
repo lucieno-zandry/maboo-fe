@@ -1,8 +1,6 @@
-import useRedirectAction from "~/hooks/use-redirect-action";
-import useRouterStore from "~/hooks/use-router-store";
 import buildQuery from "~/lib/build-query";
+import executeRequest from "~/lib/execute-request";
 import isCsr from "~/lib/is-csr";
-import redirectPathnames from "~/lib/redirect-pathnames";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -49,53 +47,7 @@ const defaultHeaders = (): HeadersInit => {
     return headers;
 };
 
-const handleActionRedirection = (json: any, request: () => Promise<Response>) => {
-    const redirectPathname = redirectPathnames[json.action as keyof typeof redirectPathnames];
-    const { redirect } = useRedirectAction.getState();
-
-    if (redirectPathname) {
-        redirect(redirectPathname);
-    }
-}
-
 const getEndpointUrl = (path: string) => API_URL + path;
-
-async function executeRequest<T>(request: () => Promise<Response>) {
-    const formatedResponse: FormatedResponse<T> = {
-        status: 200
-    };
-
-    try {
-        const response = await request();
-        formatedResponse.status = response.status;
-
-        const json = await response.json();
-        if (json.status) delete json.status;
-
-        if (response.status >= 400) {
-            // if backend wants to redirect the user
-            if (response.status === 403 && json.action) {
-                handleActionRedirection(json, request);
-            }
-            formatedResponse.error = json;
-        } else {
-            formatedResponse.data = json as T;
-        }
-    } catch (e) {
-        formatedResponse.error = e;
-        formatedResponse.status = 500;
-    }
-
-    if (formatedResponse.error) {
-        if (formatedResponse.error.errors && formatedResponse.status === 422) {
-            throw new ValidationException(formatedResponse.error.errors, formatedResponse.status);
-        } else {
-            throw new HttpException(formatedResponse.status, formatedResponse.error);
-        }
-    }
-
-    return formatedResponse;
-}
 
 async function get<T>(
     path: string,
@@ -116,7 +68,6 @@ async function get<T>(
         })
     );
 }
-
 
 async function post<T>(path: string, payload: FormData | Object, init: RequestInit = { headers: defaultHeaders() }): Promise<FormatedResponse<T>> {
     let body: BodyInit;

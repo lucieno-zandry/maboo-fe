@@ -45,8 +45,9 @@ export const useSuccessRedirect = () => {
     const { navigate } = useRouterStore.getState();
 
     return (fallbackPath: string = '/') => {
+        const redirectPath = (successPathname && successPathname !== location.pathname) ? successPathname : fallbackPath;
         if (successPathname) clearSuccessPathname();
-        navigate(successPathname || fallbackPath);
+        navigate(redirectPath);
     }
 }
 

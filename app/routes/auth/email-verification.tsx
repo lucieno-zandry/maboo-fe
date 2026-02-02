@@ -30,6 +30,8 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
 export default function () {
     const error = useActionData();
     const navigate = useNavigate();
+    const didSendRef = React.useRef(false);
+
 
     const handleSendEmailVerificationCode = () => {
         sendEmailVerificationCode()
@@ -50,7 +52,13 @@ export default function () {
             })
     }
 
-    React.useEffect(handleSendEmailVerificationCode, []);
+
+    React.useEffect(() => {
+        if (didSendRef.current) return;
+        didSendRef.current = true;
+
+        handleSendEmailVerificationCode();
+    }, []);
 
     return <EmailVerificationOtp
         onSendEmailVerificationCode={handleSendEmailVerificationCode}
