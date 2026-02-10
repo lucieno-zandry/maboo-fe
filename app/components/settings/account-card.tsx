@@ -9,13 +9,15 @@ import { toast } from "sonner"; // or your toast library
 import { updateAuthUser } from "~/api/http-requests";
 import { ValidationException } from "~/api/app-fetch";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export default function AccountCard() {
     const user = useUserStore((state) => state.user!);
-    const setUser = useUserStore((state) => state.setUser); // assuming you have this
+    const setUser = useUserStore((state) => state.setUser);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const { t } = useTranslation("settings");
 
     const handlePhotoClick = () => {
         fileInputRef.current?.click();
@@ -27,13 +29,13 @@ export default function AccountCard() {
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            toast.error('Please select an image file');
+            toast.error(t('settings:pleaseSelectImage'));
             return;
         }
 
         // Validate file size (e.g., 5MB max)
         if (file.size > 5 * 1024 * 1024) {
-            toast.error('Image size should be less than 5MB');
+            toast.error(t('settings:imageSizeLimit'));
             return;
         }
 
@@ -51,11 +53,11 @@ export default function AccountCard() {
             // Update user store
             setUser(response.data!.user);
 
-            toast.success('Profile photo updated successfully');
+            toast.success(t('settings:profilePhotoUpdated'));
             setPreviewUrl(null);
         } catch (error) {
             if (error instanceof ValidationException) {
-                toast.error(`${error.errors.avatar_image?.[0] || 'Invalid image file'}`);
+                toast.error(`${error.errors.avatar_image?.[0] || t('settings:invalidImageFile')}`);
             }
 
             setPreviewUrl(null);
@@ -128,12 +130,12 @@ export default function AccountCard() {
                     {isUploading ? (
                         <>
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            Uploading...
+                            {t('settings:uploading')}
                         </>
                     ) : (
                         <>
                             <Camera className="h-4 w-4" />
-                            Change Photo
+                            {t('settings:changePhoto')}
                         </>
                     )}
                 </Button>

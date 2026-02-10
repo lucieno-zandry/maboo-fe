@@ -2,6 +2,8 @@ import z, { email } from "zod";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import Field from "./custom-components/field";
 import Button from "./custom-components/button";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 type ConfirmEmailChangeDialogProps = {
     showPasswordDialog: boolean;
@@ -11,11 +13,12 @@ type ConfirmEmailChangeDialogProps = {
     cancelEmailChange: () => void;
     currentPasswordValidationErrors?: string[] | null;
     isLoading: boolean;
+    t: TFunction;
 }
 
 const passwordFormat = z.string().min(4);
 
-export default function ({
+export function ConfirmEmailChangeDialog({
     setShowPasswordDialog,
     showPasswordDialog,
     confirmEmailChange,
@@ -23,6 +26,7 @@ export default function ({
     cancelEmailChange,
     currentPasswordValidationErrors,
     isLoading,
+    t
 }: ConfirmEmailChangeDialogProps) {
     return <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
         <DialogContent aria-describedby="Change email address">
@@ -34,29 +38,34 @@ export default function ({
                     confirmEmailChange(e.currentTarget.querySelector<HTMLInputElement>('#current_password')!.value);
                 }}>
                 <DialogHeader>
-                    <DialogTitle>Confirm Email Change</DialogTitle>
+                    <DialogTitle>{t('settings:confirmEmailChange')}</DialogTitle>
                     <DialogDescription>
-                        You're about to change your email to <span className="font-semibold">{pendingEmail}</span>.
-                        Please enter your current password to confirm this change.
+                        {t('settings:confirmEmailChangeDescription', { email: pendingEmail })}
                     </DialogDescription>
                 </DialogHeader>
                 <Field
-                    label="Current Password"
+                    label={t('settings:currentPassword')}
                     id="current_password"
                     type="password"
-                    placeholder="Enter your current password"
+                    placeholder={t('settings:enterCurrentPassword')}
                     dataFormat={passwordFormat}
                     validationErrors={currentPasswordValidationErrors}
                 />
                 <DialogFooter>
                     <Button variant="outline" onClick={cancelEmailChange} type="button">
-                        Cancel
+                        {t('settings:cancel')}
                     </Button>
                     <Button type="submit" isLoading={isLoading}>
-                        Confirm Change
+                        {t('settings:confirmChange')}
                     </Button>
                 </DialogFooter>
             </form>
         </DialogContent>
     </Dialog>
+}
+
+export default function (props: Omit<ConfirmEmailChangeDialogProps, "t">) {
+    const { t } = useTranslation("settings");
+
+    return <ConfirmEmailChangeDialog {...props} t={t} />
 }

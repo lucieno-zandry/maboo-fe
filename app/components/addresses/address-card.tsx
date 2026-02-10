@@ -11,6 +11,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import useAddressStore from "~/hooks/use-address-store";
 import { Checkbox } from "../ui/checkbox";
 import ConfirmDeleteDialog from "./confirm-delete-dialog";
+import { useTranslation } from "react-i18next";
 
 type AddressCardProps = {
     address: Address;
@@ -20,6 +21,7 @@ type AddressCardProps = {
 export default function AddressCard({ address, onEdit }: AddressCardProps) {
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
+    const { t } = useTranslation();
 
     const selectedAddresses = useAddressStore((s) => s.selectedAddresses);
     const setSelectedAddresses = useAddressStore((s) => s.setSelectedAddresses);
@@ -48,7 +50,7 @@ export default function AddressCard({ address, onEdit }: AddressCardProps) {
                             <CardTitle>{address.fullname}</CardTitle>
                             {address.is_default ? (
                                 <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                                    Default
+                                    {t('addresses:default')}
                                 </span>
                             ) : null}
                         </div>

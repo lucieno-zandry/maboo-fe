@@ -21,9 +21,10 @@ export default function LangBoundary() {
     if (lang) {
       if (i18n.language !== lang) {
         i18n.changeLanguage(lang);
+        setLang(lang);
       }
-
-      setLang(lang);
+      
+      document.documentElement.lang = lang;
     }
   }, [lang]);
 

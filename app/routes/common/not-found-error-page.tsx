@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router";
 import { MoveLeft, Home, FileQuestion } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import useRouterStore from "~/hooks/use-router-store";
 
 export default function () {
   const navigate = useNavigate();
+  const { lang } = useRouterStore();
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12">
@@ -56,7 +58,7 @@ export default function () {
               Contact Support
             </button>
             <button
-              onClick={() => navigate("orders")}
+              onClick={() => navigate(`/${lang}/orders`)}
               className="text-sm text-left hover:text-primary transition-colors font-medium"
             >
               View Recent Orders

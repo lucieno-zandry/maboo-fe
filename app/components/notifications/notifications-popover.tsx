@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate, type NavigateFunction } from "react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Bell } from "lucide-react";
 import NotificationsSkeleton from "./notifications-skeleton";
@@ -7,34 +7,31 @@ import { cn } from "~/lib/utils";
 import NotificationsEmpty from "./notifications-empty";
 import { Button } from "../ui/button";
 import { ShipmentItem, SystemItem, TransactionItem } from "./notification-item";
+import useRouterStore from "~/hooks/use-router-store";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
-type Props = {
+export type NotificationsPopoverProps = {
     notifications: AppNotification[] | null;
-    onMarkAsRead?: (id: string) => void;
     unreadCount: number;
     onMarkAllAsRead?: () => void;
-    onRemove?: (id: string) => void;
+    onRemove?: (id: string) => Promise<void>;
+    lang: string;
+    handleAction?: (n: AppNotification) => void;
+    navigate: NavigateFunction,
+    t: TFunction,
 };
 
 export function NotificationsPopover({
     unreadCount,
     notifications,
-    onMarkAsRead,
     onMarkAllAsRead,
-    onRemove
-}: Props) {
-    const navigate = useNavigate();
-
-    const handleAction = (n: AppNotification) => {
-        // 1. Mark as read immediately
-        onMarkAsRead?.(n.id);
-
-        // 2. Handle Navigation based on type
-        if (n.data.notification_type === "transaction" || n.data.notification_type === "shipment") {
-            navigate(`order/${n.data.order_uuid}`);
-        }
-    };
-
+    onRemove,
+    lang,
+    handleAction,
+    navigate,
+    t
+}: NotificationsPopoverProps) {
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -50,13 +47,13 @@ export function NotificationsPopover({
 
             <PopoverContent align="end" className="w-96 p-0 shadow-2xl">
                 <div className="flex items-center justify-between border-b px-4 py-3 bg-muted/20">
-                    <h4 className="text-sm font-semibold text-foreground">Notifications</h4>
+                    <h4 className="text-sm font-semibold text-foreground">{t('common:notifications')}</h4>
                     {unreadCount > 0 && (
                         <button
                             onClick={onMarkAllAsRead}
                             className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
                         >
-                            Mark all as read
+                            {t('common:markAllAsRead')}
                         </button>
                     )}
                 </div>
@@ -72,7 +69,7 @@ export function NotificationsPopover({
                                 key={n.id}
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => handleAction(n)}
+                                onClick={() => handleAction?.(n)}
                                 className={cn(
                                     "relative w-full text-left px-4 py-4 transition-all hover:bg-muted/50 border-b last:border-0 cursor-pointer",
                                     !n.read_at && "bg-blue-50/30 dark:bg-blue-900/10"
@@ -86,7 +83,6 @@ export function NotificationsPopover({
                                     />
                                 )}
 
-
                                 {n.data.notification_type === "shipment" && (
                                     <ShipmentItem
                                         data={n.data}
@@ -94,8 +90,6 @@ export function NotificationsPopover({
                                         onRemove={() => onRemove?.(n.id)}
                                     />
                                 )}
-
-
 
                                 {n.data.notification_type === "system" && (
                                     <SystemItem data={n.data} />
@@ -114,11 +108,32 @@ export function NotificationsPopover({
                 </ScrollArea>
 
                 <div className="border-t p-2 bg-muted/5">
-                    <Button variant="ghost" className="w-full text-xs h-9 justify-center font-medium" onClick={() => navigate('/notifications')}>
-                        View all activity
+                    <Button variant="ghost" className="w-full text-xs h-9 justify-center font-medium" onClick={() => navigate(`/${lang}/${notifications}`)}>
+                        {t('common:viewAllActivity')}
                     </Button>
                 </div>
             </PopoverContent>
         </Popover>
     );
+}
+export default function ({ onMarkAsRead, ...props }: Omit<NotificationsPopoverProps, "lang" | "navigate" | "handleAction" | 't'> & { onMarkAsRead?: (id: string) => void }) {
+    const { lang } = useRouterStore();
+    const { t } = useTranslation();
+
+    const navigate = useNavigate();
+
+    const handleAction = (n: AppNotification) => {
+        onMarkAsRead?.(n.id);
+
+        // 2. Handle Navigation based on type
+        if (n.data.notification_type === "transaction" || n.data.notification_type === "shipment") {
+            navigate(`/${lang}/order/${n.data.order_uuid}`);
+        }
+    };
+
+    return <NotificationsPopover
+        lang={lang}
+        handleAction={handleAction}
+        navigate={navigate}
+        t={t} {...props} />
 }

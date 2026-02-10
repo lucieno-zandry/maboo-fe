@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addVariantToCart, getProduct } from "~/api/http-requests";
 import {
@@ -18,8 +18,10 @@ import formatMoney from "~/lib/format-money";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import { useUserStore } from "~/hooks/use-user"; // 1. Import your store
+import { useUserStore } from "~/hooks/use-user";
 import navigateToCheckout from "~/lib/navigate-to-checkout";
+import placeholderImage from "~/assets/images/placeholder.svg";
+import { useTranslation } from "react-i18next";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const { slug } = params;
@@ -32,7 +34,6 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
     const variantId = formData.get('variant_id')?.toString();
     const count = formData.get('count')?.toString();
     const isBuyNow = formData.get('buy_now')?.toString() === "true";
-    const refreshCart = useRefreshCart();
 
     if (variantId && count) {
         const response = await addVariantToCart({
@@ -41,24 +42,24 @@ export const clientAction = async ({ request }: ActionFunctionArgs) => {
         });
 
         if (response.data?.cart_item) {
-            // Logic: If "Buy Now" was clicked, skip the toast and go to checkout
+            // If "Buy Now" was clicked, redirect to checkout
             if (isBuyNow) {
                 return navigateToCheckout([response.data.cart_item.id], redirect);
             }
 
-            await refreshCart();
-            toast.success("Product added to cart!");
+            // Return success status for "Add to Cart"
             return { success: true };
         }
     }
 
-    toast.error("Failed to add product to cart.");
-    return { status: 422 };
+    // Return error status
+    return { success: false, status: 422 };
 }
 
 
 export default function ProductPage() {
-    const { user } = useUserStore(); // 2. Get user permissions
+    const { t } = useTranslation("product");
+    const { user } = useUserStore();
     const product = useLoaderData<Product | null>();
     const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
@@ -66,13 +67,24 @@ export default function ProductPage() {
 
     const fetcher = useFetcher();
     const navigation = useNavigation();
+    const refreshCart = useRefreshCart();
 
     const isSubmitting = fetcher.state !== "idle" || navigation.state !== "idle";
 
-    // 3. Permission-aware price logic
     const canSeeSpecial = user?.permissions?.can_use_special_prices ?? false;
 
-    // Helper to determine the price for the current context
+    // Handle toast notifications based on fetcher data
+    useEffect(() => {
+        if (fetcher.data && fetcher.state === "idle") {
+            if (fetcher.data.success) {
+                toast.success(t('addedToCart'));
+                refreshCart();
+            } else if (fetcher.data.success === false) {
+                toast.error(t('addToCartError'));
+            }
+        }
+    }, [fetcher.data, fetcher.state, t, refreshCart]);
+
     const getEffectivePrice = (variant: Variant | null) => {
         if (!variant) return 0;
         return (canSeeSpecial && variant.special_price !== null)
@@ -81,8 +93,6 @@ export default function ProductPage() {
     };
 
     const unitPrice = useMemo(() => getEffectivePrice(selectedVariant), [selectedVariant, canSeeSpecial]);
-
-    // 🧮 Subtotal computation using the effective unit price
     const subtotal = useMemo(() => unitPrice * count, [unitPrice, count]);
 
     if (!product) return <NotFound />;
@@ -101,7 +111,6 @@ export default function ProductPage() {
         setCount(1);
     };
 
-    // This handles the "Buy Now" logic specifically
     const onBuyNow = () => {
         if (!selectedVariant) return;
         fetcher.submit(
@@ -125,7 +134,7 @@ export default function ProductPage() {
                             <AnimatePresence mode="wait">
                                 <motion.img
                                     key={selectedVariant?.id || 'default'}
-                                    src={selectedVariant?.image?.url || product.images?.[0]?.url || "/placeholder.png"}
+                                    src={selectedVariant?.image?.url || product.images?.[0]?.url || placeholderImage}
                                     alt={product.title}
                                     className="h-full w-full object-cover"
                                     initial={{ opacity: 0 }}
@@ -137,13 +146,13 @@ export default function ProductPage() {
 
                             {canSeeSpecial && selectedVariant?.special_price && (
                                 <Badge className="absolute top-6 left-6 bg-green-600 text-white border-none px-4 py-1.5 text-sm font-bold shadow-lg">
-                                    PARTNER PRICING
+                                    {t('partnerPricing')}
                                 </Badge>
                             )}
                         </div>
 
                         <div className="hidden lg:block space-y-4 pt-8 border-t">
-                            <h2 className="text-xl font-bold tracking-tight text-gray-900">About this product</h2>
+                            <h2 className="text-xl font-bold tracking-tight text-gray-900">{t('aboutProduct')}</h2>
                             <p className="text-muted-foreground leading-relaxed text-lg whitespace-pre-line">
                                 {product.description}
                             </p>
@@ -155,7 +164,7 @@ export default function ProductPage() {
                         <div className="lg:sticky lg:top-24 space-y-8">
                             <header className="space-y-4">
                                 <Badge variant="outline" className="rounded-full px-4 py-1 text-gray-500 border-gray-200">
-                                    {product.category?.title || 'Featured Product'}
+                                    {product.category?.title || t('featuredProduct')}
                                 </Badge>
                                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
                                     {product.title}
@@ -166,7 +175,6 @@ export default function ProductPage() {
                                         <span className="text-3xl font-bold text-gray-900">
                                             {formatMoney(unitPrice)}
                                         </span>
-                                        {/* Show strike-through only if user has special price permissions */}
                                         {canSeeSpecial && selectedVariant?.special_price && (
                                             <span className="text-xl text-gray-400 line-through">
                                                 {formatMoney(selectedVariant.price)}
@@ -179,8 +187,8 @@ export default function ProductPage() {
                                         selectedVariant && selectedVariant.stock > 0 ? "text-emerald-600" : "text-red-500"
                                     )}>
                                         {selectedVariant && selectedVariant.stock > 0 ? (
-                                            <><CheckCircle2 className="w-4 h-4" /> In Stock</>
-                                        ) : "Out of Stock"}
+                                            <><CheckCircle2 className="w-4 h-4" /> {t('inStock')}</>
+                                        ) : t('outOfStock')}
                                     </span>
                                 </div>
                             </header>
@@ -215,7 +223,7 @@ export default function ProductPage() {
                             {/* Cart Interaction Area */}
                             <div className="p-6 rounded-[2.5rem] border border-gray-100 bg-gray-50/50 space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-sm font-bold text-gray-700">Quantity</label>
+                                    <label className="text-sm font-bold text-gray-700">{t('quantity')}</label>
                                     <div className="flex items-center bg-white border border-gray-200 rounded-full p-1.5 shadow-sm">
                                         <Button
                                             variant="ghost"
@@ -255,7 +263,7 @@ export default function ProductPage() {
                                                 <div className="flex items-center justify-between w-full px-2">
                                                     <div className="flex items-center">
                                                         <ShoppingCart className="w-5 h-5 mr-3" />
-                                                        <span>Add to Cart</span>
+                                                        <span>{t('addToCart')}</span>
                                                     </div>
                                                     <span className="text-sm opacity-80">{formatMoney(subtotal)}</span>
                                                 </div>
@@ -270,14 +278,15 @@ export default function ProductPage() {
                                         className="w-full h-16 rounded-2xl text-lg font-bold border-2 border-gray-200 hover:border-black transition-all"
                                         disabled={!selectedVariant || selectedVariant.stock <= 0 || isSubmitting}
                                     >
-                                        Buy it now
+                                        {t('buyNow')}
                                     </Button>
                                 </div>
 
-                                {/* 4. Add a subtle reminder of the benefit */}
                                 {canSeeSpecial && selectedVariant?.special_price && (
                                     <p className="text-center text-xs text-green-600 font-medium italic">
-                                        Partner discount of {formatMoney(selectedVariant.price - selectedVariant.special_price)} applied
+                                        {t('partnerDiscount', {
+                                            amount: formatMoney(selectedVariant.price - selectedVariant.special_price)
+                                        })}
                                     </p>
                                 )}
                             </div>
@@ -286,11 +295,17 @@ export default function ProductPage() {
                             <div className="grid grid-cols-2 gap-4 pt-4">
                                 <div className="flex items-center gap-3 p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
                                     <Truck className="w-5 h-5 text-gray-400" />
-                                    <div className="text-[11px] leading-tight font-bold text-gray-900">FREE SHIPPING<br /><span className="text-gray-400 font-medium">On all local orders</span></div>
+                                    <div className="text-[11px] leading-tight font-bold text-gray-900">
+                                        {t('freeShipping')}<br />
+                                        <span className="text-gray-400 font-medium">{t('freeShippingDesc')}</span>
+                                    </div>
                                 </div>
                                 <div className="flex items-center gap-3 p-4 rounded-2xl border border-gray-100 bg-white shadow-sm">
                                     <ShieldCheck className="w-5 h-5 text-gray-400" />
-                                    <div className="text-[11px] leading-tight font-bold text-gray-900">2 YEAR WARRANTY<br /><span className="text-gray-400 font-medium">Full replacement</span></div>
+                                    <div className="text-[11px] leading-tight font-bold text-gray-900">
+                                        {t('warranty')}<br />
+                                        <span className="text-gray-400 font-medium">{t('warrantyDesc')}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

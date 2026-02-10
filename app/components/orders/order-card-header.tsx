@@ -11,9 +11,10 @@ interface OrderCardHeaderProps {
         colorClass: string;
     };
     onDelete: () => void;
+    lang: string
 }
 
-export function OrderCardHeader({ order, statusConfig, onDelete }: OrderCardHeaderProps) {
+export function OrderCardHeader({ order, statusConfig, onDelete, lang }: OrderCardHeaderProps) {
     const date = new Date(order.created_at).toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
@@ -57,7 +58,7 @@ export function OrderCardHeader({ order, statusConfig, onDelete }: OrderCardHead
                             <Trash2 className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" asChild>
-                            <Link to={`order/${order.uuid}`}>
+                            <Link to={`/${lang}/order/${order.uuid}`}>
                                 <ChevronRight className="w-5 h-5" />
                             </Link>
                         </Button>

@@ -8,6 +8,7 @@ import { CheckCircle2, Clock, Wallet } from "lucide-react";
 import { useState } from "react";
 import { DeleteOrderDialog } from "./delete-order-dialog";
 import { useRevalidator } from "react-router";
+import useRouterStore from "~/hooks/use-router-store";
 
 interface OrderCardProps {
     order: Order;
@@ -15,6 +16,7 @@ interface OrderCardProps {
 
 export function OrderCard({ order }: OrderCardProps) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const { lang } = useRouterStore();
 
     const transactions = order.transactions ?? [];
     const hasSucceeded = transactions.some(t => t.status === 'SUCCESS');
@@ -55,6 +57,7 @@ export function OrderCard({ order }: OrderCardProps) {
                     order={order}
                     statusConfig={statusConfig}
                     onDelete={() => setShowDeleteDialog(true)}
+                    lang={lang}
                 />
                 <CardContent className="p-0">
                     <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
@@ -67,6 +70,7 @@ export function OrderCard({ order }: OrderCardProps) {
                             <OrderActionButton
                                 orderUuid={order.uuid}
                                 requiresReview={statusConfig.requiresReview}
+                                lang={lang}
                             />
                         </div>
                     </div>

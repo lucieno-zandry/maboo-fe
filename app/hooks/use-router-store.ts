@@ -14,5 +14,5 @@ export default create<RouterStore>((set) => ({
     navigate: (path) => location.pathname = path,
     setRouterContext: (ctx) => set({ ...ctx }),
     lang: 'en',
-    setLang: (lang) => ({ lang })
+    setLang: (lang) => set({ lang })
 }));

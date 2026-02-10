@@ -1,0 +1,12 @@
+{
+    "place_order": "Place Order",
+    "processing": "Processing...",
+    "errors": {
+        "transaction_failed": "Failed to initiate transaction with status: {{status}}",
+        "order_failed": "Failed to create order with status: {{message}}",
+        "cart_empty": "Your cart is empty. Please add items to your cart before proceeding to checkout."
+    },
+    "success": {
+        "order_created": "Order placed successfully!"
+    }
+}

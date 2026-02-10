@@ -1,17 +1,24 @@
 "use client"
 
-import { Link, Outlet } from "react-router"
+import { Link } from "react-router"
 import { useUserStore } from "~/hooks/use-user"
 import { Button } from "./ui/button";
 import UserDropdown from "./user-dropdown";
 import Cart from "./cart/cart";
 import Notifications from "./notifications/notifications";
-import { ProductSearch } from "./product-search";
+import ProductSearch from "./product-search";
 import { LanguageSwitcher } from "~/components/i18n/language-switcher";
+import useRouterStore from "~/hooks/use-router-store";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
-export default function Navbar() {
-    const { user } = useUserStore();
+type NavbarProps = {
+    user: User | null;
+    lang: string;
+    t: TFunction;
+}
 
+export function Navbar({ user, lang, t }: NavbarProps) {
     return (
         <header className="flex justify-between items-center px-8 py-4 shadow-sm bg-white sticky top-0 z-25 gap-4">
             <div className="flex items-center gap-8">
@@ -19,8 +26,7 @@ export default function Navbar() {
                     <Link to="/" className="text-2xl font-bold text-gray-800">ShopEase</Link>
                 </h1>
                 <nav className="space-x-6 hidden lg:block">
-                    {/* Note: In your routing, links should probably include the :lang prefix */}
-                    <Link to="products" className="text-sm font-medium text-gray-600 hover:text-gray-900">Products</Link>
+                    <Link to={`/${lang}/products`} className="text-sm font-medium text-gray-600 hover:text-gray-900">{t('common:products')}</Link>
                 </nav>
             </div>
 
@@ -36,7 +42,7 @@ export default function Navbar() {
 
                 {!user ? (
                     <Button variant="default" asChild>
-                        <Link to="auth">Log in</Link>
+                        <Link to={`/${lang}/auth`}>{t('common:logIn')}</Link>
                     </Button>
                 ) : (
                     <div className="flex gap-2 items-center">
@@ -47,5 +53,17 @@ export default function Navbar() {
                 )}
             </div>
         </header>
-    );
+    )
+}
+
+
+export default function () {
+    const { user } = useUserStore();
+    const { lang } = useRouterStore();
+    const { t } = useTranslation();
+
+    return <Navbar
+        user={user}
+        lang={lang}
+        t={t} />
 }

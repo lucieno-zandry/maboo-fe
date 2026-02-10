@@ -1,4 +1,6 @@
+import type { TFunction } from "i18next"
 import { ShoppingBag } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "~/components/ui/button"
 import {
   Empty,
@@ -9,7 +11,12 @@ import {
   EmptyTitle,
 } from "~/components/ui/empty"
 
-export function CartEmpty({ onClose }: { onClose: () => void }) {
+export type CartEmptyProps = {
+  onClose: () => void,
+  t: TFunction,
+}
+
+export function CartEmpty({ onClose, t }: CartEmptyProps) {
   return (
     <Empty className="border border-dashed">
       <EmptyHeader>
@@ -17,18 +24,24 @@ export function CartEmpty({ onClose }: { onClose: () => void }) {
           <ShoppingBag />
         </EmptyMedia>
 
-        <EmptyTitle>Your Cart is Empty</EmptyTitle>
+        <EmptyTitle>{t('common:cartIsEmpty')}</EmptyTitle>
 
         <EmptyDescription>
-          You haven't added any products yet. Browse the catalog and pick something you like.
+          {t('common:cartEmptyDescription')}
         </EmptyDescription>
       </EmptyHeader>
 
       <EmptyContent>
         <Button variant="outline" size="sm" onClick={onClose} type="button">
-          Continue Shopping
+          {t('common:continueShopping')}
         </Button>
       </EmptyContent>
     </Empty>
   )
+}
+
+export default function (props: Pick<CartEmptyProps, 'onClose'>) {
+  const { t } = useTranslation();
+
+  return <CartEmpty t={t} {...props} />
 }

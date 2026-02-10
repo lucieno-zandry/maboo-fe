@@ -1,5 +1,7 @@
+//checkout.tsx
+
 import { useState, useMemo, useEffect } from "react";
-import { AddressForm } from "~/components/address/address-form";
+import { AddressForm } from "~/components/addresses/address-form";
 import { PaymentMethod } from "~/components/checkout/payment-method";
 import { OrderReview } from "~/components/checkout/order-review";
 import Button from "~/components/custom-components/button";
@@ -12,18 +14,24 @@ import useCheckoutStore from "~/hooks/use-checkout-store";
 import OrderSummary from "~/components/checkout/order-summary";
 import { useRefreshCart } from "~/hooks/use-cart";
 import { HttpException, ValidationException, type FormatedResponse } from "~/api/app-fetch";
+import useRouterStore from "~/hooks/use-router-store";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
+import type { WhereInConditions } from "~/lib/build-where-param";
 
 type Step = "address" | "payment" | "review";
 
-export const clientLoader = async ({ request }: LoaderFunctionArgs) => {
+export const clientLoader = async ({ request, params }: LoaderFunctionArgs) => {
     const url = new URL(request.url);
     const cartItemsIds = url.searchParams.get('cartItemIds')?.split(',')?.map(Number) ?? [];
+    const whereIn: WhereInConditions | undefined = cartItemsIds.length > 0 ? { id: cartItemsIds } : undefined;
 
-    const response = cartItemsIds.length > 0 && await getCartItems({ whereIn: { id: cartItemsIds } });
+    const response = await getCartItems({ whereIn });
+    const { lang } = params;
 
-    if (!response) {
-        toast.error("Your cart is empty. Please add items to your cart before proceeding to checkout.");
-        return redirect('orders');
+    if (response.data?.cart_items?.length === 0) {
+        toast.error(i18next.t('checkout:errors.cart_empty'));
+        return redirect(`/${lang}/orders`);
     }
 
     return response.data?.cart_items;
@@ -61,6 +69,7 @@ export default function CheckoutPage() {
     const { selectedAddressId } = useAddressStore();
     const { appliedCoupon, setAppliedCoupon, setCartItemsIds, method } = useCheckoutStore();
     const { cartItems, setCartItems } = useCheckoutStore();
+    const { lang } = useRouterStore();
 
     const cartItemsIds = useMemo(() => cartItems.map((item) => item.id) || [], [cartItems]);
 
@@ -90,6 +99,8 @@ export default function CheckoutPage() {
         setActiveStep(next);
     };
 
+    const { t } = useTranslation("checkout");
+
     const handlePlaceOrder = () => {
         if (!selectedAddressId || cartItemsIds.length === 0 || !method) return;
         setLoading(true);
@@ -108,17 +119,21 @@ export default function CheckoutPage() {
                             location.href = transactionResponse.data.transaction.payment_url;
                         }
                     } catch (e) {
-                        if (e instanceof HttpException || e instanceof ValidationException)
-                            toast.error(`Failed to initiate transaction with status : ${e.status}`);
+                        if (e instanceof HttpException || e instanceof ValidationException) {
+                            // Using interpolation for the status code
+                            toast.error(t("errors.transaction_failed", { status: e.status }));
+                        }
 
                         setCartItems([]);
-                        navigate(`order/${response.data.order.uuid}`);
+                        navigate(`/${lang}/order/${response.data.order.uuid}`);
                     }
-
                 }
             })
             .catch((error) => {
-                toast.error(`Failed to create order with status: ${error.message || error.status} `)
+                // Using interpolation for message/status
+                toast.error(t("errors.order_failed", {
+                    message: error.message || error.status
+                }));
             })
             .finally(() => {
                 setLoading(false);

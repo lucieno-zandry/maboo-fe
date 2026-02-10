@@ -1,9 +1,9 @@
-// Updated ProductsPage.tsx
+// Updated products.tsx
 import { redirect, useLoaderData } from "react-router";
 import { getProducts } from "~/api/http-requests";
 import { HttpException } from "~/api/app-fetch";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
-import { ProductsHeader } from "~/components/products/products-header";
+import ProductsHeader  from "~/components/products/products-header";
 import { ProductGrid } from "~/components/products/product-grid";
 
 export const loader = async () => {
@@ -17,7 +17,7 @@ export const loader = async () => {
     }
 }
 
-export default function ProductsPage() {
+export default function() {
     const products = useLoaderData() as Product[];
 
     return (

@@ -9,6 +9,8 @@ import { useState, useMemo, type FocusEvent, useEffect } from "react";
 import z from "zod";
 import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import { ValidationException } from "~/api/app-fetch";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 // Define the validation schema inside or outside the component
 const addressSchema = {
@@ -28,6 +30,7 @@ type AddressDialogProps = {
     onValidationChange: (errors: string[] | null, e: FocusEvent<HTMLInputElement, Element>) => void;
     formErrors: Record<string, string[]> | null;
     canSubmit: boolean;
+    t: TFunction<"translation", undefined>,
 }
 
 export function AddressDialog({
@@ -38,14 +41,15 @@ export function AddressDialog({
     open,
     canSubmit,
     formErrors,
-    onValidationChange
+    onValidationChange,
+    t
 }: AddressDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px]" aria-describedby="Add or edit an address">
                 <DialogHeader>
                     <DialogTitle className="text-xl">
-                        {isEdit ? "Edit address" : "Add new address"}
+                        {isEdit ? t('addresses:edit') : t('addresses:add_new')}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -59,7 +63,7 @@ export function AddressDialog({
                     <FieldGroup>
                         <CustomField
                             name="fullname"
-                            label="Full name"
+                            label={t('addresses:full_name')}
                             defaultValue={address?.fullname}
                             dataFormat={addressSchema.fullname}
                             onValidationErrorsChange={onValidationChange}
@@ -69,7 +73,7 @@ export function AddressDialog({
 
                         <CustomField
                             name="line1"
-                            label="Address line 1"
+                            label={t('addresses:line1')}
                             placeholder="Street address, P.O. box"
                             defaultValue={address?.line1}
                             dataFormat={addressSchema.line1}
@@ -81,7 +85,7 @@ export function AddressDialog({
                         <div className="grid grid-cols-2 gap-4">
                             <CustomField
                                 name="line2"
-                                label="Line 2 (Opt)"
+                                label={t('addresses:line2_optional')}
                                 placeholder="Apt, suite"
                                 defaultValue={address?.line2 ?? ""}
                                 dataFormat={addressSchema.line2}
@@ -90,7 +94,7 @@ export function AddressDialog({
                             />
                             <CustomField
                                 name="line3"
-                                label="Line 3 (Opt)"
+                                label={t('addresses:line3_optional')}
                                 defaultValue={address?.line3 ?? ""}
                                 dataFormat={addressSchema.line3}
                                 onValidationErrorsChange={onValidationChange}
@@ -100,7 +104,7 @@ export function AddressDialog({
 
                         <CustomField
                             name="phone_number"
-                            label="Phone number"
+                            label={t('addresses:phone_number')}
                             type="tel"
                             defaultValue={address?.phone_number}
                             dataFormat={addressSchema.phone_number}
@@ -114,16 +118,16 @@ export function AddressDialog({
                     <div className="flex items-center justify-between rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
                         <div className="space-y-0.5">
                             <Label htmlFor="is_default" className="text-base font-medium">
-                                Set as default address
+                                {t("addresses:dialog.set_default_label")}
                             </Label>
                             <p className="text-sm text-muted-foreground">
-                                Use this as your primary shipping address.
+                                {t("addresses:dialog.set_default_description")}
                             </p>
                         </div>
                         <Switch
                             id="is_default"
                             name="is_default"
-                            value="1" // Ensures "1" is sent when ON
+                            value="1"
                             defaultChecked={address?.is_default ?? false}
                         />
                     </div>
@@ -134,14 +138,14 @@ export function AddressDialog({
                             type="button"
                             onClick={() => onOpenChange(false)}
                         >
-                            Cancel
+                            {t("common:cancel")}
                         </Button>
                         <Button
                             type="submit"
                             isLoading={isLoading}
                             disabled={!canSubmit}
                         >
-                            {isEdit ? "Save changes" : "Create address"}
+                            {isEdit ? t("addresses:dialog.save_changes") : t("addresses:dialog.create_address")}
                         </Button>
                     </div>
                 </Form>
@@ -174,6 +178,7 @@ export default function ({ address, ...props }: Pick<AddressDialogProps, "addres
     };
 
     const canSubmit = useMemo(() => !formErrors, [formErrors]);
+    const { t } = useTranslation(["addresses", "common"]);
 
     return (
         <AddressDialog
@@ -183,6 +188,7 @@ export default function ({ address, ...props }: Pick<AddressDialogProps, "addres
             canSubmit={canSubmit}
             formErrors={formErrors}
             onValidationChange={handleValidationChange}
+            t={t}
             {...props}
         />
     );

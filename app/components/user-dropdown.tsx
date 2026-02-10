@@ -5,12 +5,7 @@ import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuPortal,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { useUserStore } from "~/hooks/use-user"
@@ -19,16 +14,21 @@ import { LogoutDialog } from "./logout-dialog";
 import React from "react";
 import { Link } from "react-router";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
-import { MapPin, Package, Settings, TicketPercent } from "lucide-react";
+import { MapPin, Package, Settings, TicketPercent, User } from "lucide-react";
+import useRouterStore from "~/hooks/use-router-store";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
-export default function () {
-    const { user } = useUserStore();
-    const { setIsOpen } = useClientCodeDialogStore();
+type UserDropdownProps = {
+    user: User,
+    lang: string,
+    setIsOpen: (open: boolean) => void,
+    setLogoutOpen: (open: boolean) => void,
+    logoutOpen: boolean,
+    t: TFunction,
+}
 
-    const [logoutOpen, setLogoutOpen] = React.useState(false);
-
-    if (!user) return;
-
+export function UserDropdown({ user, lang, setIsOpen, setLogoutOpen, logoutOpen, t }: UserDropdownProps) {
     return (
         <>
             <DropdownMenu>
@@ -40,24 +40,24 @@ export default function () {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="start">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t('common:myAccount')}</DropdownMenuLabel>
                     <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
-                            <Link to={'addresses'} className="flex items-center">
+                            <Link to={`/${lang}/addresses`} className="flex items-center">
                                 <MapPin className="mr-2 h-4 w-4" />
-                                <span>Addresses</span>
+                                <span>{t('common:addresses')}</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={'settings'} className="flex items-center">
+                            <Link to={`/${lang}/settings`} className="flex items-center">
                                 <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
+                                <span>{t('common:settings')}</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={'orders'} className="flex items-center">
+                            <Link to={`/${lang}/orders`} className="flex items-center">
                                 <Package className="mr-2 h-4 w-4" />
-                                <span>Orders</span>
+                                <span>{t('common:orders')}</span>
                             </Link>
                         </DropdownMenuItem>
 
@@ -70,16 +70,16 @@ export default function () {
                                     className="text-primary focus:text-primary focus:bg-primary/5 cursor-pointer font-medium"
                                 >
                                     <TicketPercent className="mr-2 h-4 w-4" />
-                                    <span>Unlock Partner Prices</span>
+                                    <span>{t('common:unlockPartnerPrices')}</span>
                                 </DropdownMenuItem>
                             </>
                         )}
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Support</DropdownMenuItem>
+                    <DropdownMenuItem>{t('common:support')}</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem variant="destructive" onSelect={() => setLogoutOpen(true)}>
-                        Log out
+                        {t('common:logOut')}
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -87,4 +87,23 @@ export default function () {
             <LogoutDialog open={logoutOpen} onOpenChange={setLogoutOpen} />
         </>
     )
+}
+
+export default function () {
+    const { user } = useUserStore();
+    const { setIsOpen } = useClientCodeDialogStore();
+    const { lang } = useRouterStore();
+    const { t } = useTranslation();
+
+    const [logoutOpen, setLogoutOpen] = React.useState(false);
+
+    if (!user) return;
+
+    return <UserDropdown
+        user={user}
+        lang={lang}
+        setIsOpen={setIsOpen}
+        setLogoutOpen={setLogoutOpen}
+        logoutOpen={logoutOpen}
+        t={t} />
 }

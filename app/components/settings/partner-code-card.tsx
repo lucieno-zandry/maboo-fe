@@ -4,11 +4,13 @@ import { Button } from "~/components/ui/button";
 import { CheckCircle, TicketPercent, ArrowRight } from "lucide-react";
 import { useUserStore } from "~/hooks/use-user";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
+import { useTranslation } from "react-i18next";
 
 
 export function PartnerCodeSettings() {
     const { user } = useUserStore();
     const { setIsOpen } = useClientCodeDialogStore();
+    const { t } = useTranslation("settings");
 
     const onOpenDialog = () => {
         setIsOpen(true);
@@ -23,15 +25,15 @@ export function PartnerCodeSettings() {
                         <CheckCircle className="h-5 w-5 text-green-600" />
                     </div>
                     <div>
-                        <CardTitle className="text-lg">Partner Access Active</CardTitle>
+                        <CardTitle className="text-lg">{t('settings:partnerAccessActive')}</CardTitle>
                         <CardDescription>
-                            Your account is linked to code: <span className="font-mono font-bold text-green-700">{user.client_code.code}</span>
+                            {t('settings:accountLinkedToCode')} <span className="font-mono font-bold text-green-700">{user.client_code.code}</span>
                         </CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-green-600 font-medium italic">
-                        Exclusive member pricing is currently applied to all eligible products.
+                        {t('settings:exclusivePricingApplied')}
                     </p>
                 </CardContent>
             </Card>
@@ -46,9 +48,9 @@ export function PartnerCodeSettings() {
                     <TicketPercent className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                    <CardTitle>Partner Program</CardTitle>
+                    <CardTitle>{t('settings:partnerProgram')}</CardTitle>
                     <CardDescription>
-                        Unlock wholesale and partner-exclusive pricing.
+                        {t('settings:unlockWholesalePricing')}
                     </CardDescription>
                 </div>
             </CardHeader>
@@ -58,7 +60,7 @@ export function PartnerCodeSettings() {
                     onClick={onOpenDialog}
                     className="w-full group hover:border-primary hover:text-primary transition-all"
                 >
-                    Enter Partner Code
+                    {t('settings:enterPartnerCode')}
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
             </CardContent>

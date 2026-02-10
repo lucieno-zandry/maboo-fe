@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import Button from "../custom-components/button";
-import { removeCartItem, updateCartItem } from "~/api/http-requests";
+import { updateCartItem } from "~/api/http-requests";
 import { toast } from "sonner";
 import formatMoney from "~/lib/format-money";
-import { useRefreshCart } from "~/hooks/use-cart";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export type CartSheetItemProps = {
     item: CartItem;
@@ -11,38 +12,27 @@ export type CartSheetItemProps = {
     refreshCart: () => Promise<unknown>
 }
 
+type CartItemProps = {
+    item: CartItem;
+    subtotal: number;
+    count: number;
+    formatMoney: (value: number) => string;
+    onCountChange: (newCount: number) => void;
+    onRemove: (itemId: number) => void;
+    t: TFunction;
+};
+
 let timeout: NodeJS.Timeout | null;
 
-export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
-    const [count, setCount] = React.useState(item.count);
-
-    const subtotal = React.useMemo(() => {
-        return count * item.unit_price;
-    }, [count, item.unit_price]);
-
-    const onCountChange = React.useCallback((newCount: number) => {
-        if (newCount < 1) return;
-
-        setCount(newCount);
-        if (timeout) clearTimeout(timeout);
-
-        timeout = setTimeout(async () => {
-            const loadingToast = toast.loading('Updating cart item...');
-
-            await updateCartItem(item.id, { count: newCount });
-            refreshCart()
-                .then(() => {
-                    toast.dismiss(loadingToast);
-                    toast.success('Cart item updated.');
-                })
-                .finally(() => { timeout = null });
-        }, 500);
-    }, [item.id]);
-
-    useEffect(() => {
-        setCount(item.count);
-    }, [item.count]);
-
+export function CartItem({
+    item,
+    subtotal,
+    count,
+    formatMoney,
+    onCountChange,
+    onRemove,
+    t
+}: CartItemProps) {
     return (
         <div key={item.id} className="flex gap-3 rounded-xl border p-3">
             <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
@@ -53,7 +43,7 @@ export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
                         className="object-cover w-full h-full"
                     />
                 ) : (
-                    <span className="text-xs opacity-60">No Image</span>
+                    <span className="text-xs opacity-60">{t('common:noImage')}</span>
                 )}
             </div>
 
@@ -72,16 +62,15 @@ export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
                     {formatMoney(item.unit_price)}
                 </div>
 
-                <div className="text-sm mt-1">
-                    Subtotal: {formatMoney(subtotal)}
-                </div>
+                <div className="text-sm mt-1">{t('common:subtotal')}: {formatMoney(subtotal)}</div>
 
                 <div className="flex items-center gap-2 mt-3">
                     <Button
                         size="sm"
                         type="button"
                         variant="outline"
-                        onClick={() => onCountChange(count - 1)}>
+                        onClick={() => onCountChange(count - 1)}
+                    >
                         -
                     </Button>
                     <span className="text-sm w-6 text-center">{count}</span>
@@ -89,7 +78,8 @@ export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
                         size="sm"
                         type="button"
                         variant="outline"
-                        onClick={() => onCountChange(count + 1)}>
+                        onClick={() => onCountChange(count + 1)}
+                    >
                         +
                     </Button>
                 </div>
@@ -98,10 +88,53 @@ export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
                     variant="ghost"
                     className="text-red-500 mt-2 px-0"
                     type="button"
-                    onClick={() => onRemove(item.id)}>
-                    Remove
+                    onClick={() => onRemove(item.id)}
+                >
+                    {t('common:remove')}
                 </Button>
             </div>
         </div>
     );
+}
+
+
+export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
+    const [count, setCount] = React.useState(item.count);
+
+    const subtotal = React.useMemo(() => {
+        return count * item.unit_price;
+    }, [count, item.unit_price]);
+
+    const { t } = useTranslation("common");
+
+    const onCountChange = React.useCallback((newCount: number) => {
+        if (newCount < 1) return;
+
+        setCount(newCount);
+        if (timeout) clearTimeout(timeout);
+
+        timeout = setTimeout(async () => {
+            const loadingToast = toast.loading(t('common:updatingCartItem'));
+
+            await updateCartItem(item.id, { count: newCount });
+            refreshCart()
+                .then(() => {
+                    toast.dismiss(loadingToast);
+                    toast.success(t('common:cartItemUpdated'));
+                })
+                .finally(() => { timeout = null });
+        }, 500);
+    }, [item.id, t]);
+    useEffect(() => {
+        setCount(item.count);
+    }, [item.count]);
+
+    return <CartItem
+        item={item}
+        subtotal={subtotal}
+        count={count}
+        formatMoney={formatMoney}
+        onCountChange={onCountChange}
+        onRemove={onRemove}
+        t={t} />
 }

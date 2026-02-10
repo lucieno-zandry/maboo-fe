@@ -1,0 +1,27 @@
+{
+  "title": "Addresses",
+  "new_address": "New address",
+  "select_all": "Select all",
+  "delete_selected": "Delete selected",
+  "no_addresses": "No addresses yet",
+  "notifications": {
+    "created": "Address created successfully",
+    "updated": "Address updated successfully",
+    "deleted": "Address removed successfully",
+    "bulk_deleted": "Selected addresses removed successfully"
+  },
+  "default": "Default",
+  "dialog": {
+    "set_default_label": "Set as default address",
+    "set_default_description": "Use this as your primary shipping address.",
+    "save_changes": "Save changes",
+    "create_address": "Create address"
+  },
+  "full_name": "Full name",
+  "line1": "Address line 1",
+  "line2_optional": "Line 2 (Opt)",
+  "line3_optional": "Line 3 (Opt)",
+  "phone_number": "Phone number",
+  "edit": "Edit address",
+  "add_new": "Add new address"
+}

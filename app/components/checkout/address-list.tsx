@@ -5,7 +5,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button"; // Added Button for an Action
 import { MapPinOff } from "lucide-react"; // Added an icon for the empty state
 import { cn } from "~/lib/utils";
-import { AddressListSkeleton } from "../address/address-list-skeleton";
+import { AddressListSkeleton } from "../addresses/address-list-skeleton";
 
 export function AddressList({
     addresses,

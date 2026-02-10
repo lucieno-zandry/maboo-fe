@@ -16,16 +16,17 @@ const dataFormat = {
   password: z.string().min(4),
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const url = new URL(request.url);
   const email = url.searchParams.get('email');
   const response = email && await getEmailInfo(email);
+  const { lang } = params;
 
   if (response && response.data?.is_taken === false) {
     return email;
   }
 
-  return redirect('auth');
+  return redirect(`/${lang}/auth`);
 }
 
 export default function () {

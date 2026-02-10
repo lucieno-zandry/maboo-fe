@@ -1,0 +1,12 @@
+{
+    "place_order": "Passer la commande",
+    "processing": "Traitement en cours...",
+    "errors": {
+        "transaction_failed": "Échec de l'initialisation de la transaction avec le statut : {{status}}",
+        "order_failed": "Échec de la création de la commande avec le statut : {{message}}",
+        "cart_empty": "Votre panier est vide. Veuillez ajouter des articles à votre panier avant de procéder au paiement."
+    },
+    "success": {
+        "order_created": "Commande passée avec succès !"
+    }
+}

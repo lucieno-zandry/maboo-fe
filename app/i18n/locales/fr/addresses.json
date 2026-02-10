@@ -1,0 +1,27 @@
+{
+  "title": "Adresses",
+  "new_address": "Nouvelle adresse",
+  "select_all": "Tout sélectionner",
+  "delete_selected": "Supprimer la sélection",
+  "no_addresses": "Aucune adresse pour le moment",
+  "notifications": {
+    "created": "Adresse créée avec succès",
+    "updated": "Adresse mise à jour avec succès",
+    "deleted": "Adresse supprimée avec succès",
+    "bulk_deleted": "Adresses sélectionnées supprimées avec succès"
+  },
+  "default": "Par défaut",
+  "dialog": {
+    "set_default_label": "Définir comme adresse par défaut",
+    "set_default_description": "Utilisez-la comme adresse de livraison principale.",
+    "save_changes": "Enregistrer les modifications",
+    "create_address": "Créer l'adresse"
+  },
+  "full_name": "Nom complet",
+  "line1": "Ligne d'addresse 1",
+  "line2_optional": "Ligne 2 (Opt)",
+  "line3_optional": "Ligne 3 (Opt)",
+  "phone_number": "Numéro de téléphone",
+  "edit": "Modifier l'adresse",
+  "add_new": "Ajouter une addresse"
+}

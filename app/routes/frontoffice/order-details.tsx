@@ -13,9 +13,10 @@ import { ShippingAddress } from "~/components/order-details/shipping-address";
 import PaymentMethodSelector from "~/components/order-details/payment-method-selector";
 import PaymentIncompleteAlert from "~/components/order-details/payment-incomplete-alert";
 import ShipmentStatus from "~/components/order-details/shipment-status";
+import useRouterStore from "~/hooks/use-router-store";
 
 export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
-    if (!params.uuid) return redirect('403');
+    if (!params.uuid) return redirect(`/${params.lang}/403`);
     const response = await getOrder(params.uuid);
     return response.data;
 }
@@ -23,6 +24,7 @@ export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
 export default function OrderDetails() {
     const { order } = useLoaderData<{ order?: Order }>();
     const { method, setMethod } = useCheckoutStore();
+    const { lang } = useRouterStore();
 
     if (!order) return <NotFound />;
 
@@ -31,14 +33,14 @@ export default function OrderDetails() {
     return (
         <div className="container max-w-6xl mx-auto p-4 md:p-10 space-y-8">
             {/* 1. Header Section */}
-            <OrderHeader order={order} statusConfig={statusConfig} />
+            <OrderHeader order={order} statusConfig={statusConfig} lang={lang} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Column (Items) */}
                 {order.cart_items &&
                     <div className="lg:col-span-2 space-y-6">
                         {statusConfig.showCTA && <PaymentIncompleteAlert />}
-                        <OrderItemList items={order.cart_items} />
+                        <OrderItemList lang={lang} items={order.cart_items} />
                     </div>}
 
                 {/* Sidebar Column (Details & Summary) */}

@@ -11,22 +11,24 @@ import { useSuccessRedirect } from "~/hooks/use-redirect-action";
 import { toast } from "sonner";
 import { ValidationException } from "~/api/app-fetch";
 import BackButton from "~/components/back-button";
+import useRouterStore from "~/hooks/use-router-store";
 
 const dataFormat = {
   email: z.email(),
   password: z.string().min(4)
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const url = new URL(request.url);
   const email = url.searchParams.get('email');
   const response = email && await getEmailInfo(email);
+  const { lang } = params;
 
   if (response && response.data?.is_taken) {
     return email;
   }
 
-  return redirect('auth');
+  return redirect(`/${lang}/auth`);
 }
 
 export default function () {
@@ -36,6 +38,8 @@ export default function () {
 
   const [isLoading, setIsLoading] = useState(false);
   const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
+
+  const { lang } = useRouterStore();
 
   const handleFormValidationChange = (validationErrors: string[] | null, e: FocusEvent<HTMLInputElement, Element>) => {
     const updatedFormValidationErrors = getUpdatedFormErrors({
@@ -110,7 +114,7 @@ export default function () {
         <div className="flex items-center">
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <Link
-            to={'/auth/password-forgotten'}
+            to={`/${lang}/auth/password-forgotten`}
             className="ml-auto text-sm underline-offset-2 hover:underline"
           >
             Forgot your password?

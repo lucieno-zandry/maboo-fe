@@ -37,12 +37,14 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { Filter, Search, Grid, List, X, ChevronDown } from 'lucide-react';
 import { getCategories, getProducts } from '~/api/http-requests';
 import type { ProductQueryParams } from '~/lib/serialize-product-params';
-import { ProductCard } from '~/components/product-card';
+import { ProductCard } from '~/components/products/product-card';
 import { ProductGridSkeleton } from '../../components/product-grid-skeleton';
 import { CategoryRadioItem } from '~/components/category-radio-item';
 import { ProductListItem } from '~/components/product-list-item';
+import { useTranslation } from 'react-i18next';
 
 export default function () {
+    const { t } = useTranslation("search_results");
     const { query } = useParams<{ query: string }>();
     const [searchParams, setSearchParams] = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
@@ -144,7 +146,7 @@ export default function () {
             // setTotalProducts(response.total || response.products.length);
             setTotalProducts(response.data?.products.length || 0); // Temporary, update based on your API
         } catch (err) {
-            setError('Failed to load products. Please try again.');
+            setError(t('errorLoading'));
             console.error('Error fetching products:', err);
         } finally {
             setLoading(false);
@@ -221,7 +223,7 @@ export default function () {
             <div className="container mx-auto px-4 py-8">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-destructive mb-4">{error}</h2>
-                    <Button onClick={fetchProducts}>Try Again</Button>
+                    <Button onClick={fetchProducts}>{t('tryAgain')}</Button>
                 </div>
             </div>
         );
@@ -232,10 +234,10 @@ export default function () {
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">
-                    Search Results for "{query}"
+                    {t('searchResultsFor', { query })}
                 </h1>
                 <p className="text-muted-foreground">
-                    {loading ? 'Loading...' : `${totalProducts} products found`}
+                    {loading ? t('loading') : t('productsFound', { count: totalProducts })}
                 </p>
             </div>
 
@@ -245,7 +247,7 @@ export default function () {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                         defaultValue={query}
-                        placeholder="Search for products..."
+                        placeholder={t('searchPlaceholder')}
                         className="pl-10"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
@@ -259,10 +261,10 @@ export default function () {
             {/* Active Filters */}
             {(selectedCategory || priceRange[0] > 0 || priceRange[1] < 1000) && (
                 <div className="mb-6 flex flex-wrap gap-2 items-center">
-                    <span className="text-sm font-medium">Active filters:</span>
+                    <span className="text-sm font-medium">{t('activeFilters')}</span>
                     {selectedCategory && categories.find(c => c.id === selectedCategory) && (
                         <Badge variant="secondary" className="gap-1">
-                            Category: {categories.find(c => c.id === selectedCategory)?.title}
+                            {t('categoryLabel')}: {categories.find(c => c.id === selectedCategory)?.title}
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -275,7 +277,7 @@ export default function () {
                     )}
                     {(priceRange[0] > 0 || priceRange[1] < 1000) && (
                         <Badge variant="secondary" className="gap-1">
-                            Price: ${priceRange[0]} - ${priceRange[1]}
+                            {t('priceLabel')}: ${priceRange[0]} - ${priceRange[1]}
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -292,7 +294,7 @@ export default function () {
                         onClick={clearFilters}
                         className="ml-2"
                     >
-                        Clear all
+                        {t('clearAll')}
                     </Button>
                 </div>
             )}
@@ -302,7 +304,7 @@ export default function () {
                 <div className="hidden lg:block w-64 flex-shrink-0">
                     <div className="sticky top-8 space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="font-semibold">Filters</h3>
+                            <h3 className="font-semibold">{t('filters')}</h3>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -310,13 +312,13 @@ export default function () {
                                 className="h-8 px-2"
                             >
                                 <X className="h-4 w-4 mr-1" />
-                                Clear
+                                {t('clear')}
                             </Button>
                         </div>
 
                         {/* Category Filter */}
                         <div className="space-y-4">
-                            <h4 className="font-medium">Category</h4>
+                            <h4 className="font-medium">{t('category')}</h4>
                             <ScrollArea className="h-[200px] pr-4">
                                 {loadingCategories ? (
                                     <div className="space-y-2">
@@ -333,7 +335,7 @@ export default function () {
                                             <div className="flex items-center space-x-2">
                                                 <RadioGroupItem value="" id="all-categories" />
                                                 <Label htmlFor="all-categories" className="cursor-pointer">
-                                                    All Categories
+                                                    {t('allCategories')}
                                                 </Label>
                                             </div>
                                             {organizedCategories.map((category) => (
@@ -347,7 +349,7 @@ export default function () {
                                         </div>
                                     </RadioGroup>
                                 ) : (
-                                    <p className="text-sm text-muted-foreground">No categories available</p>
+                                    <p className="text-sm text-muted-foreground">{t('noCategoriesAvailable')}</p>
                                 )}
                             </ScrollArea>
                         </div>
@@ -356,7 +358,7 @@ export default function () {
 
                         {/* Price Filter */}
                         <div className="space-y-4">
-                            <h4 className="font-medium">Price Range</h4>
+                            <h4 className="font-medium">{t('priceRange')}</h4>
                             <div className="px-1">
                                 <Slider
                                     value={priceRange}
@@ -376,17 +378,17 @@ export default function () {
 
                         {/* Sort Options */}
                         <div className="space-y-4">
-                            <h4 className="font-medium">Sort By</h4>
+                            <h4 className="font-medium">{t('sortBy')}</h4>
                             <Select
                                 value={sortBy}
                                 onValueChange={(value: 'created_at' | 'title') => setSortBy(value)}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Sort by" />
+                                    <SelectValue placeholder={t('sortBy')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="created_at">Newest</SelectItem>
-                                    <SelectItem value="title">Name</SelectItem>
+                                    <SelectItem value="created_at">{t('newest')}</SelectItem>
+                                    <SelectItem value="title">{t('name')}</SelectItem>
                                 </SelectContent>
                             </Select>
 
@@ -395,11 +397,11 @@ export default function () {
                                 onValueChange={(value: 'ASC' | 'DESC') => setSortDirection(value)}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Direction" />
+                                    <SelectValue placeholder={t('direction')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="DESC">Descending</SelectItem>
-                                    <SelectItem value="ASC">Ascending</SelectItem>
+                                    <SelectItem value="DESC">{t('descending')}</SelectItem>
+                                    <SelectItem value="ASC">{t('ascending')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -412,7 +414,7 @@ export default function () {
                         <SheetTrigger asChild>
                             <Button variant="outline" className="gap-2">
                                 <Filter className="h-4 w-4" />
-                                Filters
+                                {t('filters')}
                                 {(selectedCategory || priceRange[0] > 0 || priceRange[1] < 1000) && (
                                     <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center">
                                         !
@@ -422,13 +424,13 @@ export default function () {
                         </SheetTrigger>
                         <SheetContent side="left" className="w-full sm:w-96">
                             <SheetHeader className="border-b pb-4">
-                                <SheetTitle>Filters</SheetTitle>
+                                <SheetTitle>{t('filters')}</SheetTitle>
                             </SheetHeader>
                             <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
                                 <div className="py-6 space-y-6">
                                     {/* Category Filter for Mobile */}
                                     <div className="space-y-4">
-                                        <h4 className="font-medium">Category</h4>
+                                        <h4 className="font-medium">{t('category')}</h4>
                                         {loadingCategories ? (
                                             <div className="space-y-2">
                                                 {[1, 2, 3].map((i) => (
@@ -444,7 +446,7 @@ export default function () {
                                                     <div className="flex items-center space-x-2">
                                                         <RadioGroupItem value="" id="mobile-all-categories" />
                                                         <Label htmlFor="mobile-all-categories" className="cursor-pointer">
-                                                            All Categories
+                                                            {t('allCategories')}
                                                         </Label>
                                                     </div>
                                                     {organizedCategories.map((category) => (
@@ -458,7 +460,7 @@ export default function () {
                                                 </div>
                                             </RadioGroup>
                                         ) : (
-                                            <p className="text-sm text-muted-foreground">No categories available</p>
+                                            <p className="text-sm text-muted-foreground">{t('noCategoriesAvailable')}</p>
                                         )}
                                     </div>
 
@@ -466,7 +468,7 @@ export default function () {
 
                                     {/* Price Filter for Mobile */}
                                     <div className="space-y-4">
-                                        <h4 className="font-medium">Price Range</h4>
+                                        <h4 className="font-medium">{t('priceRange')}</h4>
                                         <div className="px-1">
                                             <Slider
                                                 value={priceRange}
@@ -486,17 +488,17 @@ export default function () {
 
                                     {/* Sort Options for Mobile */}
                                     <div className="space-y-4">
-                                        <h4 className="font-medium">Sort By</h4>
+                                        <h4 className="font-medium">{t('sortBy')}</h4>
                                         <Select
                                             value={sortBy}
                                             onValueChange={(value: 'created_at' | 'title') => setSortBy(value)}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Sort by" />
+                                                <SelectValue placeholder={t('sortBy')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="created_at">Newest</SelectItem>
-                                                <SelectItem value="title">Name</SelectItem>
+                                                <SelectItem value="created_at">{t('newest')}</SelectItem>
+                                                <SelectItem value="title">{t('name')}</SelectItem>
                                             </SelectContent>
                                         </Select>
 
@@ -505,18 +507,18 @@ export default function () {
                                             onValueChange={(value: 'ASC' | 'DESC') => setSortDirection(value)}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Direction" />
+                                                <SelectValue placeholder={t('direction')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="DESC">Descending</SelectItem>
-                                                <SelectItem value="ASC">Ascending</SelectItem>
+                                                <SelectItem value="DESC">{t('descending')}</SelectItem>
+                                                <SelectItem value="ASC">{t('ascending')}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     <div className="pt-4">
                                         <Button className="w-full" onClick={clearFilters}>
-                                            Clear All Filters
+                                            {t('clearAllFilters')}
                                         </Button>
                                     </div>
                                 </div>
@@ -547,7 +549,7 @@ export default function () {
                                 </Button>
                             </div>
                             <span className="text-sm text-muted-foreground">
-                                {loading ? 'Loading...' : `Showing ${products.length} of ${totalProducts} products`}
+                                {loading ? t('loading') : t('showingProducts', { count: products.length, total: totalProducts })}
                             </span>
                         </div>
 
@@ -562,13 +564,13 @@ export default function () {
                                 }}
                             >
                                 <SelectTrigger className="w-[200px]">
-                                    <SelectValue placeholder="Sort by" />
+                                    <SelectValue placeholder={t('sortBy')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="created_at-DESC">Newest First</SelectItem>
-                                    <SelectItem value="created_at-ASC">Oldest First</SelectItem>
-                                    <SelectItem value="title-ASC">Name A-Z</SelectItem>
-                                    <SelectItem value="title-DESC">Name Z-A</SelectItem>
+                                    <SelectItem value="created_at-DESC">{t('newestFirst')}</SelectItem>
+                                    <SelectItem value="created_at-ASC">{t('oldestFirst')}</SelectItem>
+                                    <SelectItem value="title-ASC">{t('nameAZ')}</SelectItem>
+                                    <SelectItem value="title-DESC">{t('nameZA')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -579,11 +581,11 @@ export default function () {
                         <ProductGridSkeleton count={limit} />
                     ) : products.length === 0 ? (
                         <div className="text-center py-12">
-                            <h3 className="text-xl font-semibold mb-2">No products found</h3>
+                            <h3 className="text-xl font-semibold mb-2">{t('noProductsFound')}</h3>
                             <p className="text-muted-foreground mb-4">
-                                Try adjusting your search or filters
+                                {t('tryAdjusting')}
                             </p>
-                            <Button onClick={clearFilters}>Clear All Filters</Button>
+                            <Button onClick={clearFilters}>{t('clearAllFilters')}</Button>
                         </div>
                     ) : viewMode === 'grid' ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
