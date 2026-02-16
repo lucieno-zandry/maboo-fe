@@ -1,4 +1,3 @@
-// components/search/ProductSearch.tsx (Updated)
 "use client";
 
 import * as React from "react";

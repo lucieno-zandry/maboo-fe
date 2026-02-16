@@ -26,7 +26,7 @@ type Product = {
   slug: string;
   title: string;
   description: string;
-  category_id: number;
+  category_id?: number;
   category?: Category;
   variants?: Variant[];
   images?: AppImage[];
@@ -38,7 +38,7 @@ type Category = {
   created_at: string;
   updated_at: string;
   title: string;
-  parent_id: number | null;
+  parent_id?: number;
 };
 
 type Variant = {
@@ -51,7 +51,7 @@ type Variant = {
   special_price: number | null;
   stock: number;
   image_id: string | null;
-  
+
   product?: Product;
   variant_options?: VariantOption[];
   promotions?: Promotion[];
@@ -133,7 +133,7 @@ type ProductSnapshot = {
   title: string;
   slug: string;
   main_image: string | null;
-  category_id: number;
+  category_id?: number;
 };
 
 type VariantSnapshot = {
