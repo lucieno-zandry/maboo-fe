@@ -22,6 +22,7 @@ import { useUserStore } from "~/hooks/use-user";
 import navigateToCheckout from "~/lib/navigate-to-checkout";
 import placeholderImage from "~/assets/images/placeholder.svg";
 import { useTranslation } from "react-i18next";
+import { ProductImageGallery } from "~/components/product/product-image-gallery";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const { slug } = params;
@@ -130,26 +131,13 @@ export default function ProductPage() {
 
                     {/* Left Column: Image Gallery */}
                     <div className="space-y-6">
-                        <div className="relative aspect-square overflow-hidden rounded-3xl bg-muted border border-gray-100">
-                            <AnimatePresence mode="wait">
-                                <motion.img
-                                    key={selectedVariant?.id || 'default'}
-                                    src={selectedVariant?.image?.url || product.images?.[0]?.url || placeholderImage}
-                                    alt={product.title}
-                                    className="h-full w-full object-cover"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                />
-                            </AnimatePresence>
-
-                            {canSeeSpecial && selectedVariant?.special_price && (
-                                <Badge className="absolute top-6 left-6 bg-green-600 text-white border-none px-4 py-1.5 text-sm font-bold shadow-lg">
-                                    {t('partnerPricing')}
-                                </Badge>
-                            )}
-                        </div>
+                        <ProductImageGallery
+                            product={product}
+                            selectedVariant={selectedVariant}
+                            canSeeSpecial={canSeeSpecial}
+                            placeholderImage={placeholderImage}
+                            t={t}
+                        />
 
                         <div className="hidden lg:block space-y-4 pt-8 border-t">
                             <h2 className="text-xl font-bold tracking-tight text-gray-900">{t('aboutProduct')}</h2>
