@@ -41,6 +41,7 @@ import { ProductGridSkeleton } from '../../components/product-grid-skeleton';
 import { CategoryRadioItem } from '~/components/category-radio-item';
 import { ProductListItem } from '~/components/product-list-item';
 import { useTranslation } from 'react-i18next';
+import formatMoney from '~/lib/format-money';
 
 export default function () {
     const { t } = useTranslation("search_results");
@@ -367,8 +368,8 @@ export default function () {
                                     className="w-full"
                                 />
                                 <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                                    <span>${priceRange[0]}</span>
-                                    <span>${priceRange[1]}</span>
+                                    <span>{formatMoney(priceRange[0], 0)}</span>
+                                    <span>{formatMoney(priceRange[1], 0)}</span>
                                 </div>
                             </div>
                         </div>

@@ -1,2 +1,2 @@
-export default (n?: number) =>
-    n === undefined ? "-" : `€${Number(n).toFixed(2)}`;
+export default (n?: number, fractionDigits: number = 2) =>
+    n === undefined ? "-" : `€${Number(n).toFixed(fractionDigits)}`;
