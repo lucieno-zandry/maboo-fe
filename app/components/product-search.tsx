@@ -223,8 +223,8 @@ export default function () {
         const delayDebounceFn = setTimeout(() => {
             getProducts({ search: query })
                 .then(response => {
-                    if (response.data?.products) {
-                        setProducts(response.data.products);
+                    if (response.data?.data) {
+                        setProducts(response.data.data);
                     }
                 })
                 .catch(err => console.error("Search failed", err))

@@ -1,5 +1,5 @@
 import { serializeProductParams, type ProductQueryParams } from "~/lib/serialize-product-params";
-import appFetch from "./app-fetch";
+import appFetch, { type PaginatedResponse } from "./app-fetch";
 import buildWhereParam, { type WhereConditions, type WhereInConditions } from "~/lib/build-where-param";
 
 export function getEmailInfo(email: string) {
@@ -41,13 +41,14 @@ export function updateAuthUser(payload: {
 }
 
 export function getProducts(params?: ProductQueryParams) {
-    return appFetch.get<{ products: Product[] }>('/product/all', {
+    return appFetch.get<PaginatedResponse<Product>>('/product/all', {
         params: serializeProductParams({
             with: ['variants', 'images', 'category'],
             ...params,
         }),
     });
 }
+
 
 export function getProduct(slug: string) {
     return appFetch.get<{ product: Product }>(`/product/get/${slug}`);

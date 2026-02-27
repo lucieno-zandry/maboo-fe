@@ -18,7 +18,7 @@ export type ProductQueryParams = {
 
     // 📄 Pagination
     limit?: number;
-    offset?: number;
+    page?: number;
 
     // 🔗 Relations
     with?: (
@@ -30,7 +30,6 @@ export type ProductQueryParams = {
         | 'variant_groups.variant_options'
     )[];
 };
-
 
 export function serializeProductParams(params?: ProductQueryParams) {
     if (!params) return undefined;
