@@ -16,6 +16,7 @@ import { ActiveFilters } from '~/components/search/active-filters';
 import { SearchFilters } from '~/components/search/search-filters';
 import { ProductsToolbar } from '~/components/search/products-toolbar';
 import { SearchPagination } from '~/components/search/search-pagination';
+import useRouterStore from '~/hooks/use-router-store';
 
 export default function SearchResults() {
     const { t } = useTranslation('search_results');
@@ -44,13 +45,14 @@ export default function SearchResults() {
         refetch,
     } = useSearchResults(query);
 
+    const { lang } = useRouterStore();
     const organizedCategories = organizeCategories(categories);
 
     const hasActiveFilters =
         Boolean(selectedCategory) || priceRange[0] > 0 || priceRange[1] < 1000;
 
     const handleSearch = (newQuery: string) => {
-        window.location.href = `/search/${encodeURIComponent(newQuery)}`;
+        window.location.href = `/${lang}/search/${encodeURIComponent(newQuery)}`;
     };
 
     const handleSortChange = (by: 'created_at' | 'title', dir: 'ASC' | 'DESC') => {

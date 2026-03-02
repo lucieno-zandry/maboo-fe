@@ -1,7 +1,8 @@
 // hooks/useSearchResults.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import { getCategories, getProducts } from '~/api/http-requests';
+import useDebounce from '~/hooks/use-debounce';
 import type { ProductQueryParams } from '~/lib/serialize-product-params';
 
 const LIMIT = 12;
@@ -36,7 +37,23 @@ export function useSearchResults(query: string | undefined) {
     const page = parseInt(searchParams.get('page') || '1');
     const totalPages = Math.ceil(totalProducts / LIMIT);
 
-    // Sync filter state → URL
+    // Memoize filter dependencies to avoid unnecessary debounce updates
+    const filterDeps = useMemo(
+        () => ({
+            query,
+            selectedCategory,
+            priceRange,
+            selectedOptions,
+            sortBy,
+            sortDirection,
+        }),
+        [query, selectedCategory, priceRange, selectedOptions, sortBy, sortDirection]
+    );
+
+    // Debounce filters (excluding page)
+    const debouncedFilters = useDebounce(filterDeps, 300);
+
+    // Sync filter state → URL (unchanged)
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
 
@@ -60,7 +77,7 @@ export function useSearchResults(query: string | undefined) {
         setSearchParams(params, { replace: true });
     }, [selectedCategory, priceRange, sortBy, sortDirection]);
 
-    // Fetch categories once
+    // Fetch categories once (unchanged)
     useEffect(() => {
         const fetchCategories = async () => {
             setLoadingCategories(true);
@@ -76,32 +93,32 @@ export function useSearchResults(query: string | undefined) {
         fetchCategories();
     }, []);
 
-    // Fetch products when filters/page change
+    // Fetch products when debounced filters or page change
     useEffect(() => {
-        if (!query) return;
+        if (!debouncedFilters.query) return; // use debounced query
 
         const fetchProducts = async () => {
             setLoading(true);
             setError(null);
             try {
                 const params: ProductQueryParams = {
-                    search: query,
-                    category_id: selectedCategory,
-                    min_price: priceRange[0],
-                    max_price: priceRange[1],
-                    variant_option_ids: selectedOptions.length > 0 ? selectedOptions : undefined,
-                    order_by: sortBy,
-                    direction: sortDirection,
+                    search: debouncedFilters.query,
+                    category_id: debouncedFilters.selectedCategory,
+                    min_price: debouncedFilters.priceRange[0],
+                    max_price: debouncedFilters.priceRange[1],
+                    variant_option_ids:
+                        debouncedFilters.selectedOptions.length > 0
+                            ? debouncedFilters.selectedOptions
+                            : undefined,
+                    order_by: debouncedFilters.sortBy,
+                    direction: debouncedFilters.sortDirection,
                     limit: LIMIT,
-                    page,
+                    page, // page is not debounced – changes trigger fetch immediately
                 };
 
                 const response = await getProducts(params);
 
                 setProducts(response.data?.data || []);
-                // FIX: use the total count from the API response, not the current page length.
-                // Adjust the field name below to match your actual API response shape,
-                // e.g. response.data?.total, response.data?.meta?.total, etc.
                 setTotalProducts(response.data?.total ?? response.data?.data.length ?? 0);
             } catch (err) {
                 setError('errorLoading');
@@ -112,8 +129,9 @@ export function useSearchResults(query: string | undefined) {
         };
 
         fetchProducts();
-    }, [query, selectedCategory, priceRange, selectedOptions, sortBy, sortDirection, page]);
+    }, [debouncedFilters, page]); // only depend on debounced filters and page
 
+    // The rest of the hook (clearFilters, handlePageChange, etc.) remains exactly as before
     const clearFilters = () => {
         setSelectedCategory(undefined);
         setPriceRange([0, 1000]);
@@ -139,7 +157,6 @@ export function useSearchResults(query: string | undefined) {
 
     const handleCategoryChange = (categoryId: number | undefined) => {
         setSelectedCategory(categoryId);
-        // Reset to page 1 when filter changes
         setSearchParams((prev) => {
             const next = new URLSearchParams(prev);
             next.delete('page');
@@ -173,6 +190,6 @@ export function useSearchResults(query: string | undefined) {
         setSortDirection,
         clearFilters,
         handlePageChange,
-        refetch: () => setSearchParams((p) => new URLSearchParams(p)), // triggers re-render
+        refetch: () => setSearchParams((p) => new URLSearchParams(p)),
     };
 }
