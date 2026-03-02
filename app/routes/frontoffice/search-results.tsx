@@ -1,6 +1,6 @@
 // routes/frontoffice/search-results.tsx
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { Search } from 'lucide-react';
@@ -43,16 +43,19 @@ export default function SearchResults() {
         clearFilters,
         handlePageChange,
         refetch,
+        rangeConfig,
     } = useSearchResults(query);
 
     const { lang } = useRouterStore();
+    const navigate = useNavigate();
     const organizedCategories = organizeCategories(categories);
 
     const hasActiveFilters =
         Boolean(selectedCategory) || priceRange[0] > 0 || priceRange[1] < 1000;
 
     const handleSearch = (newQuery: string) => {
-        window.location.href = `/${lang}/search/${encodeURIComponent(newQuery)}`;
+        if (!newQuery) return;
+        navigate(`/${lang}/search/${encodeURIComponent(newQuery)}`);
     };
 
     const handleSortChange = (by: 'created_at' | 'title', dir: 'ASC' | 'DESC') => {
@@ -92,6 +95,7 @@ export default function SearchResults() {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') handleSearch(e.currentTarget.value);
                         }}
+                        required
                     />
                 </div>
             </div>
@@ -121,6 +125,7 @@ export default function SearchResults() {
                     onSortByChange={setSortBy}
                     onSortDirectionChange={setSortDirection}
                     onClearFilters={clearFilters}
+                    rangeConfig={rangeConfig}
                 />
 
                 {/* Main content */}

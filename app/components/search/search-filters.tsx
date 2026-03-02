@@ -40,6 +40,7 @@ interface SearchFiltersProps {
     onSortByChange: (value: 'created_at' | 'title') => void;
     onSortDirectionChange: (value: 'ASC' | 'DESC') => void;
     onClearFilters: () => void;
+    rangeConfig?: { min: number, max: number, step: number };
 }
 
 function CategorySection({
@@ -140,8 +141,11 @@ export function SearchFilters({
     onSortByChange,
     onSortDirectionChange,
     onClearFilters,
+    rangeConfig
 }: SearchFiltersProps) {
     const { t } = useTranslation('search_results');
+
+    console.log(rangeConfig);
 
     const filterContent = (idPrefix: string) => (
         <div className="space-y-6">
@@ -156,22 +160,24 @@ export function SearchFilters({
 
             <Separator />
 
-            <div className="space-y-4">
-                <h4 className="font-medium">{t('priceRange')}</h4>
-                <div className="px-1">
-                    <Slider
-                        value={priceRange}
-                        onValueChange={(s) => onPriceRangeChange(s as [number, number])}
-                        max={1000}
-                        step={10}
-                        className="w-full"
-                    />
-                    <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                        <span>{formatMoney(priceRange[0], 0)}</span>
-                        <span>{formatMoney(priceRange[1], 0)}</span>
+            {rangeConfig &&
+                <div className="space-y-4">
+                    <h4 className="font-medium">{t('priceRange')}</h4>
+                    <div className="px-1">
+                        <Slider
+                            value={priceRange}
+                            onValueChange={(s) => onPriceRangeChange(s as [number, number])}
+                            min={rangeConfig.min}
+                            max={rangeConfig.max}
+                            step={rangeConfig.step}
+                            className="w-full"
+                        />
+                        <div className="flex justify-between mt-2 text-sm text-muted-foreground">
+                            <span>{formatMoney(priceRange[0], 0)}</span>
+                            <span>{formatMoney(priceRange[1], 0)}</span>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </div>}
 
             <Separator />
 

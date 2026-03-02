@@ -1,8 +1,10 @@
 // hooks/useSearchResults.ts
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
-import { getCategories, getProducts } from '~/api/http-requests';
+import { toast } from 'sonner';
+import { getCategories, getPriceRange, getProducts } from '~/api/http-requests';
 import useDebounce from '~/hooks/use-debounce';
+import { getDefaultPriceRange, getDefaultRangeConfig, getUrlPriceRange } from '~/lib/get-price-range';
 import type { ProductQueryParams } from '~/lib/serialize-product-params';
 
 const LIMIT = 12;
@@ -14,10 +16,13 @@ export function useSearchResults(query: string | undefined) {
     const [selectedCategory, setSelectedCategory] = useState<number | undefined>(
         searchParams.get('category') ? parseInt(searchParams.get('category')!) : undefined
     );
-    const [priceRange, setPriceRange] = useState<[number, number]>([
-        searchParams.get('min_price') ? parseInt(searchParams.get('min_price')!) : 0,
-        searchParams.get('max_price') ? parseInt(searchParams.get('max_price')!) : 1000,
-    ]);
+
+    const initialPriceRange = getUrlPriceRange(searchParams) || getDefaultPriceRange();
+
+    const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
+
+    const [rangeConfig, setRangeConfig] = useState<{ min: number, max: number, step: number }>();
+
     const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
     const [sortBy, setSortBy] = useState<'created_at' | 'title'>(
         (searchParams.get('sort') as 'created_at' | 'title') || 'created_at'
@@ -53,7 +58,7 @@ export function useSearchResults(query: string | undefined) {
     // Debounce filters (excluding page)
     const debouncedFilters = useDebounce(filterDeps, 300);
 
-    // Sync filter state → URL (unchanged)
+    // Sync filter state → URL
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
 
@@ -93,9 +98,31 @@ export function useSearchResults(query: string | undefined) {
         fetchCategories();
     }, []);
 
+    useEffect(() => {
+        const fetchPriceRange = async () => {
+            try {
+                const response = await getPriceRange();
+                
+                if (response.data?.min && response.data.max && response.data.step) {
+                    setRangeConfig(response.data)
+                    setPriceRange([response.data.min, response.data.max]);
+                    return;
+                }
+
+                throw new Error;
+            } catch (e) {
+                toast.error('Failed to fetch price range');
+                console.error('Failed to fetch price range', error);
+                setRangeConfig(getDefaultRangeConfig());
+            }
+        }
+
+        fetchPriceRange();
+    }, []);
+
     // Fetch products when debounced filters or page change
     useEffect(() => {
-        if (!debouncedFilters.query) return; // use debounced query
+        if (!debouncedFilters.query || !rangeConfig) return; // use debounced query
 
         const fetchProducts = async () => {
             setLoading(true);
@@ -129,7 +156,7 @@ export function useSearchResults(query: string | undefined) {
         };
 
         fetchProducts();
-    }, [debouncedFilters, page]); // only depend on debounced filters and page
+    }, [debouncedFilters, page, rangeConfig]); // only depend on debounced filters and page
 
     // The rest of the hook (clearFilters, handlePageChange, etc.) remains exactly as before
     const clearFilters = () => {
@@ -191,5 +218,6 @@ export function useSearchResults(query: string | undefined) {
         clearFilters,
         handlePageChange,
         refetch: () => setSearchParams((p) => new URLSearchParams(p)),
+        rangeConfig,
     };
 }

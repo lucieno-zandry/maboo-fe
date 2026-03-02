@@ -54,6 +54,10 @@ export function getProduct(slug: string) {
     return appFetch.get<{ product: Product }>(`/product/get/${slug}`);
 }
 
+export function getPriceRange() {
+    return appFetch.get<{ min: number, max: number, step: number }>('/product/price-range');
+}
+
 export function sendEmailVerificationCode() {
     return appFetch.post<{ link_sent: boolean }>('/auth/email/send-validation-code', {});
 }
