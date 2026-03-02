@@ -102,7 +102,7 @@ export function useSearchResults(query: string | undefined) {
         const fetchPriceRange = async () => {
             try {
                 const response = await getPriceRange();
-                
+
                 if (response.data?.min && response.data.max && response.data.step) {
                     setRangeConfig(response.data)
                     setPriceRange([response.data.min, response.data.max]);
@@ -161,7 +161,7 @@ export function useSearchResults(query: string | undefined) {
     // The rest of the hook (clearFilters, handlePageChange, etc.) remains exactly as before
     const clearFilters = () => {
         setSelectedCategory(undefined);
-        setPriceRange([0, 1000]);
+        setPriceRange(getDefaultPriceRange(rangeConfig));
         setSelectedOptions([]);
         setSortBy('created_at');
         setSortDirection('DESC');
