@@ -1,5 +1,8 @@
 import type { NavigateFunction, RedirectFunction } from "react-router";
+import useRouterStore from "~/hooks/use-router-store";
 
 export default (cartItemIds: number[], navigate: NavigateFunction | RedirectFunction) => {
-    return navigate(`checkout?cartItemIds=${Array.from(cartItemIds).join(',')}`);
+    const { lang } = useRouterStore.getState();
+
+    return navigate(`/${lang}/checkout?cartItemIds=${Array.from(cartItemIds).join(',')}`);
 }
