@@ -20,21 +20,36 @@ export function ProductImageGallery({
   placeholderImage,
   t,
 }: Props) {
+  // Build image list: variant image first (if any), then product images, up to 4 total
   const images = useMemo(() => {
+    const result: { url: string }[] = [];
+
+    // Add variant image if available
     if (selectedVariant?.image?.url) {
-      return [selectedVariant.image];
+      result.push(selectedVariant.image);
     }
 
+    // Add product images, avoiding duplicates and respecting the 4‑thumbnail limit
     if (product.images?.length) {
-      return product.images.slice(0, 4);
+      for (const img of product.images) {
+        if (result.length >= 4) break;
+        if (!result.some(item => item.url === img.url)) {
+          result.push(img);
+        }
+      }
     }
 
-    return [{ url: placeholderImage }];
+    // Fallback to placeholder if no images
+    if (result.length === 0) {
+      result.push({ url: placeholderImage });
+    }
+
+    return result;
   }, [product.images, selectedVariant, placeholderImage]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Reset selected image when variant changes
+  // Reset selected image when variant changes (new image becomes first)
   useEffect(() => {
     setSelectedIndex(0);
   }, [selectedVariant?.id]);
