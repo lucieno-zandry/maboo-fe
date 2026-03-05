@@ -103,7 +103,7 @@ export function useSearchResults(query: string | undefined) {
             try {
                 const response = await getPriceRange();
 
-                if (response.data?.min && response.data.max && response.data.step) {
+                if (response.data?.min != undefined && response.data.max && response.data.step) {
                     setRangeConfig(response.data)
                     setPriceRange([response.data.min, response.data.max]);
                     return;

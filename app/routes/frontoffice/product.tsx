@@ -22,7 +22,7 @@ import { CartActions } from "~/components/product/cart-actions";
 import { TrustBadges } from "~/components/product/trust-badges";
 import placeholderImage from "~/assets/images/placeholder.svg";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
     const { slug } = params;
     const response = slug ? await getProduct(slug) : null;
     return response?.data?.product || null;
@@ -187,7 +187,7 @@ export default function ProductPage() {
                                 unitPrice={unitPrice}
                                 originalPrice={selectedVariant?.price}
                                 stock={selectedVariant?.stock ?? 0}
-                                canSeeSpecial={canSeeSpecial}
+                                appliedPromotions={selectedVariant?.applied_promotions}  // <-- add this
                                 t={t}
                             />
 

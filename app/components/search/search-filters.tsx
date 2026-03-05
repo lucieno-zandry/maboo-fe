@@ -145,8 +145,6 @@ export function SearchFilters({
 }: SearchFiltersProps) {
     const { t } = useTranslation('search_results');
 
-    console.log(rangeConfig);
-
     const filterContent = (idPrefix: string) => (
         <div className="space-y-6">
             <CategorySection
