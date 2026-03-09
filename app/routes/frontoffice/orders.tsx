@@ -11,9 +11,10 @@ export const clientLoader = async () => {
 }
 
 export default function OrdersPage() {
-    const { orders } = useLoaderData<{ orders: Order[] }>();
+    const loaderData = useLoaderData<typeof clientLoader>();
+    const orders = loaderData && loaderData.data;
 
-    if (orders.length === 0) {
+    if (orders && orders.length === 0) {
         return <EmptyOrdersState />;
     }
 
@@ -21,7 +22,7 @@ export default function OrdersPage() {
         <div className="container max-w-5xl mx-auto p-6 space-y-8">
             <OrdersHeader />
             <div className="grid gap-6">
-                {orders.map((order) => (
+                {orders!.map((order) => (
                     <OrderCard
                         key={order.uuid}
                         order={order}

@@ -128,7 +128,7 @@ export function getCouponFromCode(code: string) {
 }
 
 export function getOrders() {
-    return appFetch.get<{ orders: Order[] }>('/order/all?with=cart_items,transactions&order_by=updated_at&direction=DESC');
+    return appFetch.get<PaginatedResponse<Order>>('/order/all?with=cart_items,transactions&order_by=updated_at&direction=DESC');
 }
 
 export function getOrder(uuid: string) {
