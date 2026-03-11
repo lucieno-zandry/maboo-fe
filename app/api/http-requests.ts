@@ -136,7 +136,7 @@ export function getOrder(uuid: string) {
 }
 
 export function createTransaction(data: Pick<Transaction, 'method' | 'order_uuid' | 'amount'>) {
-    return appFetch.post<{ transaction: Transaction }>('/transaction/create', data)
+    return appFetch.post<{ transaction: Transaction }>('/transactions', data)
 }
 
 export function getNotifications() {
