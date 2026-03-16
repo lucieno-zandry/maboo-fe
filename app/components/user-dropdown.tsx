@@ -62,7 +62,7 @@ export function UserDropdown({ user, lang, setIsOpen, setLogoutOpen, logoutOpen,
                         </DropdownMenuItem>
 
                         {/* Clean "Unlock" Item */}
-                        {user && !user.permissions?.can_use_special_prices && (
+                        {user && !user.permissions?.can_use_effective_prices && (
                             <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
