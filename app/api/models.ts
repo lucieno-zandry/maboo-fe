@@ -33,6 +33,7 @@ type User = {
   reviewed_transactions?: Transaction[],
   statuses?: UserStatus[],
   set_statuses?: UserStatus[],
+  preferences?: UserPreference,
 };
 
 type UserStatus = {
@@ -476,4 +477,6 @@ type UserPreference = {
   currency: string;
   created_at: string;
   updated_at: string;
+
+  user?: User;
 };

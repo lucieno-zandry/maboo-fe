@@ -30,7 +30,7 @@ export function registerUser(data: {
 }
 
 export function getAuthUser() {
-    return appFetch.get<{ user: User }>('/auth/user/get');
+    return appFetch.get<{ user: User }>('/auth/user/get?with=preferences');
 }
 
 export function updateAuthUser(payload: {

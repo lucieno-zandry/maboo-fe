@@ -6,12 +6,13 @@ import { useUserStore } from './use-user';
 
 
 // Partial type for updates (all fields optional)
-export type StoreAppPreference = Omit<UserPreference, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
-export type UserPreferenceUpdates = Partial<StoreAppPreference>;
+export type StorePreference = Omit<UserPreference, 'user_id' | 'created_at' | 'updated_at'>;
+export type UserPreferenceUpdates = Partial<StorePreference>;
 
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-const defaultPreference: StoreAppPreference = {
+const defaultPreference: StorePreference = {
+    id: 0, // User has not yet fetched it's preferences
     currency: 'USD',
     language: 'en',
     theme: 'system',
@@ -19,7 +20,7 @@ const defaultPreference: StoreAppPreference = {
 };
 
 interface PreferencesState {
-    preferences: StoreAppPreference;
+    preferences: StorePreference;
     isLoading: boolean;
     error: string | null;
     // Actions
@@ -27,6 +28,7 @@ interface PreferencesState {
     updatePreferences: (updates: UserPreferenceUpdates) => Promise<unknown>;
     clearPreferences: () => void;
     setLanguage: (language: string) => void;
+    setPreferences: (preference: StorePreference) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -52,7 +54,7 @@ export const usePreferencesStore = create<PreferencesState>()(
 
                 if (!user) {
                     const current = get().preferences;
-                    const preferences: StoreAppPreference = { ...current, ...updates };
+                    const preferences: StorePreference = { ...current, ...updates };
 
                     return set({ preferences });
                 }
@@ -73,6 +75,9 @@ export const usePreferencesStore = create<PreferencesState>()(
             },
             setLanguage: (language) => {
                 get().updatePreferences({ language });
+            },
+            setPreferences: (preferences) => {
+                set({ preferences });
             }
         }),
         {

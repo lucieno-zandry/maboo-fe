@@ -1,7 +1,7 @@
-import React from "react";
-import { Outlet, useLoaderData, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
 import { HttpException } from "~/api/app-fetch";
-import { getAuthUser, getCartItems } from "~/api/http-requests";
+import { getAuthUser } from "~/api/http-requests";
 import Footer from "~/components/layout/footer";
 import Navbar from "~/components/layout/navbar";
 import { useRefreshCart } from "~/hooks/use-cart";
@@ -10,20 +10,31 @@ import handleHttpExceptionError from "~/lib/handle-http-exception-error";
 import { ClientCodeDialog } from "../../components/layout/client-code-dialog";
 import { usePreferencesStore } from "~/hooks/use-user-preference-store";
 
+const { currency: lastCurrency } =  usePreferencesStore.getState().preferences;
+
 export default function () {
     const { setUser, clearUser } = useUserStore();
-    const { fetchPreferences } = usePreferencesStore();
+    const { preferences, setPreferences } = usePreferencesStore();
 
     const refreshCart = useRefreshCart();
     const navigate = useNavigate();
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if (lastCurrency !== preferences.currency) {
+            location.reload();
+        }
+    }, [lastCurrency, preferences.currency]);
+
+    useEffect(() => {
         getAuthUser()
             .then((response) => {
                 if (response.data?.user) {
                     setUser(response.data.user);
                     refreshCart();
-                    fetchPreferences();
+
+                    if (response.data.user.preferences) {
+                        setPreferences(response.data.user.preferences);
+                    }
                 }
 
             }).catch((error) => {
