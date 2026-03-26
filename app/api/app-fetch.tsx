@@ -85,9 +85,15 @@ async function get<T>(
 ): Promise<FormatedResponse<T>> {
     const { params, ...init } = options;
 
+    const searchParams = new URLSearchParams(location.search);
+    const currency = searchParams.get('currency') || 'USD';
+
     if (!options.headers) {
         init.headers = defaultHeaders();
     }
+
+    init.headers!['X-currency' as keyof HeadersInit] = currency;
+    console.log(currency);
 
     const url = buildQuery(path, params);
 

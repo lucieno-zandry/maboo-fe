@@ -1,7 +1,7 @@
 // stores/userPreferencesStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { fetchUserPreferences, updateUserPreferences } from '~/api/http-requests';
+import { updateUserPreferences } from '~/api/http-requests';
 import { useUserStore } from './use-user';
 
 
@@ -25,26 +25,34 @@ interface PreferencesState {
     updatePreferences: (updates: UserPreferenceUpdates) => Promise<unknown>;
     clearPreferences: () => void;
     setLanguage: (language: string) => void;
-    setPreferences: (preference: StorePreference) => void;
+    setPreferences: (preference: UserPreferenceUpdates) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
     persist(
         (set, get) => ({
             preferences: defaultPreference,
+            setPreferences: (updates) => {
+                const current = get().preferences;
+                const preferences: StorePreference = { ...current, ...updates };
+
+                set({ preferences });
+            },
             updatePreferences: async (updates: UserPreferenceUpdates) => {
                 const { user } = useUserStore.getState();
 
-                if (!user) {
-                    const current = get().preferences;
-                    const preferences: StorePreference = { ...current, ...updates };
+                if (!updates.currency || updates.currency === get().preferences.currency)
+                    get().setPreferences(updates);
 
-                    return set({ preferences });
+                if (!user) {
+                    return;
                 }
 
                 try {
-                    const response = await updateUserPreferences(updates);
-                    set({ preferences: response.data!.preferences });
+                    await updateUserPreferences(updates);
+                    if (updates.currency && updates.currency !== get().preferences.currency)
+                        get().setPreferences(updates);
+
                 } catch (err: any) {
                     console.error(err.response?.data?.message || 'Failed to update preferences');
                     throw err;
@@ -52,14 +60,11 @@ export const usePreferencesStore = create<PreferencesState>()(
             },
 
             clearPreferences: () => {
-                set({ preferences: defaultPreference});
+                set({ preferences: defaultPreference });
             },
             setLanguage: (language) => {
                 get().updatePreferences({ language });
             },
-            setPreferences: (preferences) => {
-                set({ preferences });
-            }
         }),
         {
             name: 'user-preferences-storage', // unique name for localStorage key

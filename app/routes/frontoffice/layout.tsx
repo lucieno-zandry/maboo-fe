@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router";
+import { useEffect, useMemo } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { HttpException } from "~/api/app-fetch";
 import { getAuthUser } from "~/api/http-requests";
 import Footer from "~/components/layout/footer";
@@ -12,10 +12,28 @@ import { usePreferencesStore } from "~/hooks/use-user-preference-store";
 
 export default function () {
     const { setUser, clearUser } = useUserStore();
-    const { setPreferences } = usePreferencesStore();
+    const { setPreferences, preferences } = usePreferencesStore();
+    const { pathname, search } = useLocation();
+
+    const searchParams = useMemo(() => new URLSearchParams(search), [search]);
 
     const refreshCart = useRefreshCart();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const urlCurrency = searchParams.get('currency');
+        let shouldReload = false;
+
+        if (!urlCurrency) {
+            searchParams.append('currency', preferences.currency);
+            shouldReload = true;
+        } else if (urlCurrency !== preferences.currency) {
+            searchParams.set('currency', preferences.currency);
+            shouldReload = true;
+        }
+
+        if (shouldReload) location.href = (`${pathname}?${searchParams.toString()}`)
+    }, [searchParams, pathname, preferences.currency]);
 
     useEffect(() => {
         getAuthUser()

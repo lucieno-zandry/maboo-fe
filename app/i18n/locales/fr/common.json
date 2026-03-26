@@ -38,5 +38,6 @@
     "subtotal": "Sous-total",
     "remove": "Retirer",
     "updatingCartItem": "Mise à jour de l'article...",
-    "cartItemUpdated": "Article mis à jour."
+    "cartItemUpdated": "Article mis à jour.",
+    "preferences": "Préférences"
 }

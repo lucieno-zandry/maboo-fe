@@ -44,12 +44,13 @@ export function updateAuthUser(payload: {
     return appFetch.post<{ user: User }>('/auth/user/update', payload);
 }
 
-export function getProducts(params?: ProductQueryParams) {
+export function getProducts(params?: ProductQueryParams, options: RequestInit = {}) {
     return appFetch.get<PaginatedResponse<Product>>('/product/all', {
         params: serializeProductParams({
             with: ['variants', 'images', 'category'],
             ...params,
         }),
+        ...options
     });
 }
 

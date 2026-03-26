@@ -38,5 +38,6 @@
     "subtotal": "Subtotal",
     "remove": "Remove",
     "updatingCartItem": "Updating cart item...",
-    "cartItemUpdated": "Cart item updated."
+    "cartItemUpdated": "Cart item updated.",
+    "preferences": "Preferences"
 }
