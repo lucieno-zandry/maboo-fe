@@ -10,20 +10,12 @@ import handleHttpExceptionError from "~/lib/handle-http-exception-error";
 import { ClientCodeDialog } from "../../components/layout/client-code-dialog";
 import { usePreferencesStore } from "~/hooks/use-user-preference-store";
 
-const { currency: lastCurrency } =  usePreferencesStore.getState().preferences;
-
 export default function () {
     const { setUser, clearUser } = useUserStore();
-    const { preferences, setPreferences } = usePreferencesStore();
+    const { setPreferences } = usePreferencesStore();
 
     const refreshCart = useRefreshCart();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (lastCurrency !== preferences.currency) {
-            location.reload();
-        }
-    }, [lastCurrency, preferences.currency]);
 
     useEffect(() => {
         getAuthUser()

@@ -21,10 +21,7 @@ const defaultPreference: StorePreference = {
 
 interface PreferencesState {
     preferences: StorePreference;
-    isLoading: boolean;
-    error: string | null;
-    // Actions
-    fetchPreferences: () => Promise<void>;
+
     updatePreferences: (updates: UserPreferenceUpdates) => Promise<unknown>;
     clearPreferences: () => void;
     setLanguage: (language: string) => void;
@@ -35,20 +32,6 @@ export const usePreferencesStore = create<PreferencesState>()(
     persist(
         (set, get) => ({
             preferences: defaultPreference,
-            isLoading: false,
-            error: null,
-
-            fetchPreferences: async () => {
-                set({ isLoading: true, error: null });
-                try {
-                    const response = await fetchUserPreferences();
-
-                    set({ preferences: response.data?.preferences || defaultPreference, isLoading: false });
-                } catch (err: any) {
-                    set({ error: err.response?.data?.message || 'Failed to load preferences', isLoading: false });
-                }
-            },
-
             updatePreferences: async (updates: UserPreferenceUpdates) => {
                 const { user } = useUserStore.getState();
 
@@ -59,19 +42,17 @@ export const usePreferencesStore = create<PreferencesState>()(
                     return set({ preferences });
                 }
 
-                set({ isLoading: true, error: null });
-
                 try {
                     const response = await updateUserPreferences(updates);
-                    set({ preferences: response.data!.preferences, isLoading: false });
+                    set({ preferences: response.data!.preferences });
                 } catch (err: any) {
-                    set({ error: err.response?.data?.message || 'Failed to update preferences', isLoading: false });
+                    console.error(err.response?.data?.message || 'Failed to update preferences');
                     throw err;
                 }
             },
 
             clearPreferences: () => {
-                set({ preferences: defaultPreference, isLoading: false, error: null });
+                set({ preferences: defaultPreference});
             },
             setLanguage: (language) => {
                 get().updatePreferences({ language });

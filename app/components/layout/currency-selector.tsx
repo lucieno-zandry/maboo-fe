@@ -32,6 +32,34 @@ interface CurrencySelectProps {
     disabled?: boolean;
 }
 
+const DropdownCurrencySelect = ({ value, onChange, disabled }: CurrencySelectProps) => {
+    return <div className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-2">
+            <CircleDollarSign className="h-4 w-4" />
+            <span>Currency</span>
+        </div>
+        <Select
+            value={value || 'USD'}
+            onValueChange={onChange}
+            disabled={disabled}
+        >
+            <SelectTrigger className="w-[80px] h-8">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                {CURRENCIES.map((curr) => (
+                    <SelectItem key={curr.code} value={curr.code}>
+                        <span className="font-medium">{curr.code}</span>
+                        <span className="text-muted-foreground text-xs ml-1 hidden sm:inline">
+                            - {curr.label}
+                        </span>
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
+    </div>
+}
+
 const CurrencySelect = ({ value, onChange, disabled }: CurrencySelectProps) => (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger className="w-[80px] sm:w-[110px] h-9 flex items-center gap-2 bg-transparent">
@@ -54,7 +82,7 @@ const CurrencySelect = ({ value, onChange, disabled }: CurrencySelectProps) => (
 );
 
 // Smart component that chooses the right store based on auth status
-export const CurrencySelector = () => {
+export const CurrencySelector = ({ type = 'navbar' }: { type?: 'navbar' | 'dropdown' }) => {
     const { authStatus } = useUserStore();
     const { preferences, updatePreferences } = usePreferencesStore();
 
@@ -62,8 +90,10 @@ export const CurrencySelector = () => {
         updatePreferences({ currency: newCurrency });
     };
 
+    const Component = type === 'dropdown' ? DropdownCurrencySelect : CurrencySelect;
+
     return (
-        <CurrencySelect
+        <Component
             value={preferences?.currency || 'USD'}
             onChange={handleCurrencyChange}
             disabled={authStatus === 'unknown'} // Disabled while loading for authenticated user

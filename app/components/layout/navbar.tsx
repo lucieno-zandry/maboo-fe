@@ -13,13 +13,15 @@ import type { TFunction } from "i18next";
 import { CurrencySelector } from "./currency-selector";
 import appPathname from "~/lib/app-pathname";
 import { ThemeSelector } from "./theme-selector";
+import { useMemo } from "react";
 
 type NavbarProps = {
-    user: User | null;
+    isUnAuthenticated: boolean,
+    isAuthenticated: boolean,
     t: TFunction;
 }
 
-export function NavbarView({ user, t }: NavbarProps) {
+export function NavbarView({ isAuthenticated, isUnAuthenticated, t }: NavbarProps) {
     return (
         <header className="flex flex-wrap justify-between items-center px-4 sm:px-8 py-3 shadow-sm bg-white/95 backdrop-blur-sm sticky top-0 z-50 gap-4 border-b border-gray-100">
             <div className="flex items-center gap-4 md:gap-8">
@@ -39,12 +41,15 @@ export function NavbarView({ user, t }: NavbarProps) {
             </div>
 
             {/* Middle Search - Hidden on small mobile to avoid layout breaking, expanded on larger screens */}
-            <div className="flex-1 max-w-md hidden md:block">
-                <ProductSearch />
-            </div>
+            {
+                (isAuthenticated || isUnAuthenticated) &&
+                <div className="flex-1 max-w-md hidden md:block">
+                    <ProductSearch />
+                </div>
+            }
 
             <div className="flex gap-2 sm:gap-4 items-center">
-                {!user ? (
+                {isUnAuthenticated && (
                     <div className="flex gap-1 sm:gap-2 items-center overflow-x-auto no-scrollbar pb-1 sm:pb-0">
                         <LanguageSwitcher />
                         <CurrencySelector />
@@ -53,7 +58,9 @@ export function NavbarView({ user, t }: NavbarProps) {
                             <Link to={appPathname('/auth')}>{t('common:logIn')}</Link>
                         </Button>
                     </div>
-                ) : (
+                )}
+
+                {isAuthenticated && (
                     <div className="flex gap-3 sm:gap-4 items-center">
                         <Cart />
                         <Notifications />
@@ -71,8 +78,11 @@ export function NavbarView({ user, t }: NavbarProps) {
 }
 
 export default function Navbar() {
-    const { user } = useUserStore();
+    const { user, authStatus } = useUserStore();
     const { t } = useTranslation();
 
-    return <NavbarView user={user} t={t} />
+    const isUnAuthenticated = useMemo(() => authStatus === "unauthenticated", [authStatus])
+    const isAuthenticated = useMemo(() => authStatus === "authenticated", [authStatus])
+
+    return <NavbarView t={t} isAuthenticated={isAuthenticated} isUnAuthenticated={isUnAuthenticated} />
 }
