@@ -2,6 +2,7 @@ import { Outlet, useParams } from "react-router";
 import i18n from "~/i18n/i18n";
 import { useEffect } from "react";
 import useRouterStore from "~/hooks/use-router-store";
+import { usePreferencesStore } from "~/hooks/use-user-preference-store";
 
 export async function loader({ params }: { params: { lang?: string } }) {
   const lang = params.lang ?? "en";
@@ -15,15 +16,15 @@ export async function loader({ params }: { params: { lang?: string } }) {
 
 export default function LangBoundary() {
   const { lang } = useParams();
-  const { setLang } = useRouterStore();
+  const { setLanguage } = usePreferencesStore();
 
   useEffect(() => {
     if (lang) {
       if (i18n.language !== lang) {
         i18n.changeLanguage(lang);
-        setLang(lang);
+        setLanguage(lang);
       }
-      
+
       document.documentElement.lang = lang;
     }
   }, [lang]);

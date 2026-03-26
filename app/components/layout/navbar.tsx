@@ -12,14 +12,14 @@ import useRouterStore from "~/hooks/use-router-store";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { CurrencySelector } from "./currency-selector";
+import appPathname from "~/lib/app-pathname";
 
 type NavbarProps = {
     user: User | null;
-    lang: string;
     t: TFunction;
 }
 
-export function Navbar({ user, lang, t }: NavbarProps) {
+export function Navbar({ user, t }: NavbarProps) {
     return (
         <header className="flex justify-between items-center px-8 py-4 shadow-sm bg-white sticky top-0 z-25 gap-4">
             <div className="flex items-center gap-8">
@@ -27,7 +27,7 @@ export function Navbar({ user, lang, t }: NavbarProps) {
                     <Link to="/" className="text-2xl font-bold text-gray-800">ShopEase</Link>
                 </h1>
                 <nav className="space-x-6 hidden lg:block">
-                    <Link to={`/${lang}/products`} className="text-sm font-medium text-gray-600 hover:text-gray-900">{t('common:products')}</Link>
+                    <Link to={appPathname('/products')} className="text-sm font-medium text-gray-600 hover:text-gray-900">{t('common:products')}</Link>
                 </nav>
             </div>
 
@@ -41,7 +41,7 @@ export function Navbar({ user, lang, t }: NavbarProps) {
                         <LanguageSwitcher />
                         <CurrencySelector />
                         <Button variant="default" asChild>
-                            <Link to={`/${lang}/auth`}>{t('common:logIn')}</Link>
+                            <Link to={appPathname('/auth')}>{t('common:logIn')}</Link>
                         </Button>
                     </div>
                 ) : (
@@ -59,11 +59,9 @@ export function Navbar({ user, lang, t }: NavbarProps) {
 
 export default function () {
     const { user } = useUserStore();
-    const { lang } = useRouterStore();
     const { t } = useTranslation();
 
     return <Navbar
         user={user}
-        lang={lang}
         t={t} />
 }

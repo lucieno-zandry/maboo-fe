@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { ValidationException } from "~/api/app-fetch";
 import BackButton from "~/components/custom-components/back-button";
 import useRouterStore from "~/hooks/use-router-store";
+import appPathname from "~/lib/app-pathname";
 
 const dataFormat = {
   email: z.email(),
@@ -38,8 +39,6 @@ export default function () {
 
   const [isLoading, setIsLoading] = useState(false);
   const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
-
-  const { lang } = useRouterStore();
 
   const handleFormValidationChange = (validationErrors: string[] | null, e: FocusEvent<HTMLInputElement, Element>) => {
     const updatedFormValidationErrors = getUpdatedFormErrors({
@@ -114,7 +113,7 @@ export default function () {
         <div className="flex items-center">
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <Link
-            to={`/${lang}/auth/password-forgotten?email=${email}`}
+            to={appPathname(`/auth/password-forgotten?email=${email}`)}
             className="ml-auto text-sm underline-offset-2 hover:underline"
           >
             Forgot your password?

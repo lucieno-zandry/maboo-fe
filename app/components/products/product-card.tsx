@@ -4,12 +4,11 @@ import formatMoney from "~/lib/format-money";
 import Button from "../custom-components/button";
 import { Badge } from "../ui/badge";
 import { useUserStore } from "~/hooks/use-user";
-import useRouterStore from "~/hooks/use-router-store";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
+import appPathname from "~/lib/app-pathname";
 
 type ProductCardProps = {
-    lang: string;
     product: Product;
     mainImage?: string;
     showsSpecialPrice?: boolean;
@@ -21,7 +20,6 @@ type ProductCardProps = {
 };
 
 export function ProductCard({
-    lang,
     product,
     mainImage,
     showsSpecialPrice = false,
@@ -32,7 +30,7 @@ export function ProductCard({
     t
 }: ProductCardProps) {
     return (
-        <Link to={`/${lang}/product/${product.slug}`}>
+        <Link to={appPathname(`/product/${product.slug}`)}>
             <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full relative group">
                 {showsSpecialPrice && (
                     <div className="absolute top-2 right-2 z-10">
@@ -107,7 +105,6 @@ export function ProductCard({
 
 export default function ({ product }: { product: Product }) {
     const { user } = useUserStore();
-    const { lang } = useRouterStore();
     const { t } = useTranslation("products");
 
     const canSeeSpecial = user?.permissions?.can_use_effective_prices ?? false;
@@ -131,7 +128,6 @@ export default function ({ product }: { product: Product }) {
     return (
         <ProductCard
             formatMoney={formatMoney}
-            lang={lang}
             product={product}
             mainImage={mainImage}
             lowestPrice={lowestPrice}

@@ -1,6 +1,6 @@
 // routes/frontoffice/search-results.tsx
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { Search } from 'lucide-react';
@@ -16,7 +16,7 @@ import { ActiveFilters } from '~/components/search/active-filters';
 import { SearchFilters } from '~/components/search/search-filters';
 import { ProductsToolbar } from '~/components/search/products-toolbar';
 import { SearchPagination } from '~/components/search/search-pagination';
-import useRouterStore from '~/hooks/use-router-store';
+import appNavigate from '~/lib/app-navigate';
 
 export default function SearchResults() {
     const { t } = useTranslation('search_results');
@@ -45,9 +45,6 @@ export default function SearchResults() {
         refetch,
         rangeConfig,
     } = useSearchResults(query);
-
-    const { lang } = useRouterStore();
-    const navigate = useNavigate();
     const organizedCategories = organizeCategories(categories);
 
     const hasActiveFilters =
@@ -55,7 +52,7 @@ export default function SearchResults() {
 
     const handleSearch = (newQuery: string) => {
         if (!newQuery) return;
-        navigate(`/${lang}/search/${encodeURIComponent(newQuery)}`);
+        appNavigate(`/search/${encodeURIComponent(newQuery)}`);
     };
 
     const handleSortChange = (by: 'created_at' | 'title', dir: 'ASC' | 'DESC') => {

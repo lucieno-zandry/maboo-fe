@@ -14,21 +14,20 @@ import { LogoutDialog } from "./logout-dialog";
 import React from "react";
 import { Link } from "react-router";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
-import { MapPin, Package, Settings, TicketPercent, User } from "lucide-react";
-import useRouterStore from "~/hooks/use-router-store";
+import { MapPin, Package, Settings, TicketPercent } from "lucide-react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import appPathname from "~/lib/app-pathname";
 
 type UserDropdownProps = {
     user: User,
-    lang: string,
     setIsOpen: (open: boolean) => void,
     setLogoutOpen: (open: boolean) => void,
     logoutOpen: boolean,
     t: TFunction,
 }
 
-export function UserDropdown({ user, lang, setIsOpen, setLogoutOpen, logoutOpen, t }: UserDropdownProps) {
+export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: UserDropdownProps) {
     return (
         <>
             <DropdownMenu>
@@ -43,19 +42,19 @@ export function UserDropdown({ user, lang, setIsOpen, setLogoutOpen, logoutOpen,
                     <DropdownMenuLabel>{t('common:myAccount')}</DropdownMenuLabel>
                     <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
-                            <Link to={`/${lang}/addresses`} className="flex items-center">
+                            <Link to={appPathname('/addresses')} className="flex items-center">
                                 <MapPin className="mr-2 h-4 w-4" />
                                 <span>{t('common:addresses')}</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={`/${lang}/settings`} className="flex items-center">
+                            <Link to={appPathname("/settings")} className="flex items-center">
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>{t('common:settings')}</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to={`/${lang}/orders`} className="flex items-center">
+                            <Link to={appPathname("/orders")} className="flex items-center">
                                 <Package className="mr-2 h-4 w-4" />
                                 <span>{t('common:orders')}</span>
                             </Link>
@@ -92,7 +91,6 @@ export function UserDropdown({ user, lang, setIsOpen, setLogoutOpen, logoutOpen,
 export default function () {
     const { user } = useUserStore();
     const { setIsOpen } = useClientCodeDialogStore();
-    const { lang } = useRouterStore();
     const { t } = useTranslation();
 
     const [logoutOpen, setLogoutOpen] = React.useState(false);
@@ -101,7 +99,6 @@ export default function () {
 
     return <UserDropdown
         user={user}
-        lang={lang}
         setIsOpen={setIsOpen}
         setLogoutOpen={setLogoutOpen}
         logoutOpen={logoutOpen}

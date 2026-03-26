@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Search, Package, ArrowUpRight, Loader2, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router";
 import {
     Command,
     CommandDialog,
@@ -15,11 +14,11 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { getProducts } from "~/api/http-requests";
-import useRouterStore from "~/hooks/use-router-store";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import formatMoney from "~/lib/format-money"; // added import
 import Highlight from "./highlight";
+import appNavigate from "~/lib/app-navigate";
 
 export type SearchDialogProps = {
     open: boolean;
@@ -177,8 +176,6 @@ export default function () {
     const [query, setQuery] = React.useState("");
     const [products, setProducts] = React.useState<Product[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
-    const navigate = useNavigate();
-    const { lang } = useRouterStore();
     const { t } = useTranslation();
 
     React.useEffect(() => {
@@ -219,13 +216,13 @@ export default function () {
 
     const onSelectProduct = (slug: string) => {
         setOpen(false);
-        navigate(`/${lang}/product/${slug}`);
+        appNavigate(`/product/${slug}`);
     };
 
     const navigateToSearchResults = () => {
         if (query.trim()) {
             setOpen(false);
-            navigate(`/${lang}/search/${encodeURIComponent(query.trim())}`);
+            appNavigate(`/search/${encodeURIComponent(query.trim())}`);
         }
     };
 

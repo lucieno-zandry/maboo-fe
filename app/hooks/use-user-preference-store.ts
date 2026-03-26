@@ -26,6 +26,7 @@ interface PreferencesState {
     fetchPreferences: () => Promise<void>;
     updatePreferences: (updates: UserPreferenceUpdates) => Promise<unknown>;
     clearPreferences: () => void;
+    setLanguage: (language: string) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -69,6 +70,9 @@ export const usePreferencesStore = create<PreferencesState>()(
             clearPreferences: () => {
                 set({ preferences: defaultPreference, isLoading: false, error: null });
             },
+            setLanguage: (language) => {
+                get().updatePreferences({ language });
+            }
         }),
         {
             name: 'user-preferences-storage', // unique name for localStorage key

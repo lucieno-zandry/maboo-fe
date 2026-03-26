@@ -4,11 +4,10 @@ import formatMoney from "~/lib/format-money";
 import { Badge } from "../ui/badge";
 import Button from "../custom-components/button";
 import { useUserStore } from "~/hooks/use-user";
-import useRouterStore from "~/hooks/use-router-store";
+import appPathname from "~/lib/app-pathname";
 
 export function ProductListItem({ product }: { product: Product }) {
     const { user } = useUserStore();
-    const { lang } = useRouterStore();
 
     // Check if the user has permission to see special prices (still used for badge logic)
     const canSeeSpecial = user?.permissions?.can_use_effective_prices ?? false;
@@ -27,7 +26,7 @@ export function ProductListItem({ product }: { product: Product }) {
     const mainImage = product.images?.[0]?.url;
 
     return (
-        <Link to={`/${lang}/product/${product.slug}`}>
+        <Link to={appPathname(`/product/${product.slug}`)}>
             <Card className="overflow-hidden hover:shadow-md transition-shadow relative">
                 {hasDiscount && (
                     <Badge className="absolute top-2 left-2 z-10 bg-green-600 hover:bg-green-700">
