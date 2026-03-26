@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { TabsContent } from "../ui/tabs";
 import React from "react";
 import { useUserStore } from "~/hooks/use-user";
-import ConfirmEmailChangeDialog from "../confirm-email-change-dialog";
+import ConfirmEmailChangeDialog from "../settings/confirm-email-change-dialog";
 import { updateAuthUser } from "~/api/http-requests";
 import { toast } from "sonner";
 import Field from "../custom-components/field";

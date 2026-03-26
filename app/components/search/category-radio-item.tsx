@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
+import { RadioGroupItem } from "../ui/radio-group";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
 
 export function CategoryRadioItem({

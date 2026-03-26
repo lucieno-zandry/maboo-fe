@@ -2,12 +2,12 @@ import React from "react";
 import { Outlet, useLoaderData, useNavigate } from "react-router";
 import { HttpException } from "~/api/app-fetch";
 import { getAuthUser, getCartItems } from "~/api/http-requests";
-import Footer from "~/components/footer";
-import Navbar from "~/components/navbar";
+import Footer from "~/components/layout/footer";
+import Navbar from "~/components/layout/navbar";
 import { useRefreshCart } from "~/hooks/use-cart";
 import { useUserStore } from "~/hooks/use-user";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
-import { ClientCodeDialog } from "../../components/client-code-dialog";
+import { ClientCodeDialog } from "../../components/layout/client-code-dialog";
 
 export default function () {
     const { setUser, clearUser } = useUserStore();

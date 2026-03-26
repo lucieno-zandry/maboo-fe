@@ -22,7 +22,7 @@ import {
 } from '~/components/ui/sheet';
 import { Badge } from '~/components/ui/badge';
 import { Filter, X } from 'lucide-react';
-import { CategoryRadioItem } from '~/components/category-radio-item';
+import { CategoryRadioItem } from '~/components/search/category-radio-item';
 import { useTranslation } from 'react-i18next';
 import formatMoney from '~/lib/format-money';
 import type { CategoryWithChildren } from '~/lib/organize-categories';

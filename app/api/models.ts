@@ -466,3 +466,14 @@ type ClientCode = {
   // Joined relationships
   users?: User[],
 };
+
+type UserPreference = {
+  id: number;
+  user_id: number;
+  theme: 'light' | 'dark' | 'system';
+  language: string;
+  timezone: string;
+  currency: string;
+  created_at: string;
+  updated_at: string;
+};

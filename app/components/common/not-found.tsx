@@ -1,7 +1,7 @@
 import React from 'react';
 import { Home, Frown } from 'lucide-react';
 import notFound from "~/assets/images/404.png";
-import Button from './custom-components/button';
+import Button from '../custom-components/button';
 import { useNavigate } from 'react-router';
 
 const NotFound = () => {

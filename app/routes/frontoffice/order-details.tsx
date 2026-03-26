@@ -6,7 +6,7 @@ import OrderItemList from "~/components/order-details/order-item-list";
 import OrderSummary from "~/components/order-details/order-summary";
 
 import { getOrder } from "~/api/http-requests";
-import NotFound from "~/components/not-found";
+import NotFound from "~/components/common/not-found";
 import useCheckoutStore from "~/hooks/use-checkout-store";
 import { getOrderStatusConfig } from "~/lib/get-order-status-config";
 import { ShippingAddress } from "~/components/order-details/shipping-address";

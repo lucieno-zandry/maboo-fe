@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useNavigate } from "react-router";
 import { useCallback } from "react";
 

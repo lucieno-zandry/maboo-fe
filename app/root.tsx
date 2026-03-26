@@ -11,7 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import RouterContextInjector from "./lib/router-context-injector";
 import { Toaster } from "./components/ui/sonner";
-import { RouteProgress } from "./components/route-progress";
+import { RouteProgress } from "./components/layout/route-progress";
 import './i18n/i18n';
 
 

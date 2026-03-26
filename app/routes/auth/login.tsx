@@ -10,7 +10,7 @@ import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import { useSuccessRedirect } from "~/hooks/use-redirect-action";
 import { toast } from "sonner";
 import { ValidationException } from "~/api/app-fetch";
-import BackButton from "~/components/back-button";
+import BackButton from "~/components/custom-components/back-button";
 import useRouterStore from "~/hooks/use-router-store";
 
 const dataFormat = {

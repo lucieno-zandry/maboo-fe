@@ -2,15 +2,16 @@
 
 import { Link } from "react-router"
 import { useUserStore } from "~/hooks/use-user"
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import UserDropdown from "./user-dropdown";
-import Cart from "./cart/cart";
-import Notifications from "./notifications/notifications";
-import ProductSearch from "./search/product-search";
+import Cart from "../cart/cart";
+import Notifications from "../notifications/notifications";
+import ProductSearch from "../search/product-search";
 import { LanguageSwitcher } from "~/components/i18n/language-switcher";
 import useRouterStore from "~/hooks/use-router-store";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
+import { CurrencySelector } from "./currency-selector";
 
 type NavbarProps = {
     user: User | null;
@@ -35,15 +36,14 @@ export function Navbar({ user, lang, t }: NavbarProps) {
             </div>
 
             <div className="flex gap-4 items-center">
-                {/* 🌍 Language Switcher placed here */}
-                <LanguageSwitcher />
-
-                <div className="h-6 w-[1px] bg-gray-200 hidden sm:block" />
-
                 {!user ? (
-                    <Button variant="default" asChild>
-                        <Link to={`/${lang}/auth`}>{t('common:logIn')}</Link>
-                    </Button>
+                    <div className="flex gap-2 items-center">
+                        <LanguageSwitcher />
+                        <CurrencySelector />
+                        <Button variant="default" asChild>
+                            <Link to={`/${lang}/auth`}>{t('common:logIn')}</Link>
+                        </Button>
+                    </div>
                 ) : (
                     <div className="flex gap-2 items-center">
                         <Cart />

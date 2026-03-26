@@ -17,12 +17,16 @@ export function registerUser(data: {
     email: FormDataEntryValue,
     password: FormDataEntryValue,
     password_confirmation: FormDataEntryValue,
-    name: string
+    name: string,
+    preferred_language: string,
+    preferred_currency: string,
+    preferred_timezone: string,
+    preferred_theme: string,
 }) {
     return appFetch.post<{
         auth: User,
         token: string,
-    }>('/auth/register', data)
+    }>('/auth/register', data);
 }
 
 export function getAuthUser() {
@@ -211,4 +215,14 @@ export function cancelDispute(transactionUuid: string) {
     return appFetch.delete<{ transaction: Transaction }>(
         `/transactions/${transactionUuid}/dispute`
     );
+}
+
+// user preferences
+
+export function fetchUserPreferences() {
+    return appFetch.get<{ preferences: UserPreference }>('/user/preferences');
+}
+
+export function updateUserPreferences(data: Partial<UserPreference>) {
+    return appFetch.put<{ preferences: UserPreference }>('/user/preferences', data);
 }
