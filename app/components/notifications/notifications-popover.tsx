@@ -1,4 +1,3 @@
-import { useNavigate, type NavigateFunction } from "react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Bell } from "lucide-react";
 import NotificationsSkeleton from "./notifications-skeleton";
@@ -7,10 +6,8 @@ import { cn } from "~/lib/utils";
 import NotificationsEmpty from "./notifications-empty";
 import { Button } from "../ui/button";
 import { ShipmentItem, SystemItem, TransactionItem } from "./notification-item";
-import useRouterStore from "~/hooks/use-router-store";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
-import appPathname from "~/lib/app-pathname";
 import appNavigate from "~/lib/app-navigate";
 
 export type NotificationsPopoverProps = {

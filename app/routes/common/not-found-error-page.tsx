@@ -51,7 +51,7 @@ export default function () {
           </p>
           <div className="grid grid-cols-2 gap-4">
             <button
-              onClick={() => navigate(appPathname("support"))}
+              onClick={() => navigate(appPathname("/support"))}
               className="text-sm text-left hover:text-primary transition-colors font-medium"
             >
               Contact Support

@@ -67,7 +67,7 @@ export default function BlockedPage() {
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <Button
                         variant="outline"
-                        onClick={() => appNavigate(`/auth/login`)}
+                        onClick={() => appNavigate("/auth/login")}
                         className="gap-2 px-8 rounded-xl border-white/10 hover:bg-white/5"
                     >
                         <LogOut className="h-4 w-4" />
