@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { HttpException } from "~/api/app-fetch";
 import { getAuthUser } from "~/api/http-requests";
@@ -12,28 +12,36 @@ import { usePreferencesStore } from "~/hooks/use-user-preference-store";
 
 export default function () {
     const { setUser, clearUser } = useUserStore();
-    const { setPreferences, preferences } = usePreferencesStore();
-    const { pathname, search } = useLocation();
-
-    const searchParams = useMemo(() => new URLSearchParams(search), [search]);
+    const { setPreferences, preferences, rehydrated } = usePreferencesStore();
 
     const refreshCart = useRefreshCart();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const urlCurrency = searchParams.get('currency');
+        if (!rehydrated) return;
+
+        const url = new URL(location.href);
+        const urlCurrency = url.searchParams.get('currency');
+        const urlTheme = url.searchParams.get('theme');
+
         let shouldReload = false;
 
+        if (!urlTheme) {
+            url.searchParams.append('theme', preferences.theme);
+        } else if (urlTheme !== preferences.theme) {
+            url.searchParams.set('theme', preferences.theme);
+        }
+
         if (!urlCurrency) {
-            searchParams.append('currency', preferences.currency);
-            shouldReload = true;
+            url.searchParams.append('currency', preferences.currency);
         } else if (urlCurrency !== preferences.currency) {
-            searchParams.set('currency', preferences.currency);
+            url.searchParams.set('currency', preferences.currency);
             shouldReload = true;
         }
 
-        if (shouldReload) location.href = (`${pathname}?${searchParams.toString()}`)
-    }, [searchParams, pathname, preferences.currency]);
+        if (shouldReload) location.href = url.toString()
+        else history.replaceState({ replace: true }, '', url);
+    }, [preferences.currency, rehydrated, preferences.theme]);
 
     useEffect(() => {
         getAuthUser()
