@@ -11,7 +11,7 @@ export default (n?: number, fractionDigits: number = 2) => {
     try {
         return new Intl.NumberFormat(language, {
             style: 'currency',
-            currency: currency, // Dynamically uses 'USD', 'EUR', 'MGA', etc.
+            currency: currency,
             minimumFractionDigits: fractionDigits,
             maximumFractionDigits: fractionDigits,
         }).format(n);

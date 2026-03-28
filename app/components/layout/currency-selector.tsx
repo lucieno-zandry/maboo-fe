@@ -6,7 +6,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '~/components/ui/select';
-import { usePreferencesStore } from '~/hooks/use-user-preference-store';
+import { defaultPreference, usePreferencesStore } from '~/hooks/use-user-preference-store';
 import { useUserStore } from '~/hooks/use-user';
 import { CircleDollarSign } from 'lucide-react';
 
@@ -39,7 +39,7 @@ const DropdownCurrencySelect = ({ value, onChange, disabled }: CurrencySelectPro
             <span>Currency</span>
         </div>
         <Select
-            value={value || 'USD'}
+            value={value || defaultPreference.currency}
             onValueChange={onChange}
             disabled={disabled}
         >
@@ -94,7 +94,7 @@ export const CurrencySelector = ({ type = 'navbar' }: { type?: 'navbar' | 'dropd
 
     return (
         <Component
-            value={preferences?.currency || 'USD'}
+            value={preferences.currency}
             onChange={handleCurrencyChange}
             disabled={authStatus === 'unknown'} // Disabled while loading for authenticated user
         />
