@@ -1,12 +1,11 @@
 "use client"
 
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
 import { useUserStore } from "~/hooks/use-user"
 import { Button } from "../ui/button";
 import UserDropdown from "./user-dropdown";
 import Cart from "../cart/cart";
 import Notifications from "../notifications/notifications";
-import ProductSearch from "../search/product-search";
 import { LanguageSwitcher } from "~/components/layout/language-switcher";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
@@ -14,14 +13,16 @@ import { CurrencySelector } from "./currency-selector";
 import appPathname from "~/lib/app-pathname";
 import { ThemeSelector } from "./theme-selector";
 import { useMemo } from "react";
+import { NavSearch } from "./nav-search";
 
 type NavbarProps = {
     isUnAuthenticated: boolean,
     isAuthenticated: boolean,
     t: TFunction;
+    navbarSearchVisible: boolean,
 }
 
-export function NavbarView({ isAuthenticated, isUnAuthenticated, t }: NavbarProps) {
+export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearchVisible }: NavbarProps) {
     return (
         <header className="flex flex-wrap justify-between items-center px-4 sm:px-8 py-3 shadow-sm bg-white/95 backdrop-blur-sm sticky top-0 z-50 gap-4 border-b border-gray-100">
             <div className="flex items-center gap-4 md:gap-8">
@@ -42,9 +43,9 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t }: NavbarProp
 
             {/* Middle Search - Hidden on small mobile to avoid layout breaking, expanded on larger screens */}
             {
-                (isAuthenticated || isUnAuthenticated) &&
+                navbarSearchVisible &&
                 <div className="flex-1 max-w-md hidden md:block">
-                    <ProductSearch />
+                    <NavSearch />
                 </div>
             }
 
@@ -70,19 +71,27 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t }: NavbarProp
             </div>
 
             {/* Mobile Search Bar - Shows up as a full-width block under the main header on small screens if needed */}
-            <div className="w-full block md:hidden mt-2">
-                <ProductSearch />
-            </div>
+            {navbarSearchVisible &&
+                <div className="w-full block md:hidden mt-2">
+                    <NavSearch />
+                </div>}
         </header>
     )
 }
 
 export default function Navbar() {
-    const { user, authStatus } = useUserStore();
+    const { authStatus } = useUserStore();
     const { t } = useTranslation();
+    const { pathname } = useLocation();
 
     const isUnAuthenticated = useMemo(() => authStatus === "unauthenticated", [authStatus])
     const isAuthenticated = useMemo(() => authStatus === "authenticated", [authStatus])
+    const navbarSearchVisible = useMemo(() => (!pathname.includes('/search')) && (isAuthenticated || isUnAuthenticated), [pathname, isAuthenticated, isUnAuthenticated]);
 
-    return <NavbarView t={t} isAuthenticated={isAuthenticated} isUnAuthenticated={isUnAuthenticated} />
+    return <NavbarView
+        t={t}
+        isAuthenticated={isAuthenticated}
+        isUnAuthenticated={isUnAuthenticated}
+        navbarSearchVisible={navbarSearchVisible}
+    />
 }

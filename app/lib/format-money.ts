@@ -20,3 +20,21 @@ export default (n?: number, fractionDigits: number = 2) => {
         return `${currency} ${Number(n).toFixed(fractionDigits)}`;
     }
 };
+
+export function getCurrencySymbol(): string {
+    const { currency, language } = usePreferencesStore.getState().preferences;
+
+    try {
+        // Format a dummy value and extract the symbol
+        const parts = new Intl.NumberFormat(language, {
+            style: "currency",
+            currency,
+        }).formatToParts(0);
+
+        const symbolPart = parts.find(p => p.type === "currency");
+        return symbolPart ? symbolPart.value : currency;
+    } catch (error) {
+        // Fallback: just return the currency code itself
+        return currency;
+    }
+}
