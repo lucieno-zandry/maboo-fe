@@ -7,13 +7,14 @@ import {
     useRef,
     useState,
 } from "react";
-import { useNavigate, useParams } from "react-router";
+import {  useParams } from "react-router";
 import { getCategories, getProducts } from "~/api/http-requests";
 // ~/components/nav-search/nav-search-view.tsx
 // Pure presentational. No hooks, no API calls.
 
 import { Search, X, ArrowRight, Tag, Package, Clock, Loader2, TrendingUp } from "lucide-react";
 import { cn } from "~/lib/utils";
+import appNavigate from "~/lib/app-navigate";
 
 export interface NavSearchViewProps {
     value: string;
@@ -345,7 +346,6 @@ function addRecent(term: string, current: string[]): string[] {
 // ─── Smart component ───────────────────────────────────────────────────────
 
 export function NavSearch() {
-    const navigate = useNavigate();
     const { lang } = useParams<{ lang: string }>();
 
     const [value, setValue] = useState("");
@@ -454,8 +454,8 @@ export function NavSearch() {
         setValue("");
         setSuggestions([]);
 
-        navigate(`/${lang}/search/${encodeURIComponent(trimmed)}`);
-    }, [lang, navigate, recentSearches]);
+        appNavigate(`/search/${encodeURIComponent(trimmed)}`);
+    }, [lang, recentSearches]);
 
     const handleSubmit = useCallback(() => {
         // If keyboard-navigating to a suggestion, select it
@@ -474,15 +474,15 @@ export function NavSearch() {
             setOpen(false);
             setValue("");
             setSuggestions([]);
-            navigate(`/${lang}/product/${s.slug}`);
+            appNavigate(`/product/${s.slug}`);
         } else if (s.type === "category" && s.categoryId !== undefined) {
             // Search with category pre-applied
             setOpen(false);
             setValue("");
             setSuggestions([]);
-            navigate(`/${lang}/search/all?category=${s.categoryId}`);
+            appNavigate(`/search/all?category=${s.categoryId}`);
         }
-    }, [lang, navigate]);
+    }, [lang]);
 
     const handleSelectRecent = useCallback((term: string) => {
         goToSearch(term);

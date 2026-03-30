@@ -6,6 +6,8 @@ import { useSearchStore } from "~/hooks/use-search-store";
 import { Button } from "../ui/button";
 import { cn } from "~/lib/utils";
 import { ProductCardView } from "./product-card";
+import { Link } from "react-router";
+import appPathname from "~/lib/app-pathname";
 
 export function ProductGrid() {
     const products = useSearchStore((s) => s.products);
@@ -246,12 +248,14 @@ export function ProductGridView({
                 )}
             >
                 {products.map((product) => (
-                    <ProductCardView
-                        key={product.id}
-                        product={product}
-                        viewMode={viewMode}
-                        onAddToCart={onAddToCart}
-                    />
+                    <Link to={appPathname(`/product/${product.slug}`)}>
+                        <ProductCardView
+                            key={product.id}
+                            product={product}
+                            viewMode={viewMode}
+                            onAddToCart={onAddToCart}
+                        />
+                    </Link>
                 ))}
             </div>
 

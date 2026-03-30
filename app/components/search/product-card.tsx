@@ -43,11 +43,11 @@ function PriceDisplay({ variant }: { variant: Variant }) {
     return (
         <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold tracking-tight text-foreground">
-                ${formatMoney(variant.effective_price ?? variant.price)}
+                {formatMoney(variant.effective_price ?? variant.price)}
             </span>
             {hasDiscount && (
                 <span className="text-sm text-muted-foreground line-through">
-                    ${formatMoney(variant.price)}
+                    {formatMoney(variant.price)}
                 </span>
             )}
         </div>
@@ -121,7 +121,6 @@ function GridCard({ product, onAddToCart }: ProductCardViewProps) {
     return (
         <Card className="group relative flex flex-col overflow-hidden border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-border">
             <ProductImage product={product} compact />
-
             <CardContent className="flex flex-1 flex-col gap-3 p-4">
                 {/* Title */}
                 <div>
