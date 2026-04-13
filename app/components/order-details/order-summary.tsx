@@ -1,4 +1,4 @@
-import { CreditCard, Receipt, TicketPercent, Trash2 } from "lucide-react";
+import { CreditCard, Receipt, TicketPercent, Trash2, Truck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import formatMoney from "~/lib/format-money";
 import { Separator } from "../ui/separator";
@@ -11,6 +11,8 @@ import appNavigate from "~/lib/app-navigate";
 
 function OrderSummary({ order, statusConfig, method }: { order: Order; statusConfig: any; method: Transaction['method'] }) {
     const subtotal = order.cart_items?.reduce((acc, item) => acc + item.total, 0) ?? 0;
+    const shippingCost = order.shipping_cost ?? 0;
+    const shippingMethodName = order.shipping_method_snapshot?.name;
     const [loading, setLoading] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -24,7 +26,6 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
             .then(response => {
                 if (response.data?.transaction.payment_url)
                     location.href = response.data.transaction.payment_url;
-
             })
             .catch((error) => {
                 toast.error(`Failed to initiate transaction with status : ${error.status}`);
@@ -53,6 +54,16 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
                             <span>Subtotal</span>
                             <span>{formatMoney(subtotal)}</span>
                         </div>
+                        {shippingCost > 0 && (
+                            <div className="flex justify-between text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                    <Truck className="w-4 h-4" />
+                                    Shipping
+                                    {shippingMethodName && ` (${shippingMethodName})`}
+                                </span>
+                                <span>{formatMoney(shippingCost)}</span>
+                            </div>
+                        )}
                         {order.coupon_snapshot && (
                             <div className="flex justify-between text-sm text-emerald-600">
                                 <span className="flex items-center gap-1">
