@@ -36,5 +36,8 @@
     "couponApplied": "Coupon \"{{code}}\" applied!",
     "failedFetchCoupon": "Failed to fetch coupon. Please try again.",
     "couponRemoved": "Coupon removed.",
-    "couponRemovedMinValue": "Coupon \"{{code}}\" was removed because your order no longer meets the minimum value of {{amount}}."
+    "couponRemovedMinValue": "Coupon \"{{code}}\" was removed because your order no longer meets the minimum value of {{amount}}.",
+    "itemNotAvailable": "This item is not available in your country.",
+    "shipping": "Shipping",
+    "unavailable": "Unavailable"
 }

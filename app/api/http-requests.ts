@@ -56,7 +56,7 @@ export function getProducts(params?: ProductQueryParams, options: RequestInit = 
 
 
 export function getProduct(slug: string) {
-    return appFetch.get<{ product: Product }>(`/product/get/${slug}`);
+    return appFetch.get<{ product: Product }>(`/product/get/${slug}?with=cart_items.order,variant_groups.variant_options,variants.variant_options,variants.image,variants.promotions,images`);
 }
 
 export function getPriceRange() {
@@ -124,7 +124,7 @@ export function removeAddresses(ids: number[]) {
     return appFetch.delete<{ deleted: number }>(`/address/delete?address_ids=${ids.join(',')}`);
 }
 
-export function createOrder(payload: { cart_item_ids: number[], address_id: number, coupon_id?: number }) {
+export function createOrder(payload: { cart_item_ids: number[], address_id: number, coupon_id?: number, shipping_method_id: number }) {
     return appFetch.post<{ order: Order }>('/order/create', payload);
 }
 
@@ -222,4 +222,8 @@ export function fetchUserPreferences() {
 
 export function updateUserPreferences(data: Partial<UserPreference>) {
     return appFetch.put<{ preferences: UserPreference }>('/user/preferences', data);
+}
+
+export function fetchAvailableShippingMethods(data: { address_id: number, cart_items: ({ weight: number, quantity: number, price: number })[] }) {
+    return appFetch.post<{ method: ShippingMethod, cost: number }[]>('/shipping-methods/available', data);
 }

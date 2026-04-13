@@ -36,5 +36,8 @@
     "couponApplied": "Coupon \"{{code}}\" appliqué !",
     "failedFetchCoupon": "Échec de la récupération du coupon. Veuillez réessayer.",
     "couponRemoved": "Coupon retiré.",
-    "couponRemovedMinValue": "Le coupon \"{{code}}\" a été retiré car votre commande ne satisfait plus la valeur minimale de {{amount}}."
+    "couponRemovedMinValue": "Le coupon \"{{code}}\" a été retiré car votre commande ne satisfait plus la valeur minimale de {{amount}}.",
+    "itemNotAvailable": "Ce produit n'est pas disponible dans votre pays",
+    "shipping": "Expédition",
+    "unavailable": "Non disponible"
 }

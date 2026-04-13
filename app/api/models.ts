@@ -14,7 +14,7 @@ type User = {
   client_code_id?: number;
   blocked_by_id?: number;
   deleted_at?: string;
-  status: UserStatus | null, // computed from the api
+  status: UserStatus | null; // computed from the api
 
   permissions?: {
     can_use_effective_prices: boolean;
@@ -23,17 +23,17 @@ type User = {
   // relations
   avatar_image?: AppImage;
   client_code?: ClientCode;
-  cart_items?: CartItem[],
-  addresses?: Address[],
-  orders?: Order[],
-  transactions?: Transaction[],
-  refund_requests?: RefundRequest[],
-  reviewed_refund_requests?: RefundRequest[],
-  performed_transaction_audit_logs?: TransactionAuditLog[],
-  reviewed_transactions?: Transaction[],
-  statuses?: UserStatus[],
-  set_statuses?: UserStatus[],
-  preferences?: UserPreference,
+  cart_items?: CartItem[];
+  addresses?: Address[];
+  orders?: Order[];
+  transactions?: Transaction[];
+  refund_requests?: RefundRequest[];
+  reviewed_refund_requests?: RefundRequest[];
+  performed_transaction_audit_logs?: TransactionAuditLog[];
+  reviewed_transactions?: Transaction[];
+  statuses?: UserStatus[];
+  set_statuses?: UserStatus[];
+  preferences?: UserPreference;
 };
 
 type UserStatus = {
@@ -49,6 +49,19 @@ type UserStatus = {
   set_by_user?: User;
 };
 
+type UserPreference = {
+  id: number;
+  user_id: number;
+  theme: 'light' | 'dark' | 'system';
+  language: string;
+  timezone: string;
+  currency: string;
+  created_at: string;
+  updated_at: string;
+
+  user?: User;
+};
+
 type Product = {
   id: number;
   created_at: string;
@@ -57,6 +70,8 @@ type Product = {
   title: string;
   description: string;
   category_id?: number;
+
+  cart_items?: CartItem[];
   category?: Category;
   variants?: Variant[];
   images?: AppImage[];
@@ -88,6 +103,12 @@ type Variant = {
   variant_options?: VariantOption[];
   promotions?: Promotion[];
   image?: AppImage;
+
+  // Shipping dimensions
+  weight_kg?: number;      // in kilograms
+  length_cm?: number;      // in centimeters
+  width_cm?: number;
+  height_cm?: number;
 };
 
 type VariantGroup = {
@@ -185,13 +206,16 @@ type VariantSnapshot = {
   sku: string;
   price: number;
   image: string | null;
+  weight_kg?: number;
+  length_cm?: number;
+  width_cm?: number;
+  height_cm?: number;
 };
 
 type VariantOptionsSnapshot = {
   [group: string]: string;
 };
 
-// Updated Address type
 type Address = {
   id: number;
   user_id: number;
@@ -213,6 +237,8 @@ type Address = {
   user?: User;
 };
 
+type ShippingMethodSnapshot = Pick<ShippingMethod, 'name' | 'carrier'> & { estimated_days: number };
+
 type Order = {
   uuid: string;
   created_at: string;
@@ -223,6 +249,12 @@ type Order = {
   coupon_id: number | null;
   coupon_discount_applied: number;
   deleted_at: string | null;
+  shipping_method_id?: number;     // FK to ShippingMethod
+  shipping_cost: number;           // calculated cost at order time
+  shipping_method_snapshot?: ShippingMethodSnapshot;
+
+  // optional: total weight of order (sum of variant weights * quantity)
+  total_weight_kg?: number;
 
   address_snapshot: Address;
   coupon_snapshot?: Pick<Coupon, "id" | "code" | "type" | "discount" | "min_order_value">;
@@ -230,7 +262,7 @@ type Order = {
   shipments?: Shipment[];
   transactions?: Transaction[];
   user?: User;
-  refund_requests?: RefundRequest[],
+  refund_requests?: RefundRequest[];
   coupon?: Coupon;
 };
 
@@ -248,7 +280,7 @@ type Coupon = {
   end_date: string;
   is_active: boolean;
 
-  orders?: Order[],
+  orders?: Order[];
 };
 
 type Shipment = {
@@ -271,7 +303,7 @@ type ShipmentData = {
 };
 
 // ----------------------------------------------------------------------------
-// Transaction & related types (updated)
+// Transaction & related types
 // ----------------------------------------------------------------------------
 type TransactionType = "PAYMENT" | "REFUND" | "MANUAL";
 type DisputeStatus = "OPEN" | "RESOLVED" | "LOST";
@@ -308,7 +340,7 @@ type Transaction = {
   audit_logs?: TransactionAuditLog[];
   webhook_logs?: PaymentWebhookLog[];
   refund_requests?: RefundRequest[];
-  reviewer?: User   // 👈 new relation
+  reviewer?: User;   // 👈 new relation
 };
 
 type TransactionAuditLog = {
@@ -342,7 +374,7 @@ type PaymentWebhookLog = {
 };
 
 // ----------------------------------------------------------------------------
-// New RefundRequest model
+// RefundRequest model
 // ----------------------------------------------------------------------------
 type RefundRequest = {
   id: number;
@@ -367,12 +399,12 @@ type RefundRequest = {
 };
 
 // ----------------------------------------------------------------------------
-// Notification types (updated)
+// Notification types
 // ----------------------------------------------------------------------------
 type TransactionNotificationData = {
   notification_type: "transaction";
   type: "payment_success" | "payment_failed";
-  transaction_uuid?: string;            // note: originally transaction_id, but updated to match new UUID
+  transaction_uuid?: string;
   order_uuid: string;
   amount: number;
   payment_method: string;
@@ -430,7 +462,6 @@ type ClientCodeNotificationData = {
   message: string;
 };
 
-
 type OtherNotificationData = {
   notification_type: "system";
   title: string;
@@ -455,7 +486,7 @@ type AppNotification = {
 };
 
 // ----------------------------------------------------------------------------
-// ClientCode (unchanged)
+// ClientCode
 // ----------------------------------------------------------------------------
 type ClientCode = {
   id: number;
@@ -465,18 +496,49 @@ type ClientCode = {
   created_at: string;
 
   // Joined relationships
-  users?: User[],
+  users?: User[];
 };
 
-type UserPreference = {
+// ----------------------------------------------------------------------------
+// Shipping
+// ----------------------------------------------------------------------------
+type ShippingMethod = {
   id: number;
-  user_id: number;
-  theme: 'light' | 'dark' | 'system';
-  language: string;
-  timezone: string;
-  currency: string;
+  name: string;                    // e.g., "Standard Delivery", "Express FedEx"
+  carrier: 'custom' | 'fedex' | 'colissimo';
+  is_active: boolean;
+
+  // Calculation strategy
+  calculation_type: 'flat_rate' | 'weight_based' | 'api';
+
+  // For flat_rate or weight_based
+  flat_rate?: number;              // fixed cost
+  free_shipping_threshold?: number; // order total above this -> free
+  rate_per_kg?: number;            // cost per kilogram
+
+  // For API carriers (FedEx, Colissimo)
+  api_config?: Record<string, any>; // API keys, account numbers, etc.
+
+  // Display & restrictions
+  min_delivery_days?: number;
+  max_delivery_days?: number;
+  allowed_countries?: string[];    // ISO codes, null = all
+
   created_at: string;
   updated_at: string;
 
-  user?: User;
+  shipping_rates?: ShippingRate[];
+};
+
+type ShippingRate = {
+  id: number;
+  shipping_method_id: number;
+  country_code: string;            // ISO alpha-2, or '*' for default
+  city_pattern?: string;           // optional regex/glob for city-specific rates
+  min_weight_kg?: number;          // weight bracket lower bound
+  max_weight_kg?: number;          // weight bracket upper bound
+  rate: number;                    // base cost for this combination
+  rate_per_kg?: number;            // extra per kg beyond min_weight
+
+  shipping_method?: ShippingMethod;
 };

@@ -7,7 +7,7 @@ import {
     useRef,
     useState,
 } from "react";
-import {  useParams } from "react-router";
+import { useParams } from "react-router";
 import { getCategories, getProducts } from "~/api/http-requests";
 // ~/components/nav-search/nav-search-view.tsx
 // Pure presentational. No hooks, no API calls.

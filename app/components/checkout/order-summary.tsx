@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getCouponFromCode } from "~/api/http-requests";
+import { fetchAvailableShippingMethods } from "~/api/http-requests"; // adjust import
 import formatMoney from "~/lib/format-money";
 import { Card } from "../ui/card";
 import Button from "../custom-components/button";
@@ -9,13 +10,14 @@ import { Loader2, TicketPercent, Tag, X } from "lucide-react";
 import useCheckoutStore from "~/hooks/use-checkout-store";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import useAddressStore from "~/hooks/use-address-store";
 
 type OrderSummaryContainerProps = {
     cartItems: CartItem[];
     itemsCount: number;
     subtotal: number;
     discountAmount: number;
-    total: number;
+    total: number; // this is subtotal - discount (pre‑shipping)
     promotionDiscount: number;
 };
 
@@ -28,20 +30,21 @@ export default function ({
     promotionDiscount
 }: OrderSummaryContainerProps) {
 
-    const { appliedCoupon, setAppliedCoupon } = useCheckoutStore();
-
+    const { appliedCoupon, setAppliedCoupon, selectedShipping, setSelectedShipping } = useCheckoutStore();
+    const { selectedAddressId } = useAddressStore();
     const [couponCode, setCouponCode] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingCoupon, setIsLoadingCoupon] = useState(false);
+    const [shippingOptions, setShippingOptions] = useState<{ method: ShippingMethod; cost: number }[]>([]);
+    const [isLoadingShipping, setIsLoadingShipping] = useState(false);
     const { t } = useTranslation("checkout");
 
+    // --- Coupon logic (unchanged) ---
     const handleApplyCoupon = async () => {
         if (!couponCode.trim()) return;
-
-        setIsLoading(true);
+        setIsLoadingCoupon(true);
         try {
             const res = await getCouponFromCode(couponCode);
             const coupon = res.data?.coupon;
-
             if (!coupon || !coupon.is_active) {
                 toast.error(t('checkout:invalidInactiveCoupon'));
             } else if (subtotal < coupon.min_order_value) {
@@ -58,7 +61,7 @@ export default function ({
         } catch {
             toast.error(t('checkout:failedFetchCoupon'));
         } finally {
-            setIsLoading(false);
+            setIsLoadingCoupon(false);
         }
     };
 
@@ -69,14 +72,11 @@ export default function ({
 
     useEffect(() => {
         if (!appliedCoupon) return;
-
         const noLongerValid =
             appliedCoupon.min_order_value &&
             subtotal < appliedCoupon.min_order_value;
-
         if (noLongerValid) {
             setAppliedCoupon(null);
-
             toast.warning(
                 t('checkout:couponRemovedMinValue', {
                     code: appliedCoupon.code,
@@ -86,41 +86,94 @@ export default function ({
         }
     }, [subtotal, appliedCoupon, setAppliedCoupon, t]);
 
+    // --- Shipping logic ---
+    // Prepare cart items for shipping API
+    const shippingCartItems = cartItems.map(item => ({
+        weight: item.variant_snapshot?.weight_kg ?? 0,
+        quantity: item.count,
+        price: item.unit_price
+    }));
+
+    useEffect(() => {
+        if (!selectedAddressId || shippingCartItems.length === 0) {
+            setShippingOptions([]);
+            setSelectedShipping(null);
+            return;
+        }
+
+        const fetchShipping = async () => {
+            setIsLoadingShipping(true);
+            try {
+                const response = await fetchAvailableShippingMethods({
+                    address_id: selectedAddressId,
+                    cart_items: shippingCartItems
+                });
+                // response.data is { method: ShippingMethod, cost: number }[]
+                const options = response.data!;
+                setShippingOptions(options);
+                if (options.length > 0) {
+                    setSelectedShipping(options[0]); // auto-select first
+                } else {
+                    setSelectedShipping(null);
+                }
+            } catch (error) {
+                console.error("Failed to fetch shipping methods", error);
+                toast.error(t('checkout:shippingFetchError'));
+                setShippingOptions([]);
+                setSelectedShipping(null);
+            } finally {
+                setIsLoadingShipping(false);
+            }
+        };
+
+        fetchShipping();
+    }, [selectedAddressId, cartItems]); // re-fetch when address or cart changes
+
+    // Compute final total: pre‑shipping total + selected shipping cost
+    const shippingCost = selectedShipping?.cost ?? 0;
+    const finalTotal = total + shippingCost;
 
     return (
         <OrderSummary
             itemsCount={itemsCount}
             subtotal={subtotal}
-            total={total}
+            total={finalTotal}
             couponCode={couponCode}
             appliedCoupon={appliedCoupon}
             discountAmount={discountAmount}
-            isLoading={isLoading}
+            isLoadingCoupon={isLoadingCoupon}
             onCouponCodeChange={setCouponCode}
             onApplyCoupon={handleApplyCoupon}
             onRemoveCoupon={removeCoupon}
             t={t}
             promotionDiscount={promotionDiscount}
+            shippingOptions={shippingOptions}
+            selectedShipping={selectedShipping}
+            isLoadingShipping={isLoadingShipping}
+            onSelectShipping={setSelectedShipping}
         />
     );
 }
 
-
+// --- View Props ---
 type OrderSummaryViewProps = {
     itemsCount: number;
     subtotal: number;
     total: number;
-
     couponCode: string;
     appliedCoupon: Coupon | null;
     discountAmount: number;
-    isLoading: boolean;
-
+    isLoadingCoupon: boolean;
     onCouponCodeChange: (value: string) => void;
     onApplyCoupon: () => void;
     onRemoveCoupon: () => void;
     t: TFunction;
     promotionDiscount: number;
+    // shipping
+    shippingOptions: { method: ShippingMethod; cost: number }[];
+    selectedShipping: { method: ShippingMethod; cost: number } | null;
+    isLoadingShipping: boolean;
+    onSelectShipping: (option: { method: ShippingMethod; cost: number }) => void;
 };
 
 export function OrderSummary({
@@ -130,12 +183,16 @@ export function OrderSummary({
     couponCode,
     appliedCoupon,
     discountAmount,
-    isLoading,
+    isLoadingCoupon,
     onCouponCodeChange,
     onApplyCoupon,
     onRemoveCoupon,
     t,
-    promotionDiscount
+    promotionDiscount,
+    shippingOptions,
+    selectedShipping,
+    isLoadingShipping,
+    onSelectShipping
 }: OrderSummaryViewProps) {
     return (
         <Card className="sticky top-20 p-6 bg-muted/30 border-dashed space-y-6">
@@ -162,6 +219,47 @@ export function OrderSummary({
                         </div>
                     )}
 
+                    {/* Shipping section */}
+                    {isLoadingShipping ? (
+                        <div className="flex justify-between items-center text-muted-foreground">
+                            <span>{t('checkout:shipping')}</span>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        </div>
+                    ) : shippingOptions.length > 0 && selectedShipping ? (
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">{t('checkout:shipping')}</span>
+                                <span>{formatMoney(selectedShipping.cost)}</span>
+                            </div>
+                            <div className="pl-2 border-l-2 border-muted">
+                                {shippingOptions.map((option, idx) => (
+                                    <label key={option.method.id} className="flex items-center gap-2 py-1 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="shippingMethod"
+                                            checked={selectedShipping.method.id === option.method.id}
+                                            onChange={() => onSelectShipping(option)}
+                                            className="accent-primary"
+                                        />
+                                        <span className="text-sm">
+                                            {option.method.name} – {formatMoney(option.cost)}
+                                            {option.method.free_shipping_threshold &&
+                                                subtotal >= option.method.free_shipping_threshold &&
+                                                option.cost === 0 && (
+                                                    <span className="text-green-600 text-xs ml-1">(Free)</span>
+                                                )}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between text-muted-foreground">
+                            <span>{t('checkout:shipping')}</span>
+                            <span>{t('checkout:unavailable')}</span>
+                        </div>
+                    )}
+
                     <div className="flex justify-between font-bold text-lg pt-4 border-t border-muted">
                         <span>{t('checkout:total')}</span>
                         <span className="text-primary">{formatMoney(total)}</span>
@@ -169,7 +267,7 @@ export function OrderSummary({
                 </div>
             </div>
 
-            {/* Coupon Section */}
+            {/* Coupon Section (unchanged) */}
             <div className="space-y-3">
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {t('checkout:haveCoupon')}
@@ -180,9 +278,7 @@ export function OrderSummary({
                         <Input
                             placeholder={t('checkout:enterCode')}
                             value={couponCode}
-                            onChange={(e) =>
-                                onCouponCodeChange(e.target.value.toUpperCase())
-                            }
+                            onChange={(e) => onCouponCodeChange(e.target.value.toUpperCase())}
                             className="bg-background h-9 text-sm uppercase"
                             onKeyDown={(e) => e.key === "Enter" && onApplyCoupon()}
                         />
@@ -191,10 +287,10 @@ export function OrderSummary({
                             size="sm"
                             onClick={onApplyCoupon}
                             disabled={!couponCode}
-                            isLoading={isLoading}
+                            isLoading={isLoadingCoupon}
                             className="h-9 px-4"
                         >
-                            {isLoading ? (
+                            {isLoadingCoupon ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 t('checkout:apply')
@@ -205,9 +301,7 @@ export function OrderSummary({
                     <div className="flex items-center justify-between p-2 pl-3 bg-emerald-50 border border-emerald-200 rounded-lg">
                         <div className="flex items-center gap-2 text-emerald-700">
                             <Tag className="w-3 h-3" />
-                            <span className="text-sm font-bold uppercase">
-                                {appliedCoupon.code}
-                            </span>
+                            <span className="text-sm font-bold uppercase">{appliedCoupon.code}</span>
                         </div>
                         <Button
                             variant="ghost"

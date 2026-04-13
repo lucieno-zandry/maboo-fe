@@ -10,6 +10,11 @@ type CheckoutStore = {
     setCartItems: (cartItems: CheckoutStore['cartItems']) => void;
     method: Transaction['method'];
     setMethod: (method: CheckoutStore['method']) => void;
+    selectedShipping: {
+        method: ShippingMethod,
+        cost: number
+    } | null;
+    setSelectedShipping: (shipping: CheckoutStore['selectedShipping']) => void;
 }
 
 const useCheckoutStore = create<CheckoutStore>(
@@ -23,7 +28,9 @@ const useCheckoutStore = create<CheckoutStore>(
         method: 'VISA',
         setMethod: (method) => {
             set({ method });
-        }
+        },
+        selectedShipping: null,
+        setSelectedShipping: (selectedShipping) => set({ selectedShipping })
     })
 );
 

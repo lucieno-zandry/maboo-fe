@@ -168,7 +168,7 @@ export default function () {
     const loaderCartItems = useLoaderData<CartItem[]>();
 
     const { selectedAddressId } = useAddressStore();
-    const { appliedCoupon, setAppliedCoupon, setCartItemsIds, method } = useCheckoutStore();
+    const { appliedCoupon, setAppliedCoupon, setCartItemsIds, method, selectedShipping } = useCheckoutStore();
     const { cartItems, setCartItems } = useCheckoutStore();
     const { t } = useTranslation("checkout");
 
@@ -204,9 +204,15 @@ export default function () {
 
     const handlePlaceOrder = () => {
         if (!selectedAddressId || cartItemsIds.length === 0 || !method) return;
+
+        if (!selectedShipping) {
+            toast.error(t('checkout:itemNotAvailable'));
+            return;
+        }
+
         setLoading(true);
 
-        createOrder({ address_id: selectedAddressId, cart_item_ids: cartItemsIds, coupon_id: appliedCoupon?.id })
+        createOrder({ address_id: selectedAddressId, cart_item_ids: cartItemsIds, coupon_id: appliedCoupon?.id, shipping_method_id: selectedShipping.method.id })
             .then(async (response) => {
                 if (response.data?.order) {
                     try {
