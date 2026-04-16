@@ -1,4 +1,5 @@
 import { Package, Truck, CheckCircle, Clock } from 'lucide-react';
+import formatDate from '~/lib/format-date';
 
 type ShipmentStatusProps = {
   shipments: Shipment[];
@@ -7,34 +8,57 @@ type ShipmentStatusProps = {
 export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
   // Get the most recent shipment
   const latestShipment = shipments.sort(
-    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.updated_at).getTime()
   )[0];
 
   const getStatusConfig = (status: Shipment['status']) => {
+    const base = {
+      size: "w-4 h-4",
+    };
+
     switch (status) {
       case 'PROCESSING':
         return {
+          ...base,
           icon: Package,
           label: 'Processing',
           color: 'text-blue-600',
           bgColor: 'bg-blue-50',
           borderColor: 'border-blue-200',
+          dotColor: 'bg-blue-500',
         };
+
       case 'SHIPPED':
         return {
+          ...base,
           icon: Truck,
           label: 'Shipped',
           color: 'text-orange-600',
           bgColor: 'bg-orange-50',
           borderColor: 'border-orange-200',
+          dotColor: 'bg-orange-500',
         };
+
       case 'DELIVERED':
         return {
+          ...base,
           icon: CheckCircle,
           label: 'Delivered',
           color: 'text-green-600',
           bgColor: 'bg-green-50',
           borderColor: 'border-green-200',
+          dotColor: 'bg-green-500',
+        };
+
+      default:
+        return {
+          ...base,
+          icon: Clock,
+          label: 'Pending',
+          color: 'text-gray-600',
+          bgColor: 'bg-gray-50',
+          borderColor: 'border-gray-200',
+          dotColor: 'bg-gray-400',
         };
     }
   };
@@ -42,16 +66,6 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
   const config = getStatusConfig(latestShipment.status);
   const Icon = config.icon;
   const shipmentData = latestShipment.data as ShipmentData;
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
@@ -88,7 +102,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
                 <span className="font-medium text-gray-900">{shipmentData.carrier}</span>
               </div>
             )}
-            
+
             {shipmentData?.tracking_number && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Tracking Number</span>
@@ -129,7 +143,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
                 {formatDate(latestShipment.updated_at)}
               </span>
             </div>
-            
+
             <div className="p-3 bg-green-50 rounded-lg">
               <p className="text-sm text-green-800">
                 Your order has been successfully delivered!
