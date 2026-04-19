@@ -12,9 +12,9 @@ export function useNotifications() {
 
   // Initial load
   useEffect(() => {
-    if (!store.notifications)
+    if (!store.notifications && !store.isLoading)
       loadNotifications(1);
-  }, [store.notifications]);
+  }, [store.notifications, store.isLoading]);
 
   const handleFilterChange = useCallback((filter: NotificationFilter) => {
     changeFilter(filter);

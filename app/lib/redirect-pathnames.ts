@@ -3,4 +3,5 @@ export default {
     "AUTHENTICATE": "/auth",
     "ACCOUNT_BLOCKED": "/account-blocked",
     "ACCOUNT_SUSPENDED": "/account-suspended",
+    "MAINTENANCE_MODE_ON": "/403",
 }

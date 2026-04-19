@@ -135,7 +135,7 @@ body {
 
 @layer utilities {
 
-  /* Targeted class for your sidebar and main content */
+  /* Targeted class for sidebar and main content */
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
     /* Very thin for a sleek look */
@@ -164,4 +164,5 @@ body {
     scrollbar-width: thin;
     scrollbar-color: theme('colors.zinc.800') transparent;
   }
+
 }

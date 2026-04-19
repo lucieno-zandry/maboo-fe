@@ -10,8 +10,7 @@ import {
     PopoverTrigger,
 } from "~/components/ui/popover";
 
-import { Button } from "~/components/ui/button";
-import { Bell } from "lucide-react";
+import { NotificationBell } from "./components/notification-bell";
 
 /**
  * Notifications Popover
@@ -19,15 +18,11 @@ import { Bell } from "lucide-react";
  * Same orchestration logic, but rendered inside a popover.
  */
 export function NotificationsPopover() {
-    useNotifications();
-
     return (
         <Popover>
             {/* ── Trigger ───────────────────────────────────────────── */}
-            <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <Bell className="h-5 w-5" />
-                </Button>
+            <PopoverTrigger>
+                <NotificationBell />
             </PopoverTrigger>
 
             {/* ── Content ───────────────────────────────────────────── */}
@@ -47,7 +42,7 @@ export function NotificationsPopover() {
                     <BulkActionsBar />
 
                     {/* Scrollable list */}
-                    <div className="overflow-y-auto">
+                    <div className="overflow-y-auto ">
                         <NotificationList />
                     </div>
                 </div>
