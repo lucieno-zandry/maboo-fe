@@ -239,3 +239,7 @@ export function updateUserPreferences(data: Partial<UserPreference>) {
 export function fetchAvailableShippingMethods(data: { address_id: number, cart_items: ({ weight: number, quantity: number, price: number })[] }) {
     return appFetch.post<{ method: ShippingMethod, cost: number }[]>('/shipping-methods/available', data);
 }
+
+export function logout(options?: RequestInit) {
+    return appFetch.get<{ message: string }>('/auth/logout', options)
+}

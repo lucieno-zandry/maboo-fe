@@ -1,5 +1,6 @@
 import React from "react"
-import { Button } from "~/components/ui/button"
+import { toast } from "sonner"
+import { logout } from "~/api/http-requests"
 import {
     Dialog,
     DialogClose,
@@ -10,6 +11,7 @@ import {
     DialogTitle,
 } from "~/components/ui/dialog"
 import { useUserStore } from "~/hooks/use-user"
+import Button from "../custom-components/button"
 
 export type LogoutDialogProps = {
     open: boolean,
@@ -20,9 +22,22 @@ export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
     const { setUser } = useUserStore();
 
     const handleLogout = React.useCallback(() => {
-        setUser(null);
-        localStorage.removeItem('token');
-    }, [setUser]);
+        const loading = toast.loading('Logging you out!');
+
+        logout()
+            .then(res => {
+                toast.success(res.data?.message || "You are now logged out!");
+                onOpenChange(false);
+            })
+            .catch(e => {
+                toast.error('Loggin out may have failed, please, make sure that your account has been removed from this device!');
+            })
+            .finally(() => {
+                setUser(null);
+                localStorage.removeItem('token');
+                toast.dismiss(loading);
+            });
+    }, [setUser, onOpenChange]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -40,7 +55,10 @@ export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
                         </Button>
                     </DialogClose>
                     <DialogClose asChild>
-                        <Button variant="destructive" onClick={handleLogout}> Log out</Button>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={handleLogout}> Log out</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
