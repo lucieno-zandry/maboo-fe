@@ -1,11 +1,16 @@
-import formatMoney from "~/lib/format-money";
+import type { useFormatMoney } from "~/lib/format-money";
+
 
 interface Variant {
     price: number;
     effective_price?: number;
 }
 
-export function PriceDisplay({ variant }: { variant: Variant }) {
+export function PriceDisplay({ variant, formatMoney }:
+    {
+        variant: Variant,
+        formatMoney: ReturnType<typeof useFormatMoney>
+    }) {
     const hasDiscount =
         variant.effective_price !== undefined &&
         variant.effective_price < variant.price;

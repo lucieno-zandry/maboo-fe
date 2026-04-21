@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getCouponFromCode } from "~/api/http-requests";
 import { fetchAvailableShippingMethods } from "~/api/http-requests"; // adjust import
-import formatMoney from "~/lib/format-money";
+
 import { Card } from "../ui/card";
 import Button from "../custom-components/button";
 import { Input } from "../ui/input";
@@ -11,6 +11,7 @@ import useCheckoutStore from "~/hooks/use-checkout-store";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import useAddressStore from "~/hooks/use-address-store";
+import { useFormatMoney } from "~/lib/format-money";
 
 type OrderSummaryContainerProps = {
     cartItems: CartItem[];
@@ -37,6 +38,7 @@ export default function ({
     const [shippingOptions, setShippingOptions] = useState<{ method: ShippingMethod; cost: number }[]>([]);
     const [isLoadingShipping, setIsLoadingShipping] = useState(false);
     const { t } = useTranslation("checkout");
+    const formatMoney = useFormatMoney();
 
     // --- Coupon logic (unchanged) ---
     const handleApplyCoupon = async () => {
@@ -151,6 +153,7 @@ export default function ({
             selectedShipping={selectedShipping}
             isLoadingShipping={isLoadingShipping}
             onSelectShipping={setSelectedShipping}
+            formatMoney={formatMoney}
         />
     );
 }
@@ -174,6 +177,7 @@ type OrderSummaryViewProps = {
     selectedShipping: { method: ShippingMethod; cost: number } | null;
     isLoadingShipping: boolean;
     onSelectShipping: (option: { method: ShippingMethod; cost: number }) => void;
+    formatMoney: ReturnType<typeof useFormatMoney>
 };
 
 export function OrderSummary({
@@ -192,7 +196,8 @@ export function OrderSummary({
     shippingOptions,
     selectedShipping,
     isLoadingShipping,
-    onSelectShipping
+    onSelectShipping,
+    formatMoney
 }: OrderSummaryViewProps) {
     return (
         <Card className="sticky top-20 p-6 bg-muted/30 border-dashed space-y-6">

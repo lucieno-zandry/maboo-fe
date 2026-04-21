@@ -2,8 +2,9 @@
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
-import formatMoney from "~/lib/format-money";
+
 import { CheckCircle2, Tag } from "lucide-react";
+import type { useFormatMoney } from "~/lib/format-money";
 
 type Props = {
     title: string;
@@ -13,6 +14,7 @@ type Props = {
     stock: number;
     appliedPromotions?: AppliedPromotion[];
     t: (key: string) => string;
+    formatMoney: ReturnType<typeof useFormatMoney>
 };
 
 export function ProductInfo({
@@ -23,6 +25,7 @@ export function ProductInfo({
     stock,
     appliedPromotions = [],
     t,
+    formatMoney
 }: Props) {
     const inStock = stock > 0;
     const hasDiscount = originalPrice !== undefined && unitPrice < originalPrice;

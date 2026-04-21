@@ -5,7 +5,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Checkbox } from "~/components/ui/checkbox";
 import CartEmpty from "./cart-empty";
 import CartSheetItem from "./cart-sheet-item";
-import formatMoney from "~/lib/format-money";
+
 import { Form, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { removeCartItem } from "~/api/http-requests";
@@ -13,6 +13,7 @@ import { useRefreshCart } from "~/hooks/use-cart";
 import navigateToCheckout from "~/lib/navigate-to-checkout";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import { useFormatMoney } from "~/lib/format-money";
 
 type CartSheetProps = {
     open: boolean;
@@ -147,6 +148,7 @@ export default function ({ items, open, setOpen }: Pick<CartSheetProps, 'items' 
     const refreshCart = useRefreshCart();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const formatMoney = useFormatMoney();
 
     // 1. Manage checked state locally (assuming item.id is unique)
     const [checkedIds, setCheckedIds] = useState<Set<number>>(

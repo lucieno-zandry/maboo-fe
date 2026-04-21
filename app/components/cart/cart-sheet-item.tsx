@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import Button from "../custom-components/button";
 import { updateCartItem } from "~/api/http-requests";
 import { toast } from "sonner";
-import formatMoney from "~/lib/format-money";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Badge } from "~/components/ui/badge"; // adjust import path as needed
 import { Tag } from "lucide-react";
+import { useFormatMoney } from "~/lib/format-money";
 
 export type CartSheetItemProps = {
     item: CartItem;
@@ -126,6 +126,8 @@ export default function ({ item, onRemove, refreshCart }: CartSheetItemProps) {
     }, [count, item.unit_price]);
 
     const { t } = useTranslation("common");
+
+    const formatMoney = useFormatMoney();
 
     const onCountChange = React.useCallback((newCount: number) => {
         if (newCount < 1) return;

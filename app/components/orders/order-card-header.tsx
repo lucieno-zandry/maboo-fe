@@ -2,9 +2,10 @@ import { Link } from "react-router";
 import { CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Package, ChevronRight, Trash2 } from "lucide-react";
-import formatMoney from "~/lib/format-money";
+
 import { OrderStatusBadge } from "./order-status-badge";
 import appPathname from "~/lib/app-pathname";
+import type { useFormatMoney } from "~/lib/format-money";
 
 interface OrderCardHeaderProps {
     order: Order;
@@ -12,9 +13,10 @@ interface OrderCardHeaderProps {
         colorClass: string;
     };
     onDelete: () => void;
+    formatMoney: ReturnType<typeof useFormatMoney>
 }
 
-export function OrderCardHeader({ order, statusConfig, onDelete }: OrderCardHeaderProps) {
+export function OrderCardHeader({ order, statusConfig, onDelete, formatMoney }: OrderCardHeaderProps) {
     const date = new Date(order.created_at).toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",

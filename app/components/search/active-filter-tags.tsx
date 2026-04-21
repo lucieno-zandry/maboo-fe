@@ -1,7 +1,8 @@
 import { SORT_OPTIONS, useSearchStore } from "~/hooks/use-search-store";
 import { Badge } from "../ui/badge";
 import { X } from "lucide-react";
-import formatMoney from "~/lib/format-money";
+import { useFormatMoney } from "~/lib/format-money";
+
 
 export interface ActiveFilterTag {
     key: string;
@@ -38,10 +39,8 @@ export function ActiveFilterTagsView({ tags }: ActiveFilterTagsViewProps) {
 }
 
 export function ActiveFilterTags() {
-    const filters = useSearchStore((s) => s.filters);
-    const categories = useSearchStore((s) => s.categories);
-    const priceRangeMeta = useSearchStore((s) => s.priceRangeMeta);
-    const setFilter = useSearchStore((s) => s.setFilter);
+    const { filters, categories, priceRangeMeta, setFilter } = useSearchStore();
+    const formatMoney = useFormatMoney();
 
     const tags: ActiveFilterTag[] = [];
 

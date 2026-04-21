@@ -1,6 +1,6 @@
 import { CreditCard, Receipt, TicketPercent, Trash2, Truck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import formatMoney from "~/lib/format-money";
+
 import { Separator } from "../ui/separator";
 import { useState } from "react";
 import { createTransaction } from "~/api/http-requests";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import Button from "../custom-components/button";
 import { DeleteOrderDialog } from "~/components/orders/delete-order-dialog";
 import appNavigate from "~/lib/app-navigate";
+import { useFormatMoney } from "~/lib/format-money";
 
 function OrderSummary({ order, statusConfig, method }: { order: Order; statusConfig: any; method: Transaction['method'] }) {
     const subtotal = order.cart_items?.reduce((acc, item) => acc + item.total, 0) ?? 0;
@@ -15,6 +16,7 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
     const shippingMethodName = order.shipping_method_snapshot?.name;
     const [loading, setLoading] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const formatMoney = useFormatMoney();
 
     const handlePay = () => {
         setLoading(true);

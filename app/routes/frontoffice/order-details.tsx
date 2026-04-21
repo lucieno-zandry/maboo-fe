@@ -14,6 +14,7 @@ import PaymentMethodSelector from "~/components/order-details/payment-method-sel
 import PaymentIncompleteAlert from "~/components/order-details/payment-incomplete-alert";
 import ShipmentStatus from "~/components/order-details/shipment-status";
 import { TransactionList } from "~/components/order-details/transactions/transaction-list";
+import { useFormatMoney } from "~/lib/format-money";
 
 export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
     if (!params.uuid) return redirect(`/${params.lang}/403`);
@@ -30,6 +31,7 @@ export default function OrderDetails() {
 
     const statusConfig = getOrderStatusConfig(order);
     const handleActionComplete = () => revalidator.revalidate();
+    const formatMoney = useFormatMoney();
 
     return (
         <div className="container max-w-6xl mx-auto p-4 md:p-10 space-y-8">
@@ -40,7 +42,7 @@ export default function OrderDetails() {
                 {order.cart_items && (
                     <div className="lg:col-span-2 space-y-6">
                         {statusConfig.showCTA && <PaymentIncompleteAlert />}
-                        <OrderItemList items={order.cart_items} />
+                        <OrderItemList items={order.cart_items} formatMoney={formatMoney} />
 
                         {/* Transactions section */}
                         {order.transactions && order.transactions.length > 0 && (

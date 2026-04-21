@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { PriceDisplay } from "./price-display";
 import { ProductImage } from "./product-image";
 import { PromotionPill } from "./promotion-pill";
+import { useFormatMoney } from "~/lib/format-money";
 
 export function ListCard({
     product,
@@ -22,6 +23,7 @@ export function ListCard({
     const isLowStock =
         defaultVariant && defaultVariant.stock > 0 && defaultVariant.stock <= 5;
     const isOutOfStock = defaultVariant && defaultVariant.stock === 0;
+    const formatMoney = useFormatMoney();
 
     return (
         <Card className="group flex overflow-hidden border-border/60 bg-card shadow-sm transition-all duration-200 hover:shadow-md hover:border-border">
@@ -58,7 +60,7 @@ export function ListCard({
                 <div className="flex items-center justify-between gap-4">
                     <div>
                         {defaultVariant ? (
-                            <PriceDisplay variant={defaultVariant} />
+                            <PriceDisplay variant={defaultVariant} formatMoney={formatMoney}/>
                         ) : (
                             <span className="text-sm text-muted-foreground">No variants</span>
                         )}

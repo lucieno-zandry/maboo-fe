@@ -4,11 +4,11 @@ import { defaultPreference, usePreferencesStore, type StorePreference } from "~/
 export function getPreferencesFromLoaderFunctionArgs(loaderFunctionArgs: LoaderFunctionArgs): StorePreference {
     const { params, request } = loaderFunctionArgs;
 
-    const searchParams = new URLSearchParams(request.url);
+    const url = new URL(request.url);
 
     const language = params.lang || 'en';
-    const currency = searchParams.get('currency') || defaultPreference.currency;
-    const theme = searchParams.get('theme') || defaultPreference.theme;
+    const currency = url.searchParams.get('currency') || defaultPreference.currency;
+    const theme = url.searchParams.get('theme') || defaultPreference.theme;
     const timezone = defaultPreference.timezone;
 
     return {

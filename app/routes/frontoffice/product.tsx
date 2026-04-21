@@ -21,11 +21,35 @@ import { QuantitySelector } from "~/components/product/quantity-selector";
 import { CartActions } from "~/components/product/cart-actions";
 import { TrustBadges } from "~/components/product/trust-badges";
 import placeholderImage from "~/assets/images/placeholder.svg";
+import { getPreferencesFromLoaderFunctionArgs } from "~/lib/app-pathname";
+import { HttpException } from "~/api/app-fetch";
+import handleHttpExceptionError from "~/lib/handle-http-exception-error";
+import { useFormatMoney } from "~/lib/format-money";
 
-export const clientLoader = async ({ params }: LoaderFunctionArgs) => {
-    const { slug } = params;
-    const response = slug ? await getProduct(slug) : null;
-    return response?.data?.product || null;
+export const loader = async (args: LoaderFunctionArgs) => {
+    const { request, params } = args;
+    const { currency } = getPreferencesFromLoaderFunctionArgs(args);
+
+    try {
+        const headers: HeadersInit = {};
+        const cookie = request.headers.get('Cookie');
+
+        if (cookie) {
+            headers['Cookie'] = cookie;
+        }
+
+        headers['X-Currency'] = currency;
+        headers['Accept'] = 'application/json';
+
+        const { slug } = params;
+        const response = slug ? await getProduct(slug, { headers }) : null;
+
+        return response?.data?.product || null;
+    } catch (error) {
+        if (error instanceof HttpException) {
+            return handleHttpExceptionError({ status: error.status, navigate: redirect });
+        }
+    }
 };
 
 export const clientAction = async ({ request }: ActionFunctionArgs) => {
@@ -58,6 +82,7 @@ export default function ProductPage() {
     const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
     const [count, setCount] = useState<number>(1);
+    const formatMoney = useFormatMoney();
 
     const fetcher = useFetcher();
     const navigation = useNavigation();
@@ -189,6 +214,7 @@ export default function ProductPage() {
                                 stock={selectedVariant?.stock ?? 0}
                                 appliedPromotions={selectedVariant?.applied_promotions}  // <-- add this
                                 t={t}
+                                formatMoney={formatMoney}
                             />
 
                             <VariantSelector
@@ -212,7 +238,8 @@ export default function ProductPage() {
                                 isSubmitting={isSubmitting}
                                 onBuyNow={onBuyNow}
                                 t={t}
-                                fetcher={fetcher}   // <-- add this line
+                                fetcher={fetcher}
+                                formatMoney={formatMoney}
                             />
 
                             <TrustBadges t={t} />

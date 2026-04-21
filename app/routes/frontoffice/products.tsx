@@ -1,5 +1,5 @@
 // products.tsx
-import { redirect, useFetcher, useLoaderData, useLocation } from "react-router";
+import { redirect, useFetcher, useLoaderData, useLocation, type LoaderFunctionArgs } from "react-router";
 import { getProducts } from "~/api/http-requests";
 import { HttpException, type PaginatedResponse } from "~/api/app-fetch";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
@@ -9,15 +9,30 @@ import { useEffect, useRef, useState } from "react";
 import useDebounce from "~/hooks/use-debounce";
 import { LoadMoreButton } from "~/components/custom-components/load-more-button";
 import { ProductGridSkeleton } from "~/components/product/product-grid-skeleton";
+import { getPreferencesFromLoaderFunctionArgs } from "~/lib/app-pathname";
 
-export const clientLoader = async ({ request }: { request: Request }) => {
+export const loader = async (args: LoaderFunctionArgs) => {
+    const { request } = args;
+    const { currency } = getPreferencesFromLoaderFunctionArgs(args);
+
     try {
         const url = new URL(request.url);
         const page = Number(url.searchParams.get("page") ?? 1);
+        const headers: HeadersInit = {};
+        const cookie = request.headers.get('Cookie');
+
+        if (cookie) {
+            headers['Cookie'] = cookie;
+        }
+
+        headers['X-Currency'] = currency;
+        headers['Accept'] = 'application/json';
 
         const response = await getProducts({
             page,
             limit: 12,
+        }, {
+            headers
         });
 
         return response.data;
@@ -27,7 +42,7 @@ export const clientLoader = async ({ request }: { request: Request }) => {
         }
     }
 };
-
+ 
 export default function ProductsPage() {
     const initialData = useLoaderData() as PaginatedResponse<Product>;
     const fetcher = useFetcher<PaginatedResponse<Product>>();

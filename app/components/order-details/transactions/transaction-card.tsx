@@ -3,12 +3,13 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { useState } from "react";
 
-import formatMoney from "~/lib/format-money";
+
 import { RefundRequestBadge } from "./refund-request-badge";
 import { CancelDisputeButton } from "./cancel-dispute-button";
 import { RefundRequestDialog } from "./refund-request-dialog";
 import { DisputeDialog } from "./dispute-dialog";
 import formatDate from "~/lib/format-date";
+import { useFormatMoney } from "~/lib/format-money";
 
 interface TransactionCardProps {
     transaction: Transaction;
@@ -18,6 +19,7 @@ interface TransactionCardProps {
 export function TransactionCard({ transaction, onActionComplete }: TransactionCardProps) {
     const [showRefundDialog, setShowRefundDialog] = useState(false);
     const [showDisputeDialog, setShowDisputeDialog] = useState(false);
+    const formatMoney = useFormatMoney();
 
     const hasPendingRefundRequests = transaction.refund_requests?.some(req => req.status === 'pending');
     const isPayment = transaction.type === "PAYMENT";

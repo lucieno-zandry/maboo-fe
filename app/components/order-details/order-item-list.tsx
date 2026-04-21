@@ -1,11 +1,12 @@
 import { Package, Tag } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Link } from "react-router";
-import formatMoney from "~/lib/format-money";
+
 import { Badge } from "../ui/badge"; // assuming you have a Badge component
 import appPathname from "~/lib/app-pathname";
+import type { useFormatMoney } from "~/lib/format-money";
 
-function OrderItemList({ items }: { items: CartItem[] }) {
+function OrderItemList({ items, formatMoney}: { items: CartItem[], formatMoney: ReturnType<typeof useFormatMoney> }) {
     return (
         <Card>
             <CardHeader className="border-b pb-4">

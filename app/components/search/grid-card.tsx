@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { PriceDisplay } from "./price-display";
 import { ProductImage } from "./product-image";
 import { PromotionPill } from "./promotion-pill";
+import { useFormatMoney } from "~/lib/format-money";
 
 export function GridCard({
     product,
@@ -21,6 +22,7 @@ export function GridCard({
     const isLowStock =
         defaultVariant && defaultVariant.stock > 0 && defaultVariant.stock <= 5;
     const isOutOfStock = defaultVariant && defaultVariant.stock === 0;
+    const formatMoney = useFormatMoney();
 
     return (
         <Card className="group relative flex flex-col overflow-hidden border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-border">
@@ -39,8 +41,8 @@ export function GridCard({
 
                 {uniquePromotions.length > 0 && (
                     <div className="flex flex-wrap gap-1">
-                        {uniquePromotions.map((p) => (
-                            <PromotionPill key={p.id} promotion={p} />
+                        {uniquePromotions.map((p, key) => (
+                            <PromotionPill key={`${p.id}-${key}`} promotion={p} />
                         ))}
                     </div>
                 )}
@@ -48,7 +50,7 @@ export function GridCard({
                 <div className="mt-auto flex items-end justify-between gap-2">
                     <div>
                         {defaultVariant ? (
-                            <PriceDisplay variant={defaultVariant} />
+                            <PriceDisplay variant={defaultVariant} formatMoney={formatMoney} />
                         ) : (
                             <span className="text-sm text-muted-foreground">No variants</span>
                         )}

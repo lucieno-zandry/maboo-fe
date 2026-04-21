@@ -69,10 +69,14 @@ const defaultHeaders = (): HeadersInit => {
     if (isCsr()) {
         const token = localStorage.getItem('token');
         const tokenType = "Bearer";
+        const searchParams = new URLSearchParams(location.search);
+        const currency = searchParams.get('currency') || defaultPreference.currency;
 
         if (token && tokenType) {
-            headers['Authorization'] = `${tokenType} ${token}`;
+            // headers['Authorization'] = `${tokenType} ${token}`;
         }
+
+        headers['X-Currency'] = currency;
     }
 
     return headers;
@@ -86,21 +90,16 @@ async function get<T>(
 ): Promise<FormatedResponse<T>> {
     const { params, ...init } = options;
 
-    const searchParams = new URLSearchParams(location.search);
-    const currency = searchParams.get('currency') || defaultPreference.currency;
-
     if (!options.headers) {
         init.headers = defaultHeaders();
     }
-
-    init.headers!['X-currency' as keyof HeadersInit] = currency;
-
     const url = buildQuery(path, params);
 
     return executeRequest<T>(() =>
         fetch(getEndpointUrl(url), {
             ...init,
             method: "GET",
+            credentials: 'include',
         })
     );
 }
@@ -122,6 +121,7 @@ async function post<T>(path: string, payload: FormData | Object, init: RequestIn
         ...init,
         body,
         method: "POST",
+        credentials: 'include'
     }));
 
     return response;
@@ -144,6 +144,7 @@ async function put<T>(path: string, payload: FormData | Object, init: RequestIni
         ...init,
         body,
         method: "PUT",
+        credentials: 'include',
     }));
 
     return response;
@@ -166,6 +167,7 @@ async function patch<T>(path: string, payload: FormData | Object, init: RequestI
         ...init,
         body,
         method: "PATCH",
+        credentials: 'include',
     }));
 
     return response;
@@ -175,6 +177,7 @@ async function destroy<T>(path: string, init: RequestInit = { headers: defaultHe
     const response = await executeRequest<T>(() => fetch(getEndpointUrl(path), {
         ...init,
         method: "DELETE",
+        credentials: 'include',
     }));
 
     return response;

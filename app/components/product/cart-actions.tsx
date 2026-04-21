@@ -2,8 +2,9 @@
 import { useFetcher } from "react-router"; // keep import for type
 import { Button } from "~/components/ui/button";
 import { Loader2, ShoppingCart } from "lucide-react";
-import formatMoney from "~/lib/format-money";
+
 import type { TFunction } from "i18next";
+import type { useFormatMoney } from "~/lib/format-money";
 
 type Props = {
     selectedVariant?: Variant | null;
@@ -12,7 +13,8 @@ type Props = {
     isSubmitting: boolean;
     onBuyNow: () => void;
     t: TFunction;
-    fetcher: ReturnType<typeof useFetcher>; // accept fetcher from parent
+    fetcher: ReturnType<typeof useFetcher>;
+    formatMoney: ReturnType<typeof useFormatMoney>
 };
 
 export function CartActions({
@@ -22,7 +24,8 @@ export function CartActions({
     isSubmitting,
     onBuyNow,
     t,
-    fetcher, // use this fetcher
+    fetcher,
+    formatMoney
 }: Props) {
     const inStock = selectedVariant && selectedVariant.stock > 0;
     const effectivePrice = selectedVariant?.effective_price ?? selectedVariant?.price ?? 0;
@@ -33,7 +36,7 @@ export function CartActions({
             <div className="space-y-3">
                 {/* Use fetcher.Form so the parent can listen to the result */}
                 <fetcher.Form method="post">
-                    <input type="hidden" name="variant_id" value={selectedVariant?.id} />
+                    <input type="hidden" name="variant_id" value={selectedVariant?.id || ""} />
                     <input type="hidden" name="count" value={quantity} />
                     <Button
                         type="submit"

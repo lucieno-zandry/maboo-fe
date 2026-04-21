@@ -56,8 +56,8 @@ export function getProducts(params?: ProductQueryParams, options: RequestInit = 
 }
 
 
-export function getProduct(slug: string) {
-    return appFetch.get<{ product: Product }>(`/product/get/${slug}?with=cart_items.order,variant_groups.variant_options,variants.variant_options,variants.image,variants.promotions,images`);
+export function getProduct(slug: string, options: RequestInit = {}) {
+    return appFetch.get<{ product: Product }>(`/product/get/${slug}?with=cart_items.order,variant_groups.variant_options,variants.variant_options,variants.image,variants.promotions,images`, { ...options });
 }
 
 export function getPriceRange() {
