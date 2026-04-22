@@ -28,12 +28,12 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('settings:accountSettings')}</h1>
-            <p className="text-gray-500 mt-1">{t('settings:accountSettingsDescription')}</p>
+            <h1 className="text-3xl font-bold text-foreground">{t('settings:accountSettings')}</h1>
+            <p className="text-muted-foreground mt-1">{t('settings:accountSettingsDescription')}</p>
           </div>
           <Badge className={getRoleBadgeColor(user.role)}>
             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}

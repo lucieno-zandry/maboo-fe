@@ -117,16 +117,20 @@ export function NavSearchView({
 
     return (
         <div ref={containerRef} className="relative w-full">
-            <div className={cn(
-                "flex items-center gap-2 rounded-xl border bg-background/60 px-3 shadow-sm backdrop-blur-sm transition-all duration-200",
-                open
-                    ? "border-primary/50 bg-background shadow-md ring-2 ring-primary/10"
-                    : "border-border/60 hover:border-border"
-            )}>
-                <Search className={cn(
-                    "size-4 shrink-0 transition-colors",
-                    open ? "text-primary" : "text-muted-foreground"
-                )} />
+            <div
+                className={cn(
+                    "flex flex-wrap items-center gap-1.5 sm:gap-2 rounded-xl border bg-background/60 px-2 sm:px-3 py-1.5 shadow-sm backdrop-blur-sm transition-all duration-200",
+                    open
+                        ? "border-primary/50 bg-background shadow-md ring-2 ring-primary/10"
+                        : "border-border/60 hover:border-border"
+                )}
+            >
+                <Search
+                    className={cn(
+                        "size-4 shrink-0 transition-colors",
+                        open ? "text-primary" : "text-muted-foreground"
+                    )}
+                />
 
                 <input
                     ref={inputRef}
@@ -134,8 +138,8 @@ export function NavSearchView({
                     onChange={(e) => onChange(e.target.value)}
                     onFocus={onFocus}
                     onKeyDown={onKeyDown}
-                    placeholder="Search products, categories…"
-                    className="h-10 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
+                    placeholder="Search…"
+                    className="h-9 sm:h-10 flex-1 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
                     autoComplete="off"
                     spellCheck={false}
                 />
@@ -143,26 +147,38 @@ export function NavSearchView({
                 {loading && (
                     <Loader2 className="size-3.5 shrink-0 animate-spin text-muted-foreground" />
                 )}
+
                 {value && !loading && (
                     <button
-                        onMouseDown={(e) => { e.preventDefault(); onClear(); }}
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            onClear();
+                        }}
                         className="shrink-0 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                         <X className="size-3.5" />
                     </button>
                 )}
 
+                {/* 🔥 Responsive Search Button */}
                 <button
-                    onMouseDown={(e) => { e.preventDefault(); onSubmit(); }}
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        onSubmit();
+                    }}
                     className={cn(
-                        "flex h-7 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all",
+                        "flex items-center justify-center shrink-0 rounded-lg transition-all",
+                        // 👇 responsive sizing
+                        "h-8 px-2 sm:h-7 sm:px-3",
+                        // 👇 style
                         value
                             ? "bg-primary text-primary-foreground hover:bg-primary/90"
                             : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                     )}
                 >
-                    Search
-                    <ArrowRight className="size-3" />
+                    {/* 👇 hide text on very small screens */}
+                    <span className="hidden xs:inline text-xs font-medium">Search</span>
+                    <ArrowRight className="size-3 sm:ml-1.5" />
                 </button>
             </div>
 

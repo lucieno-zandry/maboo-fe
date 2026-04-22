@@ -6,7 +6,6 @@ import { useUserStore } from "~/hooks/use-user";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
 import { useTranslation } from "react-i18next";
 
-
 export function PartnerCodeSettings() {
     const { user } = useUserStore();
     const { setIsOpen } = useClientCodeDialogStore();
@@ -16,23 +15,24 @@ export function PartnerCodeSettings() {
         setIsOpen(true);
     }
 
-    // 1. Logic for Active Partner
+    // Active partner
     if (user?.permissions?.can_use_special_prices && user.client_code) {
         return (
-            <Card className="border-green-100 bg-green-50/30">
+            <Card className="border-green-200 dark:border-green-800/50 bg-green-50/30 dark:bg-green-950/20">
                 <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
+                        <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
                         <CardTitle className="text-lg">{t('settings:partnerAccessActive')}</CardTitle>
-                        <CardDescription>
-                            {t('settings:accountLinkedToCode')} <span className="font-mono font-bold text-green-700">{user.client_code.code}</span>
+                        <CardDescription className="text-green-700 dark:text-green-300">
+                            {t('settings:accountLinkedToCode')}{' '}
+                            <span className="font-mono font-bold">{user.client_code.code}</span>
                         </CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-green-600 font-medium italic">
+                    <p className="text-sm text-green-600 dark:text-green-400 font-medium italic">
                         {t('settings:exclusivePricingApplied')}
                     </p>
                 </CardContent>
@@ -40,9 +40,9 @@ export function PartnerCodeSettings() {
         );
     }
 
-    // 2. Logic for Non-Partner (The Toggle/Trigger)
+    // Non-partner
     return (
-        <Card className="overflow-hidden border-dashed border-2">
+        <Card className="overflow-hidden border-dashed border-2 border-border">
             <CardHeader className="flex flex-row items-center gap-4 space-y-0">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <TicketPercent className="h-5 w-5" />

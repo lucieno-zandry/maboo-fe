@@ -12,6 +12,7 @@ import {
 
 import { NotificationBell } from "./components/notification-bell";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 /**
  * Notifications Popover
@@ -19,16 +20,13 @@ import { useState } from "react";
  * Same orchestration logic, but rendered inside a popover.
  */
 export function NotificationsPopover() {
-
-    const [open, setOpen] = useState(false);
-
     return (
         <>
-            <NotificationBell onOpen={() => setOpen(true)} />
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover>
+                <NotificationBell/>
                 <PopoverContent
                     align="end"
-                    className="w-[380px] p-0 shadow-lg"
+                    className="w-[300px] sm:w-[350px] md:w-[380px] p-0 shadow-lg"
                 >
                     <div className="flex max-h-[500px] flex-col overflow-hidden rounded-xl border bg-card">
 

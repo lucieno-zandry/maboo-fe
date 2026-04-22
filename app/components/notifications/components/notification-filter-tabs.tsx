@@ -13,7 +13,7 @@ type Props = {
 
 export function NotificationFilterTabsView({ active, unreadCount, onChange }: Props) {
   return (
-    <div className="flex gap-0.5 overflow-x-auto border-b border-border/50 px-4 overflow-y-hidden ">
+    <div className="flex gap-0.5 overflow-x-auto border-b border-border/50 px-4 overflow-y-hidden pb-8">
       {FILTER_TABS.map((tab) => {
         const isActive = active === tab.value;
         const showBadge = tab.value === "unread" && unreadCount > 0;
