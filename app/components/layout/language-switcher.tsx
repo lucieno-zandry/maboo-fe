@@ -5,7 +5,7 @@ import { Globe } from "lucide-react";
 const LANGUAGES = [
     { code: "en", label: "English", native: "English" },
     { code: "fr", label: "Français", native: "Français" },
-    { code: "es", label: "Español", native: "Español" },
+    // { code: "es", label: "Español", native: "Español" },
 ];
 
 const NavbarLanguageSelect = ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (

@@ -14,14 +14,14 @@ const CURRENCIES = [
     { code: 'USD', label: 'US Dollar' },
     { code: 'EUR', label: 'Euro' },
     { code: 'GBP', label: 'British Pound' },
-    { code: 'JPY', label: 'Japanese Yen' },
-    { code: 'CAD', label: 'Canadian Dollar' },
-    { code: 'AUD', label: 'Australian Dollar' },
-    { code: 'CHF', label: 'Swiss Franc' },
-    { code: 'CNY', label: 'Chinese Yuan' },
-    { code: 'INR', label: 'Indian Rupee' },
-    { code: 'BRL', label: 'Brazilian Real' },
-    { code: 'MGA', label: 'Ariary' }
+    // { code: 'JPY', label: 'Japanese Yen' },
+    // { code: 'CAD', label: 'Canadian Dollar' },
+    // { code: 'AUD', label: 'Australian Dollar' },
+    // { code: 'CHF', label: 'Swiss Franc' },
+    // { code: 'CNY', label: 'Chinese Yuan' },
+    // { code: 'INR', label: 'Indian Rupee' },
+    // { code: 'BRL', label: 'Brazilian Real' },
+    // { code: 'MGA', label: 'Ariary' }
 ];
 
 interface CurrencySelectProps {

@@ -542,3 +542,48 @@ type ShippingRate = {
 
   shipping_method?: ShippingMethod;
 };
+
+type Setting = {
+  key: string;
+  value: any;                      // parsed according to `type`
+  type: 'string' | 'integer' | 'float' | 'boolean' | 'json';
+  group?: string | null;
+  label?: string | null;
+  description?: string | null;
+  is_public: boolean;
+  updated_at: string;
+};
+
+// ============================================================================
+// Landing Block Types
+// ============================================================================
+
+/**
+ * Polymorphic relation – can be a Product, Variant, Category, AppImage, etc.
+ * In practice, the actual object will be received from the API when loaded with `landing_able`.
+ */
+type LandingAble =
+  | Product
+  | Category
+  | Variant
+  | AppImage
+  | null;
+
+interface LandingBlock {
+  id: number;
+  block_type: 'hero' | 'collection_grid' | 'featured_products' | 'story' | 'comparison' | 'testimonials' | 'faq' | 'cta_banner' | 'trust_bar';
+  title: string | null;
+  subtitle: string | null;
+  content: Record<string, any> | null;   // JSONB content
+  landing_able_type: string | null;      // e.g., 'App\\Models\\Product'
+  landing_able_id: number | null;
+  image_id: number | null;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+
+  // Relations (loaded when requested)
+  landing_able?: LandingAble;
+  image?: AppImage | null;
+}

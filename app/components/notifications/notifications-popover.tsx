@@ -1,4 +1,3 @@
-import { useNotifications } from "./hooks/use-notifications";
 import { NotificationsHeader } from "./components/notifications-header";
 import { NotificationFilterTabs } from "./components/notification-filter-tabs";
 import { BulkActionsBar } from "./components/bulk-actions-bar";

@@ -10,8 +10,8 @@ export type UserPreferenceUpdates = Partial<StorePreference>;
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export const defaultPreference: StorePreference = {
-    currency: 'USD',
-    language: 'en',
+    currency: 'EUR',
+    language: 'fr',
     theme: 'system',
     timezone
 };

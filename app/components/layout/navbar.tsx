@@ -27,7 +27,7 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearch
             <div className="flex items-center gap-4 md:gap-8">
                 <h1>
                     <Link to={appPathname('/')} className="text-xl sm:text-2xl font-bold tracking-tight text-foreground transition-colors hover:text-foreground/80">
-                        ShopEase
+                        Alofo
                     </Link>
                 </h1>
                 <nav className="space-x-6 hidden lg:block">

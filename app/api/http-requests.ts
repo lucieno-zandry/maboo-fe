@@ -243,3 +243,11 @@ export function fetchAvailableShippingMethods(data: { address_id: number, cart_i
 export function logout(options?: RequestInit) {
     return appFetch.get<{ message: string }>('/auth/logout', options)
 }
+
+/**
+ * Public endpoint – returns all active landing blocks ordered by display_order.
+ * No authentication required.
+ */
+export function getLandingBlocksPublic(init: RequestInit) {
+    return appFetch.get<LandingBlock[]>('/landing-blocks/public', init);
+}
