@@ -107,6 +107,9 @@ export default function LandingPage() {
                             case 'comparison':
                                 return <Comparison block={block as LandingBlock<ComparisonContent>} key={key} />
 
+                            case 'faq':
+                                return <Faq block={block as LandingBlock<FaqContent>} />
+
                             default:
                                 return null;
                         }
@@ -121,10 +124,7 @@ export default function LandingPage() {
 
                 {/* 7. Verified customer testimonials */}
                 <Testimonials />
-
-                {/* 8. FAQ accordion */}
-                <Faq />
-
+                
                 {/* 9. Bottom conversion CTA */}
                 <CtaBanner />
             </main>

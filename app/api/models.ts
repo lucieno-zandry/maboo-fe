@@ -621,3 +621,14 @@ type ComparisonContent = {
   theirLabel?: string;
   rows: ComparisonRow[];
 };
+
+type FaqItem = {
+    id: string;          // unique ID for admin editing
+    question: string;
+    answer: string;
+};
+
+type FaqContent = {
+    eyebrow?: string;
+    items: FaqItem[];
+};

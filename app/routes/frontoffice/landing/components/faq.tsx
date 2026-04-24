@@ -1,25 +1,22 @@
 import { ChevronDown } from "lucide-react";
-import type { FaqItem } from "../types/landing-types";
 import { useLandingUIStore } from "../stores/use-landing-ui-store";
-import { FAQ_ITEMS } from "../helpers/landing-data";
 
 interface FaqViewProps {
-  items: FaqItem[];
+  eyebrow?: string;
+  title: string;
+  items: Array<{ id: string; question: string; answer: string }>;
   openId: string | null;
   onToggle: (id: string) => void;
 }
 
-export function FaqView({ items, openId, onToggle }: FaqViewProps) {
+export function FaqView({ eyebrow, title, items, openId, onToggle }: FaqViewProps) {
   return (
     <section className="faq" id="faq">
       <div className="faq__inner">
-        {/* Header */}
         <div className="faq__header">
-          <p className="section-eyebrow">Got questions?</p>
-          <h2 className="section-title">Everything you need to know</h2>
+          {eyebrow && <p className="section-eyebrow">{eyebrow}</p>}
+          <h2 className="section-title">{title}</h2>
         </div>
-
-        {/* Accordion */}
         <div className="faq__list" role="list">
           {items.map((item) => {
             const isOpen = openId === item.id;
@@ -37,18 +34,15 @@ export function FaqView({ items, openId, onToggle }: FaqViewProps) {
                 >
                   <span className="faq-item__question">{item.question}</span>
                   <ChevronDown
-                    className={`faq-item__chevron ${isOpen ? "faq-item__chevron--open" : ""
-                      }`}
+                    className={`faq-item__chevron ${isOpen ? "faq-item__chevron--open" : ""}`}
                     strokeWidth={1.5}
                   />
                 </button>
-
                 <div
                   id={`faq-answer-${item.id}`}
                   className="faq-item__answer-wrap"
                   aria-hidden={!isOpen}
                   style={{
-                    // CSS-driven height animation via max-height trick
                     maxHeight: isOpen ? "400px" : "0px",
                     overflow: "hidden",
                     transition: "max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -65,18 +59,18 @@ export function FaqView({ items, openId, onToggle }: FaqViewProps) {
   );
 }
 
-/**
- * Faq (Smart)
- * Delegates accordion open/close state to the landing UI store
- * so the state is preserved across re-renders and could be
- * controlled externally (e.g. deep-link to a specific FAQ).
- */
-export function Faq() {
+export function Faq({ block }: { block: LandingBlock<FaqContent> }) {
   const { openFaqId, toggleFaq } = useLandingUIStore();
+
+  const content = block.content ?? {} as FaqContent;
+  const eyebrow = content.eyebrow;
+  const items = content.items ?? [];
 
   return (
     <FaqView
-      items={FAQ_ITEMS}
+      eyebrow={eyebrow}
+      title={block.title ?? "Everything you need to know"}
+      items={items}
       openId={openFaqId}
       onToggle={toggleFaq}
     />
