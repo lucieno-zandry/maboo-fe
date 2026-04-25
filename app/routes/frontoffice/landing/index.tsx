@@ -31,6 +31,7 @@ import { CtaBanner } from "./components/cta-banner/cta-banner";
 import "./landing.css";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import { isProduct } from "./helpers/landing-able-guards";
 
 // ─── Loader ───────────────────────────────────────────────────────────────────
 export const loader = async (args: LoaderFunctionArgs) => {
@@ -73,6 +74,8 @@ export default function LandingPage() {
             toast.error(error.data?.message || 'Something went wrong!')
     }, [error]);
 
+    let stickyBarProduct: Product | null = null;
+
     return (
         <>
             {/*
@@ -80,13 +83,16 @@ export default function LandingPage() {
         Visibility is controlled by the Zustand store,
         triggered by IntersectionObserver inside <Hero />.
       */}
-            <StickyCTABar />
 
             <main className="landing">
                 {
                     landingBlocks?.map((block, key) => {
                         switch (block.block_type) {
                             case 'hero':
+
+                                if (!stickyBarProduct && block.landing_able && isProduct(block.landing_able))
+                                    stickyBarProduct = block.landing_able;
+
                                 return <Hero block={block} key={key} />
 
                             case 'collection_grid':
@@ -111,6 +117,10 @@ export default function LandingPage() {
                                 return <Testimonials block={block as LandingBlock<TestimonialsContent>} key={key} />;
 
                             case 'cta_banner':
+
+                                if (!stickyBarProduct && block.landing_able && isProduct(block.landing_able))
+                                    stickyBarProduct = block.landing_able;
+
                                 return <CtaBanner block={block as LandingBlock<CtaBannerContent>} key={key} />
 
                             default:
@@ -119,6 +129,9 @@ export default function LandingPage() {
                     })
                 }
             </main>
+
+            {stickyBarProduct &&
+                <StickyCTABar product={stickyBarProduct} />}
         </>
     );
 }
