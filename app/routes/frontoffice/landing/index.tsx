@@ -25,7 +25,7 @@ import { Story } from "./components/story";
 import { Comparison } from "./components/comparison";
 import { Testimonials } from "./components/testimonials";
 import { Faq } from "./components/faq";
-import { CtaBanner } from "./components/cta-banner";
+import { CtaBanner } from "./components/cta-banner/cta-banner";
 
 // ─── CSS ──────────────────────────────────────────────────────────────────────
 import "./landing.css";
@@ -107,16 +107,17 @@ export default function LandingPage() {
                             case 'story':
                                 return <Story block={block as LandingBlock<StoryContent>} key={key} />;
 
+                            case 'testimonials':
+                                return <Testimonials block={block as LandingBlock<TestimonialsContent>} key={key} />;
+
+                            case 'cta_banner':
+                                return <CtaBanner block={block as LandingBlock<CtaBannerContent>} key={key} />
+
                             default:
                                 return null;
                         }
                     })
                 }
-                {/* 7. Verified customer testimonials */}
-                <Testimonials />
-
-                {/* 9. Bottom conversion CTA */}
-                <CtaBanner />
             </main>
         </>
     );

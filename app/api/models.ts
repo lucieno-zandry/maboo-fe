@@ -651,3 +651,22 @@ type StoryContent = {
     imageCaption?: string;
     stats?: StoryStat[];
 };
+
+type Testimonial = {
+    id: string;
+    author: string;
+    location: string;
+    avatar?: string;          // URL placeholder
+    rating: number;           // 1-5
+    text: string;
+    verified: boolean;
+};
+
+type TestimonialsContent = {
+    eyebrow?: string;
+    testimonials: Testimonial[];
+};
+
+type CtaBannerContent = {
+    eyebrow?: string;
+};
