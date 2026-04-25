@@ -1,41 +1,32 @@
-import { STORY_CONTENT } from "../helpers/landing-data";
-import type { StorySection } from "../types/landing-types";
-
 interface StoryViewProps {
-  content: StorySection;
+  eyebrow?: string;
+  title: string;
+  body: string;
+  imageUrl: string | null;
+  imageCaption?: string;
+  stats: Array<{ value: string; label: string }>;
 }
 
-export function StoryView({ content }: StoryViewProps) {
-  const headlineLines = content.headline.split("\n");
+export function StoryView({ eyebrow, title, body, imageUrl, imageCaption, stats }: StoryViewProps) {
+  const headlineLines = title.split("\n");
 
   return (
     <section className="story" id="story">
-      {/* Image — left on desktop, full-width on mobile */}
       <div className="story__img-col">
         <div className="story__img-wrap">
-          {/*
-            IMAGE PLACEHOLDER:
-            Aerial or landscape of the SAVA region, northeastern Madagascar.
-            Lush green vanilla plantations, red laterite roads, golden-hour light.
-            Aspect ratio: 4:3 or 16:9. Min 1200×900px. No overlaid text.
-            File: /public/images/sava-region-madagascar.jpg
-          */}
           <img
-            src={content.image}
-            alt="The SAVA region of Madagascar"
+            src={imageUrl ?? "/images/placeholder-story.jpg"}
+            alt={imageCaption || "Brand story image"}
             className="story__img"
             loading="lazy"
           />
-          <p className="story__img-caption">{content.imageCaption}</p>
+          {imageCaption && <p className="story__img-caption">{imageCaption}</p>}
         </div>
-
-        {/* Decorative accent line */}
         <div className="story__accent-bar" aria-hidden />
       </div>
 
-      {/* Text — right on desktop */}
       <div className="story__text-col">
-        <p className="section-eyebrow">{content.subheadline}</p>
+        {eyebrow && <p className="section-eyebrow">{eyebrow}</p>}
 
         <h2 className="story__headline">
           {headlineLines.map((line, i) => (
@@ -46,31 +37,35 @@ export function StoryView({ content }: StoryViewProps) {
           ))}
         </h2>
 
-        <p className="story__body">{content.body}</p>
+        <p className="story__body">{body}</p>
 
-        {/* Stat pills */}
-        <div className="story__stats">
-          {[
-            { value: "2018", label: "First Partnership" },
-            { value: "12+", label: "Farmer Families" },
-            { value: "100%", label: "Direct Trade" },
-          ].map((stat) => (
-            <div key={stat.label} className="story__stat">
-              <span className="story__stat-value">{stat.value}</span>
-              <span className="story__stat-label">{stat.label}</span>
-            </div>
-          ))}
-        </div>
+        {stats.length > 0 && (
+          <div className="story__stats">
+            {stats.map((stat, idx) => (
+              <div key={idx} className="story__stat">
+                <span className="story__stat-value">{stat.value}</span>
+                <span className="story__stat-label">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
-/**
- * Story (Smart)
- * Owns the brand narrative content. Could be made CMS-driven
- * by fetching from a headless CMS endpoint in the route loader.
- */
-export function Story() {
-  return <StoryView content={STORY_CONTENT} />;
+export function Story({ block }: { block: LandingBlock<StoryContent> }) {
+  const content = block.content ?? {} as StoryContent;
+  const stats = content.stats ?? [];
+
+  return (
+    <StoryView
+      eyebrow={content.eyebrow}
+      title={block.title ?? "Our Story"}
+      body={content.body ?? ""}
+      imageUrl={block.image?.url ?? null}
+      imageCaption={content.imageCaption}
+      stats={stats}
+    />
+  );
 }

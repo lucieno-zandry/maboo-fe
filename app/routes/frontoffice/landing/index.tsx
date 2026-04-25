@@ -104,15 +104,14 @@ export default function LandingPage() {
                             case 'featured_products':
                                 return <FeaturedProducts block={block as LandingBlock<FeaturedProductsContent>} key={key} />
 
+                            case 'story':
+                                return <Story block={block as LandingBlock<StoryContent>} key={key} />;
+
                             default:
                                 return null;
                         }
                     })
                 }
-
-                {/* 5. Brand origin story with SAVA region image */}
-                <Story />
-
                 {/* 7. Verified customer testimonials */}
                 <Testimonials />
 

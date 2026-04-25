@@ -639,3 +639,15 @@ type FeaturedProductsContent = {
     
     products?: Product[];
 };
+
+type StoryStat = {
+    value: string;
+    label: string;
+};
+
+type StoryContent = {
+    eyebrow?: string;          // was subheadline
+    body: string;
+    imageCaption?: string;
+    stats?: StoryStat[];
+};
