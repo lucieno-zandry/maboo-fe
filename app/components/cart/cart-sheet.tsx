@@ -52,7 +52,7 @@ export function CartSheet({
 }: CartSheetProps) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetContent side="right" className="p-0 w-[400px] sm:w-[450px]">
+            <SheetContent side="right" className="p-0 w-full max-w-[400px]">
                 <Form className="flex flex-col overflow-y-auto">
                     <div className="p-6 pb-2">
                         <SheetHeader>
@@ -110,7 +110,7 @@ export function CartSheet({
                         )}
                     </div>
 
-                    <div className="p-6 bg-muted/30 border-t space-y-4">
+                    <div className="p-6 bg-muted/30 border-t space-y-4 mt-4">
                         <div className="space-y-1.5">
                             <div className="flex justify-between text-sm text-muted-foreground">
                                 <span>{t('common:cartSubtotal', { count: items.length })}</span>
