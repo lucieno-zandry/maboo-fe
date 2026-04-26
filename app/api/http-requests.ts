@@ -228,9 +228,9 @@ export function cancelDispute(transactionUuid: string) {
 
 // user preferences
 
-export function fetchUserPreferences() {
-    return appFetch.get<{ preferences?: UserPreference }>('/user/preferences');
-}
+// export function fetchUserPreferences() {
+//     return appFetch.get<{ preferences?: UserPreference }>('/user/preferences');
+// }
 
 export function updateUserPreferences(data: Partial<UserPreference>) {
     return appFetch.put<{ preferences: UserPreference }>('/user/preferences', data);

@@ -71,7 +71,6 @@ export default function () {
                         setPreferences(response.data.user.preferences);
                     }
                 }
-
             }).catch((error) => {
                 clearUser();
                 if (error instanceof HttpException) {

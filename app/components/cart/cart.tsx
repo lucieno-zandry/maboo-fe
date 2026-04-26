@@ -11,10 +11,9 @@ export default React.memo(function () {
 
     return <>
         <CartButton count={items?.length || 0} onClick={() => { setOpen(true) }} />
-        {items &&
-            <CartSheet
-                items={items}
-                open={open}
-                setOpen={setOpen} />}
+        <CartSheet
+            items={items || []}
+            open={open}
+            setOpen={setOpen} />
     </>
 });

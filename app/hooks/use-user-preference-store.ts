@@ -46,9 +46,11 @@ export const usePreferencesStore = create<PreferencesState>()(
 
             updatePreferences: async (updates) => {
                 const { authStatus } = useUserStore.getState();
-                const { setPreferences, preferences } = get();
+                const { setPreferences, preferences, rehydrated } = get();
                 const shouldWait = authStatus === 'authenticated' && updates.currency && updates.currency !== preferences.currency;
 
+                if (!rehydrated) return;
+                
                 if (!shouldWait)
                     // apply local change immediately (optimistic)
                     setPreferences(updates);

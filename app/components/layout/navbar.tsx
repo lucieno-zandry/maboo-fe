@@ -22,24 +22,35 @@ type NavbarProps = {
     appPathname: typeof appPathname,
     name: string,
     appLogoUrl: string,
+    userCanUseNotifications: boolean,
+    userCanUseSettings: boolean,
 }
 
-export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearchVisible, appPathname, name, appLogoUrl }: NavbarProps) {
+export function NavbarView({
+    isAuthenticated,
+    isUnAuthenticated,
+    t,
+    navbarSearchVisible,
+    appPathname,
+    name,
+    appLogoUrl,
+    userCanUseNotifications,
+    userCanUseSettings }: NavbarProps) {
     return (
         <header className="flex flex-wrap justify-between items-center px-4 sm:px-8 py-3 shadow-sm bg-background/95 backdrop-blur-md sticky top-0 z-50 gap-4 border-b border-border">
-            
+
             {/* Left Section: Logo, Brand Name & Desktop Links */}
             <div className="flex items-center gap-6 md:gap-8">
                 <h1>
-                    <Link 
-                        to={appPathname('/')} 
+                    <Link
+                        to={appPathname('/')}
                         className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
                     >
                         {appLogoUrl && (
-                            <img 
-                                src={appLogoUrl} 
-                                alt={`${name} logo`} 
-                                className="h-8 w-auto object-contain" 
+                            <img
+                                src={appLogoUrl}
+                                alt={`${name} logo`}
+                                className="h-8 w-auto object-contain"
                             />
                         )}
                         <span className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
@@ -47,7 +58,7 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearch
                         </span>
                     </Link>
                 </h1>
-                
+
                 <nav className="hidden lg:block space-x-6">
                     <Link
                         to={appPathname('/products')}
@@ -75,25 +86,30 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearch
                             <CurrencySelector />
                             <ThemeSelector />
                         </div>
-                        
+
                         {/* Login Button: Always visible top right */}
                         <Button variant="default" size="sm" className="shadow-sm" asChild>
                             <Link to={appPathname('/auth')}>{t('common:logIn')}</Link>
                         </Button>
+                        
+                        <Cart />
                     </>
                 )}
 
                 {isAuthenticated && (
                     <div className="flex items-center gap-3 sm:gap-4">
                         <Cart />
-                        <NotificationsPopover />
-                        <UserDropdown />
+                        {userCanUseNotifications &&
+                            <NotificationsPopover />}
+
+                        {userCanUseSettings &&
+                            <UserDropdown />}
                     </div>
                 )}
             </div>
 
             {/* --- Mobile Bottom Sections --- */}
-            
+
             {/* Mobile Search */}
             {navbarSearchVisible && (
                 <div className="w-full block md:hidden mt-1">
@@ -109,7 +125,7 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearch
                     <ThemeSelector />
                 </div>
             )}
-            
+
         </header>
     )
 }
@@ -117,7 +133,7 @@ export function NavbarView({ isAuthenticated, isUnAuthenticated, t, navbarSearch
 export default function Navbar() {
     const { settings } = useLoaderData<typeof loader>();
 
-    const { authStatus } = useUserStore();
+    const { authStatus, user } = useUserStore();
     const { t } = useTranslation();
     const { pathname } = useLocation();
     const appPathname = useAppPathname();
@@ -129,6 +145,9 @@ export default function Navbar() {
     const isAuthenticated = useMemo(() => authStatus === "authenticated", [authStatus])
     const navbarSearchVisible = useMemo(() => (!pathname.includes('/search')) && (isAuthenticated || isUnAuthenticated), [pathname, isAuthenticated, isUnAuthenticated]);
 
+    const userCanUseNotifications = !!user?.permissions?.can_use_notifications;
+    const userCanUseSettings = !!user?.permissions?.can_use_settings;
+
     return <NavbarView
         t={t}
         isAuthenticated={isAuthenticated}
@@ -137,5 +156,7 @@ export default function Navbar() {
         appPathname={appPathname}
         name={name}
         appLogoUrl={appLogoUrl}
+        userCanUseNotifications={userCanUseNotifications}
+        userCanUseSettings={userCanUseSettings}
     />
 }

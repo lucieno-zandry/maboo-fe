@@ -18,6 +18,9 @@ type User = {
 
   permissions?: {
     can_use_special_prices: boolean;
+    can_use_notifications: boolean;
+    can_use_preferences: boolean;
+    can_use_settings: boolean;
   };
 
   // relations
@@ -623,50 +626,50 @@ type ComparisonContent = {
 };
 
 type FaqItem = {
-    id: string;          // unique ID for admin editing
-    question: string;
-    answer: string;
+  id: string;          // unique ID for admin editing
+  question: string;
+  answer: string;
 };
 
 type FaqContent = {
-    eyebrow?: string;
-    items: FaqItem[];
+  eyebrow?: string;
+  items: FaqItem[];
 };
 
 type FeaturedProductsContent = {
-    eyebrow?: string;
-    product_ids: number[];
-    
-    products?: Product[];
+  eyebrow?: string;
+  product_ids: number[];
+
+  products?: Product[];
 };
 
 type StoryStat = {
-    value: string;
-    label: string;
+  value: string;
+  label: string;
 };
 
 type StoryContent = {
-    eyebrow?: string;          // was subheadline
-    body: string;
-    imageCaption?: string;
-    stats?: StoryStat[];
+  eyebrow?: string;          // was subheadline
+  body: string;
+  imageCaption?: string;
+  stats?: StoryStat[];
 };
 
 type Testimonial = {
-    id: string;
-    author: string;
-    location: string;
-    avatar?: string;          // URL placeholder
-    rating: number;           // 1-5
-    text: string;
-    verified: boolean;
+  id: string;
+  author: string;
+  location: string;
+  avatar?: string;          // URL placeholder
+  rating: number;           // 1-5
+  text: string;
+  verified: boolean;
 };
 
 type TestimonialsContent = {
-    eyebrow?: string;
-    testimonials: Testimonial[];
+  eyebrow?: string;
+  testimonials: Testimonial[];
 };
 
 type CtaBannerContent = {
-    eyebrow?: string;
+  eyebrow?: string;
 };

@@ -20,7 +20,7 @@ export default function AccountSettings() {
   const { user, authStatus } = useUserStore();
   const { t } = useTranslation("settings");
 
-  if (!user) {
+  if (!user || !user.permissions?.can_use_settings) {
     if (authStatus === 'unknown')
       return <LoadingScreen />
 

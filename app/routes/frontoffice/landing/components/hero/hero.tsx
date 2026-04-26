@@ -86,7 +86,7 @@ export function HeroView({
                             );
                         })}
                     </div>
-                )}
+                )}  
 
                 {/* Price + CTA */}
                 <div className="hero__cta-row">
@@ -94,7 +94,6 @@ export function HeroView({
                         {selected && (() => {
                             const original = getOriginalPrice(selected);
                             const current = getEffectivePrice(selected);
-                            console.log(selected);
                             return (
                                 <>
                                     {original && (

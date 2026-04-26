@@ -16,7 +16,7 @@ export async function loader(args: LoaderFunctionArgs) {
 
 export default function LangBoundary() {
   const { lang } = useParams();
-  const { setLanguage, preferences } = usePreferencesStore();
+  const { setPreferences, preferences } = usePreferencesStore();
 
   useEffect(() => {
     if (lang) {
@@ -25,7 +25,7 @@ export default function LangBoundary() {
       }
 
       if (preferences.language !== lang) {
-        setLanguage(lang);
+        setPreferences({ language: lang });
       }
 
       document.documentElement.lang = lang;
