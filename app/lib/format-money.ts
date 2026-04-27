@@ -1,4 +1,6 @@
+import { useRouteLoaderData } from "react-router";
 import { usePreferencesStore } from "~/hooks/use-user-preference-store";
+import type { loader } from "~/routes/config/config-boundary";
 
 function base(currency: string, language: string, n?: number, fractionDigits: number = 2) {
     if (n === undefined || n === null) return "-";
@@ -42,7 +44,12 @@ export default function formatMoney(n?: number, fractionDigits: number = 2) {
 };
 
 export function useFormatMoney() {
-    const { currency, language } = usePreferencesStore().preferences;
+    const boundaryData = useRouteLoaderData<typeof loader>("routes/config/config-boundary");
+    const preferenseStore = usePreferencesStore();
+
+    const currency = boundaryData?.preferences.currency || preferenseStore.preferences.currency;
+    const language = boundaryData?.preferences.language || preferenseStore.preferences.language;
+
     return (n?: number, fractionDigits: number = 2) => base(currency, language, n, fractionDigits)
 }
 

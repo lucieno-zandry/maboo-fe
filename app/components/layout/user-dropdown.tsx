@@ -14,7 +14,7 @@ import { LogoutDialog } from './logout-dialog';
 import React from 'react';
 import { Link } from 'react-router';
 import useClientCodeDialogStore from '~/hooks/use-client-code-dialog-store';
-import { MapPin, Package, Settings, TicketPercent, LifeBuoy, LogOut } from 'lucide-react';
+import { MapPin, Package, Settings, TicketPercent, LifeBuoy, LogOut, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import appPathname from '~/lib/app-pathname';
 import { LanguageSwitcher } from './language-switcher';
@@ -22,7 +22,7 @@ import { ThemeSelector } from './theme-selector';
 import { CurrencySelector } from './currency-selector';
 
 type UserDropdownProps = {
-    user: User;
+    user: User | null;
     setIsOpen: (open: boolean) => void;
     setLogoutOpen: (open: boolean) => void;
     logoutOpen: boolean;
@@ -35,40 +35,53 @@ export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: 
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                        <UserAvatar
-                            avatarFallBack={user.name.substring(0, 2)}
-                            avatarImageUrl={user.avatar_image?.url || undefined}
-                        />
+                        {user && user.role !== 'guest' &&
+                            <UserAvatar
+                                avatarFallBack={user?.name.substring(0, 2) || ''}
+                                avatarImageUrl={user?.avatar_image?.url || undefined}
+                            />}
+
+                        {(!user || user.role === 'guest') &&
+                            <User className='text-foreground'/>}
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64" align="end" sideOffset={8}>
-                    <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">{user.name}</p>
-                            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                    {user && user.role !== 'guest' &&
+                        <>
+                            <DropdownMenuLabel className="font-normal">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                        </>}
 
                     <DropdownMenuGroup>
-                        <DropdownMenuItem asChild>
-                            <Link to={appPathname('/addresses')} className="cursor-pointer">
-                                <MapPin className="mr-2 h-4 w-4" />
-                                <span>{t('common:addresses')}</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link to={appPathname('/orders')} className="cursor-pointer">
-                                <Package className="mr-2 h-4 w-4" />
-                                <span>{t('common:orders')}</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link to={appPathname('/settings')} className="cursor-pointer">
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>{t('common:settings')}</span>
-                            </Link>
-                        </DropdownMenuItem>
+                        {user &&
+                            <DropdownMenuItem asChild>
+                                <Link to={appPathname('/addresses')} className="cursor-pointer">
+                                    <MapPin className="mr-2 h-4 w-4" />
+                                    <span>{t('common:addresses')}</span>
+                                </Link>
+                            </DropdownMenuItem>}
+
+                        {user && user.permissions?.can_use_order &&
+                            <DropdownMenuItem asChild>
+                                <Link to={appPathname('/orders')} className="cursor-pointer">
+                                    <Package className="mr-2 h-4 w-4" />
+                                    <span>{t('common:orders')}</span>
+                                </Link>
+                            </DropdownMenuItem>}
+
+                        {user && user.permissions?.can_use_settings &&
+                            <DropdownMenuItem asChild>
+                                <Link to={appPathname('/settings')} className="cursor-pointer">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    <span>{t('common:settings')}</span>
+                                </Link>
+                            </DropdownMenuItem>}
+
                     </DropdownMenuGroup>
 
                     <DropdownMenuSeparator />
@@ -90,7 +103,7 @@ export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: 
 
                     <DropdownMenuSeparator />
 
-                    {!user.permissions?.can_use_special_prices && (
+                    {!user || !user.permissions?.can_use_special_prices && (
                         <DropdownMenuItem
                             onClick={() => setIsOpen(true)}
                             className="text-primary focus:text-primary focus:bg-primary/5 cursor-pointer font-medium"
@@ -105,15 +118,21 @@ export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: 
                         <span>{t('common:support')}</span>
                     </DropdownMenuItem>
 
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        variant="destructive"
-                        onSelect={() => setLogoutOpen(true)}
-                        className="cursor-pointer"
-                    >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>{t('common:logOut')}</span>
-                    </DropdownMenuItem>
+
+                    {!user || !user.permissions?.can_log_in &&
+                        <>
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuItem
+                                variant="destructive"
+                                onSelect={() => setLogoutOpen(true)}
+                                className="cursor-pointer"
+                            >
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>{t('common:logOut')}</span>
+                            </DropdownMenuItem>
+                        </>
+                    }
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -127,8 +146,6 @@ export default function UserDropdownWrapper() {
     const { setIsOpen } = useClientCodeDialogStore();
     const { t } = useTranslation();
     const [logoutOpen, setLogoutOpen] = React.useState(false);
-
-    if (!user) return null;
 
     return (
         <UserDropdown

@@ -1,54 +1,23 @@
-'use client';
+import { useEffect, type PropsWithChildren } from 'react';
 
-import { useEffect } from 'react';
-import { usePreferencesStore } from '~/hooks/use-user-preference-store';
-
-export const ThemeProvider = () => {
-    const { theme} = usePreferencesStore().preferences;
-
+export const ThemeProvider = ({ theme, children }: PropsWithChildren<{ theme: string }>) => {
     useEffect(() => {
         const root = document.documentElement;
-
-        const applyTheme = (newTheme: string) => {
-            if (newTheme === 'dark') {
-                root.classList.add('dark');
-            } else if (newTheme === 'light') {
-                root.classList.remove('dark');
-            } else {
-                // system: check system preference
-                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (systemDark) {
-                    root.classList.add('dark');
-                } else {
-                    root.classList.remove('dark');
-                }
-            }
-        };
-
-        applyTheme(theme);
-
-        // Listen for system theme changes if theme is 'system'
-        let mediaQuery: MediaQueryList | null = null;
-        let handler: ((e: MediaQueryListEvent) => void) | null = null;
-
-        if (theme === 'system') {
-            mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            handler = (e: MediaQueryListEvent) => {
-                if (e.matches) {
-                    root.classList.add('dark');
-                } else {
-                    root.classList.remove('dark');
-                }
-            };
-            mediaQuery.addEventListener('change', handler);
+        // Remove any existing theme class
+        root.classList.remove('light', 'dark', 'system');
+        // Add the current theme class (Tailwind & shadcn use 'dark')
+        if (theme === 'dark') {
+            root.classList.add('dark');
+        } else if (theme === 'light') {
+            root.classList.add('light'); // optional, but keeps consistency
+        } else {
+            root.classList.add('system')
         }
-
-        return () => {
-            if (mediaQuery && handler) {
-                mediaQuery.removeEventListener('change', handler);
-            }
-        };
+        // Optionally set a data attribute if your CSS needs more granularity
+        root.setAttribute('data-theme', theme);
     }, [theme]);
 
-    return null;
+    return <div className={theme}>
+        {children}
+    </div>
 };

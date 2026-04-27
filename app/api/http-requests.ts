@@ -31,7 +31,7 @@ export function registerUser(data: {
 }
 
 export function getAuthUser() {
-    return appFetch.get<{ user: User }>('/auth/user/get?with=preferences,client_code');
+    return appFetch.get<{ user: User }>('/auth/user/get?with=client_code');
 }
 
 export function updateAuthUser(payload: {
@@ -228,12 +228,12 @@ export function cancelDispute(transactionUuid: string) {
 
 // user preferences
 
-// export function fetchUserPreferences() {
-//     return appFetch.get<{ preferences?: UserPreference }>('/user/preferences');
-// }
+export function fetchUserPreferences(init: RequestInit) {
+    return appFetch.get<UserPreference>('/user/preferences', init);
+}
 
 export function updateUserPreferences(data: Partial<UserPreference>) {
-    return appFetch.put<{ preferences: UserPreference }>('/user/preferences', data);
+    return appFetch.put<UserPreference>('/user/preferences', data);
 }
 
 export function fetchAvailableShippingMethods(data: { address_id: number, cart_items: ({ weight: number, quantity: number, price: number })[] }) {
@@ -252,6 +252,6 @@ export function getLandingBlocksPublic(init: RequestInit) {
     return appFetch.get<LandingBlock[]>('/landing-blocks/public', init);
 }
 
-export function getSettings() {
-    return appFetch.get<Record<string, any>>('/settings/public');
+export function getSettings(init: RequestInit) {
+    return appFetch.get<Record<string, any>>('/settings/public', init);
 }

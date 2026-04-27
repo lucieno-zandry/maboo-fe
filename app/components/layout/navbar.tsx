@@ -12,7 +12,8 @@ import { ThemeSelector } from "./theme-selector";
 import { useMemo } from "react";
 import { NavSearch } from "./nav-search";
 import { NotificationsPopover } from "../notifications/notifications-popover";
-import type { loader } from "~/routes/frontoffice/layout";
+import type { loader } from "~/routes/config/config-boundary";
+import { useSettings } from "~/hooks/use-settings";
 
 type NavbarProps = {
     isUnAuthenticated: boolean,
@@ -24,6 +25,7 @@ type NavbarProps = {
     appLogoUrl: string,
     userCanUseNotifications: boolean,
     userCanUseSettings: boolean,
+    user: User | null,
 }
 
 export function NavbarView({
@@ -35,7 +37,9 @@ export function NavbarView({
     name,
     appLogoUrl,
     userCanUseNotifications,
-    userCanUseSettings }: NavbarProps) {
+    userCanUseSettings,
+    user
+}: NavbarProps) {
     return (
         <header className="flex flex-wrap justify-between items-center px-4 sm:px-8 py-3 shadow-sm bg-background/95 backdrop-blur-md sticky top-0 z-50 gap-4 border-b border-border">
 
@@ -78,37 +82,18 @@ export function NavbarView({
 
             {/* Right Section: Settings & Auth/User Actions */}
             <div className="flex items-center gap-3 sm:gap-4">
-                {isUnAuthenticated && (
-                    <>
-                        {/* Desktop Selectors: Hidden on mobile (sm breakpoint and below) */}
-                        <div className="hidden sm:flex items-center gap-2">
-                            <LanguageSwitcher />
-                            <CurrencySelector />
-                            <ThemeSelector />
-                        </div>
+                <Cart />
 
-                        {/* Login Button: Always visible top right */}
-                        <Button variant="default" size="sm" className="shadow-sm" asChild>
-                            <Link to={appPathname('/auth')}>{t('common:logIn')}</Link>
-                        </Button>
-                        
-                        <Cart />
-                    </>
-                )}
+                {(isUnAuthenticated || user?.permissions?.can_log_in) &&
+                    <Button variant="default" size="sm" className="shadow-sm" asChild>
+                        <Link to={appPathname('/auth')}>{t('common:logIn')}</Link>
+                    </Button>}
 
-                {isAuthenticated && (
-                    <div className="flex items-center gap-3 sm:gap-4">
-                        <Cart />
-                        {userCanUseNotifications &&
-                            <NotificationsPopover />}
+                {user?.permissions?.can_use_notifications &&
+                    <NotificationsPopover />}
 
-                        {userCanUseSettings &&
-                            <UserDropdown />}
-                    </div>
-                )}
+                <UserDropdown />
             </div>
-
-            {/* --- Mobile Bottom Sections --- */}
 
             {/* Mobile Search */}
             {navbarSearchVisible && (
@@ -116,34 +101,24 @@ export function NavbarView({
                     <NavSearch />
                 </div>
             )}
-
-            {/* Mobile Selectors (Unauthenticated) */}
-            {isUnAuthenticated && (
-                <div className="w-full flex sm:hidden justify-center items-center gap-6 mt-1 pt-3 border-t border-border/50">
-                    <LanguageSwitcher />
-                    <CurrencySelector />
-                    <ThemeSelector />
-                </div>
-            )}
-
         </header>
     )
 }
 
 export default function Navbar() {
-    const { settings } = useLoaderData<typeof loader>();
+    const { get } = useSettings();
 
     const { authStatus, user } = useUserStore();
     const { t } = useTranslation();
     const { pathname } = useLocation();
     const appPathname = useAppPathname();
 
-    const name: string = settings.app_name || 'Alofo';
-    const appLogoUrl: string = settings.app_logo || '';
+    const name: string = get('app_name', 'Alofo');
+    const appLogoUrl: string = get('app_logo', '');
 
     const isUnAuthenticated = useMemo(() => authStatus === "unauthenticated", [authStatus])
     const isAuthenticated = useMemo(() => authStatus === "authenticated", [authStatus])
-    const navbarSearchVisible = useMemo(() => (!pathname.includes('/search')) && (isAuthenticated || isUnAuthenticated), [pathname, isAuthenticated, isUnAuthenticated]);
+    const navbarSearchVisible = useMemo(() => (!pathname.includes('/search')), [pathname]);
 
     const userCanUseNotifications = !!user?.permissions?.can_use_notifications;
     const userCanUseSettings = !!user?.permissions?.can_use_settings;
@@ -158,5 +133,6 @@ export default function Navbar() {
         appLogoUrl={appLogoUrl}
         userCanUseNotifications={userCanUseNotifications}
         userCanUseSettings={userCanUseSettings}
+        user={user}
     />
 }

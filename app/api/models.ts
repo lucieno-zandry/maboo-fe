@@ -7,7 +7,7 @@ type User = {
   name: string;
   email: string;
   email_verified_at: string;
-  role: "admin" | "manager" | "client";
+  role: "admin" | "manager" | "client" | "guest";
   avatar_image_id?: number;
   created_at: string;
   updated_at: string;
@@ -21,6 +21,8 @@ type User = {
     can_use_notifications: boolean;
     can_use_preferences: boolean;
     can_use_settings: boolean;
+    can_log_in: boolean;
+    can_use_order: boolean;
   };
 
   // relations

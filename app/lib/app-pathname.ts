@@ -1,5 +1,6 @@
 import { useParams, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { defaultPreference, usePreferencesStore, type StorePreference } from "~/hooks/use-user-preference-store";
+import i18n from "~/i18n/i18n";
 
 export function getPreferencesFromLoaderFunctionArgs(loaderFunctionArgs: LoaderFunctionArgs): StorePreference {
     const { params, request } = loaderFunctionArgs;
@@ -19,31 +20,15 @@ export function getPreferencesFromLoaderFunctionArgs(loaderFunctionArgs: LoaderF
     } as StorePreference
 }
 
-export default function appPathname(pathname: string, preferences?: StorePreference) {
-    let { preferences: prefs } = usePreferencesStore.getState()
-
-    if (preferences) {
-        prefs = preferences;
-    }
-
-    const to = pathnameWithPreference({ pathname, preferences: prefs });
-    return `/${prefs.language}${to}`;
+export default function appPathname(pathname: string) {
+    const language = i18n.language;
+    return `/${language}${pathname}`;
 }
 
 export function useAppPathname() {
-    const [searchParams] = useSearchParams();
-    const { lang: language = 'en' } = useParams()
+    const { lang = 'en' } = useParams();
 
-    const currency = searchParams.get('currency') || defaultPreference.currency;
-    const theme = (searchParams.get('theme') || defaultPreference.theme) as StorePreference['theme'];
-
-    const getPathname = (pathname: string) => appPathname(pathname, {
-        ...defaultPreference,
-        currency,
-        language,
-        theme,
-    });
-
+    const getPathname = (pathname: string) => `/${lang}${pathname}`;
     return getPathname;
 }
 

@@ -1,6 +1,7 @@
 import useRedirectAction from "~/hooks/use-redirect-action";
 import redirectPathnames from "./redirect-pathnames";
 import appPathname from "./app-pathname";
+import { toast } from "sonner";
 
 let redirectLock: ReturnType<typeof setTimeout> | null = null;
 
@@ -20,6 +21,7 @@ const handleActionRedirection = (
         return;
     }
 
+    toast.error(json.message || 'You have been redirected!')
     redirect(appPathname(redirectPathname));
 
     redirectLock = setTimeout(() => {

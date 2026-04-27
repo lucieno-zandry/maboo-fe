@@ -8,6 +8,7 @@ import {
 import { usePreferencesStore } from '~/hooks/use-user-preference-store';
 import { useUserStore } from '~/hooks/use-user';
 import { Sun, Moon, Laptop, Palette } from 'lucide-react';
+import { useUpdatePreferences } from '~/hooks/use-update-preferences';
 
 interface ThemeSelectProps {
     value: string;
@@ -55,7 +56,9 @@ const ThemeSelect = ({ value, onChange, disabled }: ThemeSelectProps) => {
 
 export const ThemeSelector = ({ type = 'navbar' }: { type?: 'navbar' | 'dropdown' }) => {
     const { authStatus } = useUserStore();
-    const { preferences, updatePreferences } = usePreferencesStore();
+    const { preferences } = usePreferencesStore();
+
+    const updatePreferences = useUpdatePreferences();
 
     const handleThemeChange = (newTheme: string) => {
         updatePreferences({ theme: newTheme as 'light' | 'dark' | 'system' });

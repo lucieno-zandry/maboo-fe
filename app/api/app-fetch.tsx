@@ -1,8 +1,6 @@
 import i18next from "i18next";
-import { defaultPreference } from "~/hooks/use-user-preference-store";
 import buildQuery from "~/lib/build-query";
 import executeRequest from "~/lib/execute-request";
-import isCsr from "~/lib/is-csr";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -64,19 +62,6 @@ const defaultHeaders = (): HeadersInit => {
     const headers: HeadersInit = {
         'Accept': 'application/json',
         'Accept-Language': i18next.language || 'en',
-    }
-
-    if (isCsr()) {
-        const token = localStorage.getItem('token');
-        const tokenType = "Bearer";
-        const searchParams = new URLSearchParams(location.search);
-        const currency = searchParams.get('currency') || defaultPreference.currency;
-
-        if (token && tokenType) {
-            // headers['Authorization'] = `${tokenType} ${token}`;
-        }
-
-        headers['X-Currency'] = currency;
     }
 
     return headers;

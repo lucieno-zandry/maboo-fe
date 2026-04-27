@@ -2,9 +2,9 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
-    index("routes/i18n/root-redirect.tsx"),
+    index("routes/config/root-redirect.tsx"),
 
-    route("/:lang", "routes/i18n/lang-boundary.tsx", [
+    route("/:lang", "routes/config/config-boundary.tsx", [
         route("", "routes/frontoffice/layout.tsx", [
             index("routes/frontoffice/landing/index.tsx"),
             route("products", "routes/frontoffice/products.tsx"),
