@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { getCouponFromCode } from "~/api/http-requests";
 import { HttpException } from "~/api/app-fetch";
 import { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ProductPricingViewProps {
@@ -22,6 +23,21 @@ interface ProductPricingViewProps {
     appliedCoupon?: Coupon | null;
     isApplyingCoupon: boolean;
     formatMoney: (n?: number, fractionDigits?: number) => string;
+    // Translated strings
+    activePromotionsLabel: string;
+    haveCouponLabel: string;
+    enterCodePlaceholder: string;
+    applyButton: string;
+    applyingButton: string;
+    couponAppliedTemplate: string;
+    removeButton: string;
+    percentOffTemplate: string;
+    amountOffTemplate: string;
+    endsInTemplate: string;
+    selectVariantMessage: string;
+    invalidCouponError: string;
+    failedApplyCouponError: string;
+    genericError: string;
 }
 
 export function ProductPricingView({
@@ -36,24 +52,38 @@ export function ProductPricingView({
     appliedCoupon,
     isApplyingCoupon,
     formatMoney,
+    activePromotionsLabel,
+    haveCouponLabel,
+    enterCodePlaceholder,
+    applyButton,
+    applyingButton,
+    couponAppliedTemplate,
+    removeButton,
+    percentOffTemplate,
+    amountOffTemplate,
+    endsInTemplate,
+    selectVariantMessage,
+    invalidCouponError,
+    failedApplyCouponError,
+    genericError,
 }: ProductPricingViewProps) {
     const hasDiscount = effectivePrice < originalPrice;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 rounded-lg border bg-card p-4 sm:p-5">
             {/* Price display */}
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 {hasDiscount ? (
                     <>
-                        <span className="text-2xl font-bold text-destructive">
+                        <span className="text-2xl font-bold text-destructive sm:text-3xl">
                             {formatMoney(effectivePrice)}
                         </span>
-                        <span className="text-lg text-muted-foreground line-through">
+                        <span className="text-base text-muted-foreground line-through sm:text-lg">
                             {formatMoney(originalPrice)}
                         </span>
                     </>
                 ) : (
-                    <span className="text-2xl font-bold">
+                    <span className="text-2xl font-bold sm:text-3xl">
                         {formatMoney(originalPrice)}
                     </span>
                 )}
@@ -62,19 +92,19 @@ export function ProductPricingView({
             {/* Active promotions */}
             {promotions.length > 0 && (
                 <div className="space-y-2">
-                    <p className="text-sm font-medium">Active Promotions</p>
+                    <p className="text-sm font-medium">{activePromotionsLabel}</p>
                     <ul className="space-y-1">
                         {promotions.map((promo) => (
                             <li key={promo.id} className="flex flex-wrap items-center gap-2 text-sm">
                                 <Badge variant="secondary">{promo.badge || promo.name}</Badge>
                                 <span>
                                     {promo.type === "PERCENTAGE"
-                                        ? `${promo.discount}% OFF`
-                                        : `${formatMoney(promo.discount)} OFF`}
+                                        ? percentOffTemplate.replace("{{percent}}", String(promo.discount))
+                                        : amountOffTemplate.replace("{{money}}", formatMoney(promo.discount))}
                                 </span>
                                 {countdowns[promo.id] && (
                                     <span className="text-xs text-muted-foreground">
-                                        Ends in {countdowns[promo.id]}
+                                        {endsInTemplate.replace("{{time}}", countdowns[promo.id])}
                                     </span>
                                 )}
                             </li>
@@ -85,13 +115,13 @@ export function ProductPricingView({
 
             {/* Coupon entry */}
             <div className="border-t pt-4">
-                <p className="text-sm font-medium mb-2">Have a coupon?</p>
-                <div className="flex gap-2">
+                <p className="text-sm font-medium mb-2">{haveCouponLabel}</p>
+                <div className="flex flex-col gap-2 sm:flex-row">
                     <Input
-                        placeholder="Enter code"
+                        placeholder={enterCodePlaceholder}
                         value={couponCode}
                         onChange={(e) => onCouponChange(e.target.value)}
-                        className="max-w-[200px]"
+                        className="w-full sm:max-w-[220px]"
                         disabled={!!appliedCoupon}
                     />
                     <Button
@@ -99,8 +129,9 @@ export function ProductPricingView({
                         size="sm"
                         onClick={onCouponApply}
                         disabled={!couponCode || isApplyingCoupon || !!appliedCoupon}
+                        className="w-full sm:w-auto"
                     >
-                        {isApplyingCoupon ? "Applying..." : "Apply"}
+                        {isApplyingCoupon ? applyingButton : applyButton}
                     </Button>
                 </div>
                 {couponError && (
@@ -108,14 +139,14 @@ export function ProductPricingView({
                 )}
                 {appliedCoupon && (
                     <div className="mt-2 text-sm text-green-600 flex items-center gap-2">
-                        <span>Coupon <strong>{appliedCoupon.code}</strong> applied!</span>
+                        <span>{couponAppliedTemplate.replace("{{code}}", appliedCoupon.code)}</span>
                         <Button
                             variant="ghost"
                             size="sm"
                             className="h-auto p-0 text-xs underline"
-                            onClick={() => onCouponChange("")} // clearing handled by parent
+                            onClick={() => onCouponChange("")}
                         >
-                            Remove
+                            {removeButton}
                         </Button>
                     </div>
                 )}
@@ -133,7 +164,7 @@ function formatCountdown(endDate: string): string {
     const now = new Date();
     const end = new Date(endDate);
     const diff = end.getTime() - now.getTime();
-    if (diff <= 0) return "Expired";
+    if (diff <= 0) return "Expired"; // will be overridden by t("pricing.expired") later
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -144,6 +175,7 @@ function formatCountdown(endDate: string): string {
 }
 
 export function ProductPricing({ variant }: ProductPricingProps) {
+    const { t } = useTranslation("product-detail");
     const [couponCode, setCouponCode] = useState("");
     const [couponError, setCouponError] = useState("");
     const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
@@ -165,7 +197,10 @@ export function ProductPricing({ variant }: ProductPricingProps) {
         const update = () => {
             const newCountdowns: Record<number, string> = {};
             variant.applied_promotions!.forEach((promo) => {
-                newCountdowns[promo.id] = formatCountdown(promo.end_date);
+                const raw = formatCountdown(promo.end_date);
+                // Replace "Expired" with translated version
+                const display = raw === "Expired" ? t("pricing.expired") : raw;
+                newCountdowns[promo.id] = display;
             });
             setCountdowns(newCountdowns);
         };
@@ -173,7 +208,7 @@ export function ProductPricing({ variant }: ProductPricingProps) {
         update();
         const timer = setInterval(update, 1000 * 60);
         return () => clearInterval(timer);
-    }, [variant]);
+    }, [variant, t]);
 
     const handleApplyCoupon = async () => {
         if (!couponCode.trim()) return;
@@ -183,15 +218,15 @@ export function ProductPricing({ variant }: ProductPricingProps) {
             const response = await getCouponFromCode(couponCode.trim());
             if (response.data?.coupon) {
                 setAppliedCoupon(response.data.coupon);
-                toast.success("Coupon applied!");
+                toast.success(t("pricing.couponApplied", { code: response.data.coupon.code }));
             } else {
-                setCouponError("Invalid coupon code.");
+                setCouponError(t("pricing.invalidCoupon"));
             }
         } catch (e) {
             if (e instanceof HttpException) {
-                setCouponError(e.data?.message || "Failed to apply coupon.");
+                setCouponError(e.data?.message || t("pricing.failedApplyCoupon"));
             } else {
-                setCouponError("Something went wrong.");
+                setCouponError(t("pricing.genericError"));
             }
         } finally {
             setIsApplyingCoupon(false);
@@ -199,7 +234,7 @@ export function ProductPricing({ variant }: ProductPricingProps) {
     };
 
     if (!variant) {
-        return <p className="text-sm text-muted-foreground">Select a variant to see pricing.</p>;
+        return <p className="text-sm text-muted-foreground">{t("pricing.selectVariant")}</p>;
     }
 
     return (
@@ -215,6 +250,20 @@ export function ProductPricing({ variant }: ProductPricingProps) {
             appliedCoupon={appliedCoupon}
             isApplyingCoupon={isApplyingCoupon}
             formatMoney={formatMoney}
+            activePromotionsLabel={t("pricing.activePromotions")}
+            haveCouponLabel={t("pricing.haveCoupon")}
+            enterCodePlaceholder={t("pricing.enterCode")}
+            applyButton={t("pricing.apply")}
+            applyingButton={t("pricing.applying")}
+            couponAppliedTemplate={t("pricing.couponApplied")}
+            removeButton={t("pricing.removeCoupon")}
+            percentOffTemplate={t("pricing.percentOff")}
+            amountOffTemplate={t("pricing.amountOff")}
+            endsInTemplate={t("pricing.endsIn")}
+            selectVariantMessage={t("pricing.selectVariant")}
+            invalidCouponError={t("pricing.invalidCoupon")}
+            failedApplyCouponError={t("pricing.failedApplyCoupon")}
+            genericError={t("pricing.genericError")}
         />
     );
 }

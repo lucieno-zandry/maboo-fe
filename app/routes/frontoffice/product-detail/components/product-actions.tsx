@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Minus, Plus, ShoppingCart } from "lucide-react"; // assuming lucide-react is installed
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { useAddToCart } from "../hooks/use-add-to-cart";
 import { useBuyNow } from "../hooks/use-buy-now";
+import { useTranslation } from "react-i18next";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ProductActionsViewProps {
@@ -15,6 +16,10 @@ interface ProductActionsViewProps {
     onBuyNow: () => void;
     isDisabled: boolean;
     isOutOfStock: boolean;
+    // Translated strings
+    addToCartLabel: string;
+    buyNowLabel: string;
+    outOfStockMessage: string;
 }
 
 export function ProductActionsView({
@@ -25,9 +30,12 @@ export function ProductActionsView({
     onBuyNow,
     isDisabled,
     isOutOfStock,
+    addToCartLabel,
+    buyNowLabel,
+    outOfStockMessage,
 }: ProductActionsViewProps) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 rounded-lg border bg-card p-4 sm:p-5">
             {/* Quantity selector */}
             <div className="flex items-center gap-2">
                 <Button
@@ -35,15 +43,17 @@ export function ProductActionsView({
                     size="icon"
                     disabled={isDisabled || quantity <= 1}
                     onClick={onDecrease}
+                    className="h-10 w-10"
                 >
                     <Minus className="h-4 w-4" />
                 </Button>
-                <span className="w-8 text-center text-lg font-medium">{quantity}</span>
+                <span className="w-10 text-center text-lg font-medium">{quantity}</span>
                 <Button
                     variant="outline"
                     size="icon"
                     disabled={isDisabled}
                     onClick={onIncrease}
+                    className="h-10 w-10"
                 >
                     <Plus className="h-4 w-4" />
                 </Button>
@@ -57,7 +67,7 @@ export function ProductActionsView({
                     disabled={isDisabled}
                 >
                     <ShoppingCart className="h-4 w-4" />
-                    Add to Cart
+                    {addToCartLabel}
                 </Button>
                 <Button
                     variant="secondary"
@@ -65,11 +75,11 @@ export function ProductActionsView({
                     onClick={onBuyNow}
                     disabled={isDisabled}
                 >
-                    Buy Now
+                    {buyNowLabel}
                 </Button>
             </div>
             {isOutOfStock && (
-                <p className="text-sm text-destructive">This item is currently out of stock.</p>
+                <p className="text-sm text-destructive">{outOfStockMessage}</p>
             )}
         </div>
     );
@@ -81,6 +91,7 @@ interface ProductActionsProps {
 }
 
 export function ProductActions({ variant }: ProductActionsProps) {
+    const { t } = useTranslation("product-detail");
     const [quantity, setQuantity] = useState(1);
     const addToCart = useAddToCart();
     const buyNow = useBuyNow();
@@ -110,6 +121,9 @@ export function ProductActions({ variant }: ProductActionsProps) {
             onBuyNow={handleBuyNow}
             isDisabled={isDisabled}
             isOutOfStock={isOutOfStock}
+            addToCartLabel={t("actions.addToCart")}
+            buyNowLabel={t("actions.buyNow")}
+            outOfStockMessage={t("actions.outOfStockMessage")}
         />
     );
 }

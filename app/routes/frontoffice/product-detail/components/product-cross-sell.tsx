@@ -5,6 +5,7 @@ import { getProducts } from "~/api/http-requests";
 import { useFormatMoney } from "~/lib/format-money";
 import { Link } from "react-router";
 import { useAppPathname } from "~/lib/app-pathname";
+import { useTranslation } from "react-i18next";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface CrossSellProduct {
@@ -17,6 +18,10 @@ interface ProductCrossSellViewProps {
     loading: boolean;
     formatMoney: (n?: number) => string;
     getProductUrl: (slug: string) => string;
+    // Translated strings
+    title: string;
+    noImageLabel: string;
+    fromPriceLabel: string;
 }
 
 export function ProductCrossSellView({
@@ -24,11 +29,14 @@ export function ProductCrossSellView({
     loading,
     formatMoney,
     getProductUrl,
+    title,
+    noImageLabel,
+    fromPriceLabel,
 }: ProductCrossSellViewProps) {
     if (loading) {
         return (
             <div className="mt-12 space-y-4">
-                <h2 className="text-xl font-semibold">You might also like</h2>
+                <h2 className="text-xl font-semibold">{title}</h2>
                 <div className="flex gap-4 overflow-x-auto pb-4">
                     {Array.from({ length: 4 }).map((_, i) => (
                         <div key={i} className="w-48 shrink-0 animate-pulse space-y-2">
@@ -46,13 +54,13 @@ export function ProductCrossSellView({
 
     return (
         <section className="mt-12">
-            <h2 className="text-xl font-semibold mb-4">You might also like</h2>
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+            <h2 className="text-xl font-semibold mb-4">{title}</h2>
+            <div className="grid auto-cols-[minmax(160px,1fr)] grid-flow-col gap-4 overflow-x-auto pb-4 snap-x sm:auto-cols-[minmax(190px,1fr)] lg:grid-flow-row lg:grid-cols-4 lg:overflow-visible">
                 {products.map(({ product, cheapestVariant }) => (
                     <Link
                         key={product.id}
                         to={getProductUrl(product.slug)}
-                        className="w-48 shrink-0 snap-start group"
+                        className="group snap-start"
                     >
                         <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-2">
                             {product.images?.[0] ? (
@@ -63,14 +71,14 @@ export function ProductCrossSellView({
                                 />
                             ) : (
                                 <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-                                    No image
+                                    {noImageLabel}
                                 </div>
                             )}
                         </div>
                         <p className="text-sm font-medium line-clamp-2">{product.title}</p>
                         {cheapestVariant && (
                             <p className="text-sm text-muted-foreground">
-                                From {formatMoney(cheapestVariant.price)}
+                                {fromPriceLabel.replace("{{money}}", formatMoney(cheapestVariant.price))}
                             </p>
                         )}
                     </Link>
@@ -86,6 +94,7 @@ interface ProductCrossSellProps {
 }
 
 export function ProductCrossSell({ product }: ProductCrossSellProps) {
+    const { t } = useTranslation("product-detail");
     const [products, setProducts] = useState<CrossSellProduct[]>([]);
     const [loading, setLoading] = useState(true);
     const formatMoney = useFormatMoney();
@@ -125,6 +134,9 @@ export function ProductCrossSell({ product }: ProductCrossSellProps) {
             loading={loading}
             formatMoney={formatMoney}
             getProductUrl={getProductUrl}
+            title={t("crossSell.title")}
+            noImageLabel={t("crossSell.noImage")}
+            fromPriceLabel={t("crossSell.fromPrice")}
         />
     );
 }

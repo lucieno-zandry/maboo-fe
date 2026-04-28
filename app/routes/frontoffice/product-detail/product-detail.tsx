@@ -53,10 +53,10 @@ export default function ProductDetailPage() {
     if (!product) return <ProductNotFound />;
 
     return (
-        <div className="container mx-auto py-8 px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8">
+            <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-2 lg:items-start">
                 <ProductImagesGallery images={product.images ?? []} />
-                <div className="space-y-6">
+                <div className="space-y-5 sm:space-y-6 lg:sticky lg:top-24">
                     <ProductHeader product={product} categories={categories} />
                     <ProductVariantPicker product={product} onVariantChange={setSelectedVariant} />
                     <ProductStockBadge variant={selectedVariant} />
@@ -65,7 +65,7 @@ export default function ProductDetailPage() {
                 </div>
             </div>
 
-            <div className="mt-12 space-y-12">
+            <div className="mt-8 space-y-8 sm:mt-10 sm:space-y-10 lg:mt-12 lg:space-y-12">
                 <ProductShare product={product} />
                 {selectedVariant && <ProductShippingEstimator variant={selectedVariant} />}
                 <ProductCrossSell product={product} />

@@ -17,10 +17,10 @@ export function ProductVariantPickerView({
     if (!variantGroups.length) return null;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {variantGroups.map((group) => (
                 <div key={group.id}>
-                    <h3 className="text-sm font-medium mb-2">{group.name}</h3>
+                    <h3 className="mb-2 text-sm font-medium">{group.name}</h3>
                     <div className="flex flex-wrap gap-2">
                         {group.variant_options?.map((option) => {
                             const isSelected = selectedOptions[group.id] === option.id;
@@ -29,7 +29,7 @@ export function ProductVariantPickerView({
                                     key={option.id}
                                     type="button"
                                     onClick={() => onOptionSelect(group.id, option.id)}
-                                    className={`px-4 py-2 border rounded-md text-sm font-medium transition ${isSelected
+                                    className={`min-h-10 rounded-md border px-3 py-2 text-sm font-medium transition sm:px-4 ${isSelected
                                         ? "border-primary bg-primary text-primary-foreground"
                                         : "border-input bg-background hover:bg-accent hover:text-accent-foreground"
                                         }`}

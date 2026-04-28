@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { fetchAvailableShippingMethods } from "~/api/http-requests";
 import { useAddresses } from "../hooks/use-addresses";
-import { useUserStore } from "~/hooks/use-user";
 import { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ShippingOption {
@@ -19,6 +19,13 @@ interface ProductShippingEstimatorViewProps {
     formatMoney: (n?: number) => string;
     location?: { country: string; city: string };
     variant?: Variant | null;
+    // Translated strings
+    selectVariantMessage: string;
+    noShippingMessage: string;
+    shippingTitle: string;
+    toLocationTemplate: string;
+    freeLabel: string;
+    deliveryDaysTemplate: string;
 }
 
 export function ProductShippingEstimatorView({
@@ -27,9 +34,15 @@ export function ProductShippingEstimatorView({
     formatMoney,
     location,
     variant,
+    selectVariantMessage,
+    noShippingMessage,
+    shippingTitle,
+    toLocationTemplate,
+    freeLabel,
+    deliveryDaysTemplate,
 }: ProductShippingEstimatorViewProps) {
     if (!variant) {
-        return <p className="text-sm text-muted-foreground">Select a variant to see shipping</p>;
+        return <p className="text-sm text-muted-foreground">{selectVariantMessage}</p>;
     }
 
     if (loading) {
@@ -42,28 +55,30 @@ export function ProductShippingEstimatorView({
     }
 
     if (!options.length) {
-        return <p className="text-sm text-destructive">No shipping available for your location</p>;
+        return <p className="text-sm text-destructive">{noShippingMessage}</p>;
     }
 
     return (
-        <div className="space-y-3 border rounded-lg p-4">
-            <h3 className="text-sm font-semibold">Shipping</h3>
+        <div className="space-y-3 rounded-lg border bg-card p-4 sm:p-5">
+            <h3 className="text-sm font-semibold">{shippingTitle}</h3>
             {location && (
                 <p className="text-xs text-muted-foreground">
-                    To: {location.city}, {location.country}
+                    {toLocationTemplate.replace("{{city}}", location.city).replace("{{country}}", location.country)}
                 </p>
             )}
             <ul className="space-y-2">
                 {options.map((opt) => (
-                    <li key={opt.method.id} className="flex justify-between text-sm">
+                    <li key={opt.method.id} className="flex items-start justify-between gap-3 text-sm">
                         <div className="flex flex-col">
                             <span className="font-medium">{opt.method.name}</span>
                             <span className="text-xs text-muted-foreground">
-                                {opt.method.min_delivery_days ?? "?"}-{opt.method.max_delivery_days ?? "?"} days
+                                {deliveryDaysTemplate
+                                    .replace("{{min}}", String(opt.method.min_delivery_days ?? "?"))
+                                    .replace("{{max}}", String(opt.method.max_delivery_days ?? "?"))}
                             </span>
                         </div>
-                        <span className={opt.isFree ? "text-green-600 font-medium" : ""}>
-                            {opt.isFree ? "Free" : formatMoney(opt.cost)}
+                        <span className={`shrink-0 ${opt.isFree ? "font-medium text-green-600" : ""}`}>
+                            {opt.isFree ? freeLabel : formatMoney(opt.cost)}
                         </span>
                     </li>
                 ))}
@@ -79,6 +94,7 @@ interface ProductShippingEstimatorProps {
 }
 
 export function ProductShippingEstimator({ variant, quantity = 1 }: ProductShippingEstimatorProps) {
+    const { t } = useTranslation("product-detail");
     const [options, setOptions] = useState<ShippingOption[]>([]);
     const [loading, setLoading] = useState(false);
     const [location, setLocation] = useState<{ country: string; city: string } | undefined>();
@@ -119,7 +135,7 @@ export function ProductShippingEstimator({ variant, quantity = 1 }: ProductShipp
             })
             .catch(() => setOptions([]))
             .finally(() => setLoading(false));
-    }, [variant?.weight_kg, quantity, addresses]);
+    }, [variant?.weight_kg, quantity, addresses, variant]);
 
     return (
         <ProductShippingEstimatorView
@@ -128,6 +144,12 @@ export function ProductShippingEstimator({ variant, quantity = 1 }: ProductShipp
             formatMoney={formatMoney}
             location={location}
             variant={variant}
+            selectVariantMessage={t("shipping.selectVariant")}
+            noShippingMessage={t("shipping.noShipping")}
+            shippingTitle={t("shipping.title")}
+            toLocationTemplate={t("shipping.toLocation")}
+            freeLabel={t("shipping.free")}
+            deliveryDaysTemplate={t("shipping.deliveryDays")}
         />
     );
 }

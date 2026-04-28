@@ -11,7 +11,7 @@ export default [
             route("product/:slug", "routes/frontoffice/product-detail/product-detail.tsx"),
             route("settings", "routes/common/settings.tsx"),
             route("addresses", "routes/frontoffice/addresses.tsx"),
-            route("checkout", "routes/frontoffice/checkout.tsx"),
+            route("checkout", "routes/frontoffice/checkout/checkout.tsx"),
             route("orders", "routes/frontoffice/orders.tsx"),
             route("orders/:uuid", "routes/frontoffice/order-details.tsx"),
             route("search/:query", "routes/frontoffice/search.tsx"),
