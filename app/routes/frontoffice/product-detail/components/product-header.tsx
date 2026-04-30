@@ -3,6 +3,7 @@
 import { Link } from "react-router";
 import { useAppPathname } from "~/lib/app-pathname";
 import { useTranslation } from "react-i18next";
+import { ChevronRight, Tag } from "lucide-react";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ProductHeaderViewProps {
@@ -25,38 +26,50 @@ export function ProductHeaderView({
     return (
         <div className="space-y-4">
             {/* Breadcrumb */}
-            <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground sm:text-sm">
+            <nav className="flex flex-wrap items-center gap-1 text-xs text-neutral-400">
                 {breadcrumbs.map((crumb, idx) => (
-                    <span key={idx} className="inline-flex items-center gap-2">
+                    <span key={idx} className="inline-flex items-center gap-1">
                         {crumb.href ? (
-                            <Link to={crumb.href} className="hover:text-foreground hover:underline">
+                            <Link
+                                to={crumb.href}
+                                className="hover:text-neutral-700 transition-colors duration-150"
+                            >
                                 {crumb.label}
                             </Link>
                         ) : (
-                            <span>{crumb.label}</span>
+                            <span className="text-neutral-600 font-medium">{crumb.label}</span>
                         )}
-                        {idx < breadcrumbs.length - 1 && <span>/</span>}
+                        {idx < breadcrumbs.length - 1 && (
+                            <ChevronRight className="h-3 w-3 text-neutral-300" />
+                        )}
                     </span>
                 ))}
             </nav>
 
             {/* Title */}
-            <h1 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl">{title}</h1>
+            <h1
+                className="text-3xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-4xl"
+                style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
+            >
+                {title}
+            </h1>
 
-            {/* Description (rich text) */}
+            {/* Description */}
             {description && (
                 <div
-                    className="prose prose-sm max-w-none text-muted-foreground sm:prose-base"
+                    className="prose prose-sm max-w-none text-neutral-500 sm:prose-base leading-relaxed
+                        prose-p:my-2 prose-headings:text-neutral-700 prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline"
                     dangerouslySetInnerHTML={{ __html: description }}
                 />
             )}
 
-            {/* Category link (if any) */}
+            {/* Category link */}
             {category && (
                 <Link
                     to={appPath(`/products?category_id=${category.id}`)}
-                    className="inline-flex text-sm text-primary underline underline-offset-2 hover:opacity-80"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 hover:bg-amber-100 transition-colors duration-150"
                 >
+                    <Tag className="h-3 w-3" />
                     {seeMoreLabel.replace("{{category}}", category.title)}
                 </Link>
             )}
@@ -67,12 +80,11 @@ export function ProductHeaderView({
 // ── Smart (Container) ────────────────────────────────────────────────────────
 interface ProductHeaderProps {
     product: Product;
-    categories: Category[] | null; // all categories from store or fetched
+    categories: Category[] | null;
 }
 
 export function ProductHeader({ product, categories }: ProductHeaderProps) {
     const { t } = useTranslation("product-detail");
-    // Build breadcrumb from category hierarchy
     const breadcrumbs = buildBreadcrumbs({ category: product.category, allCategories: categories || [], t });
 
     return (
@@ -86,11 +98,10 @@ export function ProductHeader({ product, categories }: ProductHeaderProps) {
     );
 }
 
-// Helper: traverse parent chain, now with translations
 function buildBreadcrumbs(params: {
-    category?: Category,
-    allCategories: Category[],
-    t: (key: string) => string
+    category?: Category;
+    allCategories: Category[];
+    t: (key: string) => string;
 }) {
     const { allCategories = [], t, category } = params;
 
@@ -103,7 +114,6 @@ function buildBreadcrumbs(params: {
         return crumbs;
     }
 
-    // Build path from current category up to root
     const path: Category[] = [];
     let current: Category | undefined = category;
     while (current) {

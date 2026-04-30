@@ -1,7 +1,7 @@
 // routes/frontoffice/product-detail/components/product-images-gallery.tsx
 
-import { useState, useRef } from "react";
-import { ImageIcon } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { ImageIcon, ZoomIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export interface AppImage {
@@ -14,35 +14,46 @@ export interface AppImage {
 function ZoomableImage({ src, alt }: { src: string; alt?: string }) {
     const [isZoomed, setIsZoomed] = useState(false);
     const [position, setPosition] = useState({ x: 50, y: 50 });
-    const imgRef = useRef<HTMLImageElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!imgRef.current) return;
-
-        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - left) / width) * 100;
-        const y = ((e.clientY - top) / height) * 100;
-
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
+        const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+        const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+        const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
         setPosition({ x, y });
-    };
+    }, []);
 
     return (
         <div
-            className="group relative flex-1 overflow-hidden rounded-lg border bg-muted cursor-crosshair"
+            ref={containerRef}
+            className="relative flex-1 overflow-hidden rounded-2xl bg-neutral-50 border border-neutral-100"
+            style={{ cursor: isZoomed ? "zoom-out" : "zoom-in" }}
             onMouseEnter={() => setIsZoomed(true)}
-            onMouseLeave={() => setIsZoomed(false)}
+            onMouseLeave={() => {
+                setIsZoomed(false);
+                setPosition({ x: 50, y: 50 });
+            }}
             onMouseMove={handleMouseMove}
         >
             <img
-                ref={imgRef}
                 src={src}
                 alt={alt || "Product image"}
-                className="aspect-square w-full object-contain sm:aspect-[4/3] md:max-h-[520px] transition-transform duration-200 ease-out"
+                className="w-full object-contain transition-transform duration-200 ease-out"
                 style={{
+                    aspectRatio: "1 / 1",
+                    maxHeight: "560px",
                     transformOrigin: `${position.x}% ${position.y}%`,
-                    transform: isZoomed ? "scale(2)" : "scale(1)",
+                    transform: isZoomed ? "scale(2.2)" : "scale(1)",
+                    willChange: "transform",
                 }}
             />
+            {!isZoomed && (
+                <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-white/80 backdrop-blur-sm px-2.5 py-1.5 text-xs text-neutral-500 shadow-sm border border-neutral-100 pointer-events-none">
+                    <ZoomIn className="h-3 w-3" />
+                    <span>Hover to zoom</span>
+                </div>
+            )}
         </div>
     );
 }
@@ -52,7 +63,6 @@ interface ProductImagesGalleryViewProps {
     images: AppImage[];
     selectedIndex: number;
     onSelect: (index: number) => void;
-    // Translated strings
     noImagesLabel: string;
     selectImageLabel: string;
     thumbnailAltPattern: string;
@@ -70,9 +80,9 @@ export function ProductImagesGalleryView({
 }: ProductImagesGalleryViewProps) {
     if (!images || images.length === 0) {
         return (
-            <div className="flex aspect-square w-full items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 sm:aspect-[4/3] md:max-h-[520px]">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <ImageIcon className="h-10 w-10 opacity-50" />
+            <div className="flex aspect-square w-full items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50">
+                <div className="flex flex-col items-center gap-3 text-neutral-400">
+                    <ImageIcon className="h-12 w-12 opacity-30" />
                     <p className="text-sm font-medium">{noImagesLabel}</p>
                 </div>
             </div>
@@ -82,34 +92,40 @@ export function ProductImagesGalleryView({
     const mainImage = images[selectedIndex];
 
     return (
-        <div className="flex flex-col-reverse gap-3 sm:gap-4 md:flex-row">
-            {/* Thumbnails (vertical on desktop) */}
-            <div className="flex gap-2 overflow-x-auto pb-1 md:max-h-[520px] md:flex-col md:overflow-y-auto md:overflow-x-hidden md:pb-0 custom-scrollbar">
-                {images.map((img, i) => {
-                    const isSelected = i === selectedIndex;
-                    return (
-                        <button
-                            key={img.id}
-                            onClick={() => onSelect(i)}
-                            aria-current={isSelected ? "true" : undefined}
-                            aria-label={selectImageLabel.replace("{{index}}", String(i + 1))}
-                            className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-md border-2 transition-all duration-200 sm:h-16 sm:w-16 
-                                ${isSelected ? "border-primary ring-2 ring-primary/20" : "border-transparent hover:border-muted-foreground/50 opacity-70 hover:opacity-100"}
-                            `}
-                        >
-                            <img
-                                src={img.url}
-                                alt={thumbnailAltPattern.replace("{{index}}", String(i + 1))}
-                                className="h-full w-full object-cover"
-                                loading="lazy"
-                            />
-                        </button>
-                    );
-                })}
-            </div>
+        <div className="flex flex-col-reverse gap-3 sm:gap-4 md:flex-row md:items-start">
+            {/* Thumbnails */}
+            {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-1 md:max-h-[560px] md:flex-col md:overflow-y-auto md:overflow-x-hidden md:pb-0 md:w-[72px] shrink-0 scrollbar-thin">
+                    {images.map((img, i) => {
+                        const isSelected = i === selectedIndex;
+                        return (
+                            <button
+                                key={img.id}
+                                onClick={() => onSelect(i)}
+                                aria-current={isSelected ? "true" : undefined}
+                                aria-label={selectImageLabel.replace("{{index}}", String(i + 1))}
+                                className={`relative h-[60px] w-[60px] shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 ${
+                                    isSelected
+                                        ? "border-amber-500 ring-2 ring-amber-200 opacity-100"
+                                        : "border-neutral-200 opacity-50 hover:opacity-80 hover:border-neutral-300"
+                                }`}
+                            >
+                                <img
+                                    src={img.url}
+                                    alt={thumbnailAltPattern.replace("{{index}}", String(i + 1))}
+                                    className="h-full w-full object-cover"
+                                    loading="lazy"
+                                />
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
 
-            {/* Main image with Zoom capabilities */}
-            <ZoomableImage src={mainImage.url} alt={mainImage.alt || productImageAlt} />
+            {/* Main image */}
+            <div className="flex-1 min-w-0">
+                <ZoomableImage src={mainImage.url} alt={mainImage.alt || productImageAlt} />
+            </div>
         </div>
     );
 }

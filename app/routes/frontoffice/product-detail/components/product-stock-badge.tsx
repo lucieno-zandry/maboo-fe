@@ -1,14 +1,13 @@
 // routes/frontoffice/product-detail/components/product-stock-badge.tsx
 
-import { Badge } from "~/components/ui/badge";
 import { useTranslation } from "react-i18next";
+import { AlertTriangle, CheckCircle2, XCircle, Package } from "lucide-react";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ProductStockBadgeViewProps {
     stock: number;
     isLowStock: boolean;
     isOutOfStock: boolean;
-    // Translated strings
     outOfStockLabel: string;
     onlyLeftTemplate: string;
     lowStockMessage: string;
@@ -25,23 +24,31 @@ export function ProductStockBadgeView({
     inStockTemplate,
 }: ProductStockBadgeViewProps) {
     if (isOutOfStock) {
-        return <Badge variant="destructive">{outOfStockLabel}</Badge>;
+        return (
+            <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-700 w-fit">
+                <XCircle className="h-4 w-4 text-red-500 shrink-0" />
+                <span className="font-medium">{outOfStockLabel}</span>
+            </div>
+        );
     }
 
     if (isLowStock) {
         return (
-            <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary">{onlyLeftTemplate.replace("{{stock}}", String(stock))}</Badge>
-                <span className="text-sm text-muted-foreground">{lowStockMessage}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-100 px-3 py-2 text-sm text-amber-800 w-fit">
+                <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                <span>
+                    <span className="font-semibold">{onlyLeftTemplate.replace("{{stock}}", String(stock))}</span>
+                    {" "}
+                    <span className="text-amber-600">{lowStockMessage}</span>
+                </span>
             </div>
         );
     }
 
     return (
-        <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                {inStockTemplate.replace("{{stock}}", String(stock))}
-            </Badge>
+        <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-100 px-3 py-2 text-sm text-emerald-800 w-fit">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+            <span className="font-medium">{inStockTemplate.replace("{{stock}}", String(stock))}</span>
         </div>
     );
 }

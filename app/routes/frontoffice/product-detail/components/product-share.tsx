@@ -1,11 +1,12 @@
 // routes/frontoffice/product-detail/components/product-share.tsx
 
 import { Button } from "~/components/ui/button";
-import { Copy, Share2 } from "lucide-react";
+import { Copy, Share2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAppPathname } from "~/lib/app-pathname";
 import isCsr from "~/lib/is-csr";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ProductShareViewProps {
@@ -13,18 +14,33 @@ interface ProductShareViewProps {
     onCopyLink: () => void;
     shareLabel: string;
     copyLinkLabel: string;
+    copied: boolean;
 }
 
-export function ProductShareView({ onShare, onCopyLink, shareLabel, copyLinkLabel }: ProductShareViewProps) {
+export function ProductShareView({ onShare, onCopyLink, shareLabel, copyLinkLabel, copied }: ProductShareViewProps) {
     return (
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Button variant="outline" size="sm" onClick={onShare} className="w-full sm:w-auto">
-                <Share2 className="h-4 w-4 mr-1" />
+        <div className="flex items-center gap-2">
+            <span className="text-xs text-neutral-400 mr-1 uppercase tracking-wide font-medium">Share</span>
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={onShare}
+                className="h-8 rounded-full border-neutral-200 text-neutral-500 hover:border-neutral-300 hover:text-neutral-700 text-xs gap-1.5 px-3"
+            >
+                <Share2 className="h-3.5 w-3.5" />
                 {shareLabel}
             </Button>
-            <Button variant="outline" size="sm" onClick={onCopyLink} className="w-full sm:w-auto">
-                <Copy className="h-4 w-4 mr-1" />
-                {copyLinkLabel}
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={onCopyLink}
+                className={`h-8 rounded-full text-xs gap-1.5 px-3 transition-all duration-200 ${copied
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                        : "border-neutral-200 text-neutral-500 hover:border-neutral-300 hover:text-neutral-700"
+                    }`}
+            >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? "Copied!" : copyLinkLabel}
             </Button>
         </div>
     );
@@ -38,28 +54,28 @@ interface ProductShareProps {
 export function ProductShare({ product }: ProductShareProps) {
     const { t } = useTranslation("product-detail");
     const appPath = useAppPathname();
+    const [copied, setCopied] = useState(false);
 
     if (!isCsr()) return null;
 
     const fullUrl = location.origin + appPath(`/product/${product.slug}`);
 
-    const handleShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: product.title,
-                url: fullUrl,
-            }).catch(() => { });
-        } else {
-            handleCopyLink();
-        }
-    };
-
     const handleCopyLink = () => {
         navigator.clipboard.writeText(fullUrl).then(() => {
+            setCopied(true);
             toast.success(t("share.copySuccess"));
+            setTimeout(() => setCopied(false), 2500);
         }).catch(() => {
             toast.error(t("share.copyFailed"));
         });
+    };
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({ title: product.title, url: fullUrl }).catch(() => { });
+        } else {
+            handleCopyLink();
+        }
     };
 
     return (
@@ -68,6 +84,7 @@ export function ProductShare({ product }: ProductShareProps) {
             onCopyLink={handleCopyLink}
             shareLabel={t("share.share")}
             copyLinkLabel={t("share.copyLink")}
+            copied={copied}
         />
     );
 }

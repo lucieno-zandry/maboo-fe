@@ -1,8 +1,8 @@
 // routes/frontoffice/product-detail/components/product-actions.tsx
 
-import { useState } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import { Button } from "~/components/ui/button";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Zap } from "lucide-react";
 import { useAddToCart } from "../hooks/use-add-to-cart";
 import { useBuyNow } from "../hooks/use-buy-now";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ interface ProductActionsViewProps {
     onBuyNow: () => void;
     isDisabled: boolean;
     isOutOfStock: boolean;
-    // Translated strings
     addToCartLabel: string;
     buyNowLabel: string;
     outOfStockMessage: string;
@@ -35,51 +34,53 @@ export function ProductActionsView({
     outOfStockMessage,
 }: ProductActionsViewProps) {
     return (
-        <div className="space-y-4 rounded-lg border bg-card p-4 sm:p-5">
-            {/* Quantity selector */}
-            <div className="flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    disabled={isDisabled || quantity <= 1}
-                    onClick={onDecrease}
-                    className="h-10 w-10"
-                >
-                    <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-10 text-center text-lg font-medium">{quantity}</span>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    disabled={isDisabled}
-                    onClick={onIncrease}
-                    className="h-10 w-10"
-                >
-                    <Plus className="h-4 w-4" />
-                </Button>
-            </div>
+        <div className="space-y-3">
+            {/* Quantity + Add to Cart row */}
+            <div className="flex gap-3">
+                {/* Quantity selector */}
+                <div className="flex items-center rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden shrink-0">
+                    <button
+                        disabled={isDisabled || quantity <= 1}
+                        onClick={onDecrease}
+                        className="flex h-11 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        <Minus className="h-3.5 w-3.5" />
+                    </button>
+                    <span className="w-10 text-center text-sm font-semibold text-neutral-800 select-none">
+                        {quantity}
+                    </span>
+                    <button
+                        disabled={isDisabled}
+                        onClick={onIncrease}
+                        className="flex h-11 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        <Plus className="h-3.5 w-3.5" />
+                    </button>
+                </div>
 
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+                {/* Add to Cart */}
                 <Button
-                    className="flex-1 gap-2"
+                    className="flex-1 h-11 gap-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-medium text-sm transition-all duration-150 shadow-none"
                     onClick={onAddToCart}
                     disabled={isDisabled}
                 >
                     <ShoppingCart className="h-4 w-4" />
                     {addToCartLabel}
                 </Button>
-                <Button
-                    variant="secondary"
-                    className="flex-1"
-                    onClick={onBuyNow}
-                    disabled={isDisabled}
-                >
-                    {buyNowLabel}
-                </Button>
             </div>
+
+            {/* Buy Now — full width, accent */}
+            <Button
+                className="w-full h-11 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm gap-2 transition-all duration-150 shadow-sm shadow-amber-200"
+                onClick={onBuyNow}
+                disabled={isDisabled}
+            >
+                <Zap className="h-4 w-4" />
+                {buyNowLabel}
+            </Button>
+
             {isOutOfStock && (
-                <p className="text-sm text-destructive">{outOfStockMessage}</p>
+                <p className="text-xs text-red-500 text-center">{outOfStockMessage}</p>
             )}
         </div>
     );
@@ -89,11 +90,12 @@ export function ProductActionsView({
 interface ProductActionsProps {
     variant: Variant | null;
     couponCode: string;
+    quantity: number;
+    setQuantity: Dispatch<SetStateAction<number>>;
 }
 
-export function ProductActions({ variant, couponCode }: ProductActionsProps) {
+export function ProductActions({ variant, couponCode, quantity, setQuantity }: ProductActionsProps) {
     const { t } = useTranslation("product-detail");
-    const [quantity, setQuantity] = useState(1);
     const addToCart = useAddToCart();
     const buyNow = useBuyNow();
 
@@ -108,21 +110,16 @@ export function ProductActions({ variant, couponCode }: ProductActionsProps) {
     const handleBuyNow = () => {
         if (!variant) return;
         buyNow({
-            variants: [{
-                variant_id: variant.id,
-                count: quantity
-            }], coupon_code: couponCode
+            variants: [{ variant_id: variant.id, count: quantity }],
+            coupon_code: couponCode,
         });
     };
-
-    const increase = () => setQuantity((q) => q + 1);
-    const decrease = () => setQuantity((q) => Math.max(1, q - 1));
 
     return (
         <ProductActionsView
             quantity={quantity}
-            onIncrease={increase}
-            onDecrease={decrease}
+            onIncrease={() => setQuantity((q) => q + 1)}
+            onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
             onAddToCart={handleAddToCart}
             onBuyNow={handleBuyNow}
             isDisabled={isDisabled}

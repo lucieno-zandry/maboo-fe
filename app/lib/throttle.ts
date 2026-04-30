@@ -1,6 +1,6 @@
 export function throttle<T extends (...args: any[]) => void>(
   func: T,
-  limit: number
+  limit: number = 100
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
   return function (this: any, ...args: Parameters<T>) {

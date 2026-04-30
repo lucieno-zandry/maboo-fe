@@ -1,17 +1,15 @@
 // routes/frontoffice/product-detail/components/product-shipping-estimator.tsx
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import { fetchAvailableShippingMethods } from "~/api/http-requests";
 import { useAddresses } from "../hooks/use-addresses";
 import { useFormatMoney } from "~/lib/format-money";
 import { useTranslation } from "react-i18next";
-
-// ── Dumb (View) ──────────────────────────────────────────────────────────────
-interface ShippingOption {
-    method: ShippingMethod;
-    cost: number;
-    isFree: boolean;
-}
+import { Button } from "~/components/ui/button";
+import { LocationSelector } from "./location-selector";
+import type { ShippingOption } from "../types/shipping";
+import { MapPin, Package, CheckCircle2, Truck } from "lucide-react";
+import useDebounce from "~/hooks/use-debounce";
+import { throttle } from "~/lib/throttle";
 
 interface ProductShippingEstimatorViewProps {
     options: ShippingOption[];
@@ -19,13 +17,21 @@ interface ProductShippingEstimatorViewProps {
     formatMoney: (n?: number) => string;
     location?: { country: string; city: string };
     variant?: Variant | null;
-    // Translated strings
+    selectedOption: ShippingOption | null;
+    onOptionSelect: (option: ShippingOption) => void;
+    hasDefaultAddress: boolean;
+    customCountry: string;
+    customCity: string;
+    onCustomCountryChange: (val: string) => void;
+    onCustomCityChange: (val: string) => void;
+    onCalculateCustomShipping: () => void;
     selectVariantMessage: string;
     noShippingMessage: string;
     shippingTitle: string;
     toLocationTemplate: string;
     freeLabel: string;
     deliveryDaysTemplate: string;
+    calculateLabel: string;
 }
 
 export function ProductShippingEstimatorView({
@@ -34,55 +40,128 @@ export function ProductShippingEstimatorView({
     formatMoney,
     location,
     variant,
+    selectedOption,
+    onOptionSelect,
+    hasDefaultAddress,
+    customCountry,
+    customCity,
+    onCustomCountryChange,
+    onCustomCityChange,
+    onCalculateCustomShipping,
     selectVariantMessage,
     noShippingMessage,
     shippingTitle,
     toLocationTemplate,
     freeLabel,
     deliveryDaysTemplate,
+    calculateLabel
 }: ProductShippingEstimatorViewProps) {
     if (!variant) {
-        return <p className="text-sm text-muted-foreground">{selectVariantMessage}</p>;
-    }
-
-    if (loading) {
         return (
-            <div className="animate-pulse space-y-2">
-                <div className="h-4 w-2/3 rounded bg-muted" />
-                <div className="h-4 w-1/2 rounded bg-muted" />
+            <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 px-4 py-5 text-sm text-neutral-400 text-center">
+                {selectVariantMessage}
             </div>
         );
     }
 
-    if (!options.length) {
-        return <p className="text-sm text-destructive">{noShippingMessage}</p>;
-    }
+    const showNoResults = !options.length && (hasDefaultAddress || (customCountry && customCity));
 
     return (
-        <div className="space-y-3 rounded-lg border bg-card p-4 sm:p-5">
-            <h3 className="text-sm font-semibold">{shippingTitle}</h3>
-            {location && (
-                <p className="text-xs text-muted-foreground">
-                    {toLocationTemplate.replace("{{city}}", location.city).replace("{{country}}", location.country)}
-                </p>
-            )}
-            <ul className="space-y-2">
-                {options.map((opt) => (
-                    <li key={opt.method.id} className="flex items-start justify-between gap-3 text-sm">
-                        <div className="flex flex-col">
-                            <span className="font-medium">{opt.method.name}</span>
-                            <span className="text-xs text-muted-foreground">
-                                {deliveryDaysTemplate
-                                    .replace("{{min}}", String(opt.method.min_delivery_days ?? "?"))
-                                    .replace("{{max}}", String(opt.method.max_delivery_days ?? "?"))}
-                            </span>
-                        </div>
-                        <span className={`shrink-0 ${opt.isFree ? "font-medium text-green-600" : ""}`}>
-                            {opt.isFree ? freeLabel : formatMoney(opt.cost)}
-                        </span>
-                    </li>
-                ))}
-            </ul>
+        <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden shadow-sm">
+            {/* Header */}
+            <div className="flex items-center gap-3 px-4 py-3 sm:px-5 border-b border-neutral-100 bg-neutral-50">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100">
+                    <Truck className="h-4 w-4 text-neutral-500" />
+                </div>
+                <div>
+                    <h3 className="text-sm font-semibold text-neutral-800">{shippingTitle}</h3>
+                    {location && (
+                        <p className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
+                            <MapPin className="h-3 w-3" />
+                            {toLocationTemplate
+                                .replace("{{city}}", location.city)
+                                .replace("{{country}}", location.country)}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-4">
+                {/* Custom location picker */}
+                {!hasDefaultAddress && (
+                    <div className="space-y-2">
+                        <LocationSelector
+                            country={customCountry}
+                            city={customCity}
+                            onCountryChange={onCustomCountryChange}
+                            onCityChange={onCustomCityChange}
+                        />
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={onCalculateCustomShipping}
+                            disabled={loading || !customCountry || !customCity}
+                            className="w-full rounded-xl border-neutral-200 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
+                        >
+                            {loading ? (
+                                <span className="flex items-center gap-2">
+                                    <span className="h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                                    Loading...
+                                </span>
+                            ) : calculateLabel}
+                        </Button>
+                    </div>
+                )}
+
+                {/* Options */}
+                {loading ? (
+                    <div className="space-y-2">
+                        {[1, 2].map((i) => (
+                            <div key={i} className="h-16 w-full animate-pulse rounded-xl bg-neutral-100" />
+                        ))}
+                    </div>
+                ) : showNoResults ? (
+                    <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-600">
+                        <Package className="h-4 w-4 shrink-0" />
+                        {noShippingMessage}
+                    </div>
+                ) : (
+                    <ul className="space-y-2">
+                        {options.map((opt) => {
+                            const isSelected = selectedOption?.method.id === opt.method.id;
+                            const isFree = opt.cost === 0;
+
+                            return (
+                                <li
+                                    key={opt.method.id}
+                                    onClick={() => onOptionSelect(opt)}
+                                    className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border-2 p-3 text-sm transition-all duration-150 ${isSelected
+                                        ? "border-amber-500 bg-amber-50"
+                                        : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`h-4 w-4 rounded-full border-2 transition-colors ${isSelected ? "border-amber-500 bg-amber-500" : "border-neutral-300"}`}>
+                                            {isSelected && <CheckCircle2 className="h-full w-full text-white" />}
+                                        </div>
+                                        <div>
+                                            <span className="font-medium text-neutral-800">{opt.method.name}</span>
+                                            <p className="text-xs text-neutral-400 mt-0.5">
+                                                {deliveryDaysTemplate
+                                                    .replace("{{min}}", String(opt.method.min_delivery_days ?? "?"))
+                                                    .replace("{{max}}", String(opt.method.max_delivery_days ?? "?"))}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className={`shrink-0 font-semibold ${isFree ? "text-emerald-600" : "text-neutral-800"}`}>
+                                        {isFree ? freeLabel : formatMoney(opt.cost)}
+                                    </span>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
+            </div>
         </div>
     );
 }
@@ -91,51 +170,82 @@ export function ProductShippingEstimatorView({
 interface ProductShippingEstimatorProps {
     variant: Variant | null;
     quantity?: number;
+    selectedOption: ShippingOption | null;
+    setSelectedOption: Dispatch<SetStateAction<ShippingOption | null>>;
 }
 
-export function ProductShippingEstimator({ variant, quantity = 1 }: ProductShippingEstimatorProps) {
+export function ProductShippingEstimator({
+    variant,
+    selectedOption,
+    setSelectedOption,
+    ...props
+}: ProductShippingEstimatorProps) {
     const { t } = useTranslation("product-detail");
     const [options, setOptions] = useState<ShippingOption[]>([]);
     const [loading, setLoading] = useState(false);
     const [location, setLocation] = useState<{ country: string; city: string } | undefined>();
+    const [customCountry, setCustomCountry] = useState("");
+    const [customCity, setCustomCity] = useState("");
+
     const formatMoney = useFormatMoney();
     const { addresses } = useAddresses();
+    const defaultAddress = addresses?.find((a) => a.is_default);
+    const quantity = useDebounce(props.quantity || 1);
+
+    const fetchRates = useCallback(
+        (forceCustom = false) => {
+            if (!variant) return;
+
+            const cartItemPayload = {
+                weight: (variant.weight_kg ?? 0) * quantity,
+                quantity,
+                price: (variant.effective_price ?? variant.price) * quantity,
+            };
+
+            const payload: any = { cart_items: [cartItemPayload] };
+
+            if (defaultAddress && !forceCustom) {
+                payload.address_id = defaultAddress.id;
+            } else if (customCountry && customCity) {
+                payload.location = { country: customCountry.toUpperCase(), city: customCity };
+            }
+
+            setLoading(true);
+            fetchAvailableShippingMethods(payload)
+                .then((res) => {
+                    if (res.data?.available) {
+                        const opts = res.data.available;
+
+                        setOptions(opts);
+                        setLocation(res.data.location);
+
+                        setSelectedOption(opts[0] || null);
+                    } else {
+                        setOptions([]);
+                        setSelectedOption(null);
+                    }
+                })
+                .catch(() => {
+                    setOptions([]);
+                    setSelectedOption(null);
+                })
+                .finally(() => setLoading(false));
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [variant?.id, variant?.weight_kg, quantity, defaultAddress?.id, customCountry, customCity]
+    );
 
     useEffect(() => {
-        if (!variant) {
-            setOptions([]);
-            return;
-        }
+        const t = setTimeout(() => {
+            fetchRates();
+        }, 300);
 
-        const defaultAddress = addresses?.find((a) => a.is_default);
-
-        const cartItemPayload = {
-            weight: (variant.weight_kg ?? 0) * quantity,
-            quantity,
-            price: (variant.effective_price ?? variant.price) * quantity,
-        };
-
-        setLoading(true);
-        fetchAvailableShippingMethods({
-            address_id: defaultAddress?.id,
-            cart_items: [cartItemPayload],
-        })
-            .then((res) => {
-                if (res.data?.available) {
-                    const opts = res.data.available.map((item) => ({
-                        method: item.method,
-                        cost: item.cost,
-                        isFree: item.cost === 0,
-                    }));
-                    setOptions(opts);
-                    setLocation(res.data.location);
-                } else {
-                    setOptions([]);
-                }
-            })
-            .catch(() => setOptions([]))
-            .finally(() => setLoading(false));
-    }, [variant?.weight_kg, quantity, addresses, variant]);
+        return () => clearTimeout(t);
+    }, [
+        variant?.weight_kg,
+        quantity,
+        defaultAddress?.id,
+    ]);
 
     return (
         <ProductShippingEstimatorView
@@ -144,12 +254,21 @@ export function ProductShippingEstimator({ variant, quantity = 1 }: ProductShipp
             formatMoney={formatMoney}
             location={location}
             variant={variant}
+            selectedOption={selectedOption}
+            onOptionSelect={setSelectedOption}
+            hasDefaultAddress={!!defaultAddress}
+            customCountry={customCountry}
+            customCity={customCity}
+            onCustomCountryChange={setCustomCountry}
+            onCustomCityChange={setCustomCity}
+            onCalculateCustomShipping={() => fetchRates(true)}
             selectVariantMessage={t("shipping.selectVariant")}
             noShippingMessage={t("shipping.noShipping")}
             shippingTitle={t("shipping.title")}
             toLocationTemplate={t("shipping.toLocation")}
             freeLabel={t("shipping.free")}
             deliveryDaysTemplate={t("shipping.deliveryDays")}
+            calculateLabel={t("shipping.calculateRates", "Calculate Rates")}
         />
     );
 }

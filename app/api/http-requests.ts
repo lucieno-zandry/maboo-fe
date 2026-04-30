@@ -254,6 +254,10 @@ export function updateUserPreferences(data: Partial<UserPreference>) {
 export function fetchAvailableShippingMethods(data: {
     address_id?: number,
     cart_items: ({ weight: number, quantity: number, price: number })[],
+    location?: {
+        country: string, // CODE : FR, UK, US, ...
+        city: string // native name : Paris, London, New York
+    }
 }) {
     return appFetch.post<{
         available: {

@@ -1,11 +1,12 @@
 // routes/frontoffice/product-detail/components/product-variant-picker.tsx
 
-import { useSyncVariantToUrl } from "../hooks/use-sync-variant-to-url"; // adjust import path
+import { useSyncVariantToUrl } from "../hooks/use-sync-variant-to-url";
+import { useState, useEffect } from "react";
 
 // ── Dumb (View) ──────────────────────────────────────────────────────────────
 interface ProductVariantPickerViewProps {
     variantGroups: VariantGroup[];
-    selectedOptions: Record<number, number>; // groupId -> selected optionId
+    selectedOptions: Record<number, number>;
     onOptionSelect: (groupId: number, optionId: number) => void;
 }
 
@@ -20,7 +21,16 @@ export function ProductVariantPickerView({
         <div className="space-y-5">
             {variantGroups.map((group) => (
                 <div key={group.id}>
-                    <h3 className="mb-2 text-sm font-medium">{group.name}</h3>
+                    <div className="flex items-center justify-between mb-2.5">
+                        <h3 className="text-sm font-semibold text-neutral-700 uppercase tracking-wide">
+                            {group.name}
+                        </h3>
+                        {selectedOptions[group.id] !== undefined && (
+                            <span className="text-xs text-neutral-400">
+                                {group.variant_options?.find((o) => o.id === selectedOptions[group.id])?.value}
+                            </span>
+                        )}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                         {group.variant_options?.map((option) => {
                             const isSelected = selectedOptions[group.id] === option.id;
@@ -29,12 +39,15 @@ export function ProductVariantPickerView({
                                     key={option.id}
                                     type="button"
                                     onClick={() => onOptionSelect(group.id, option.id)}
-                                    className={`min-h-10 rounded-md border px-3 py-2 text-sm font-medium transition sm:px-4 ${isSelected
-                                        ? "border-primary bg-primary text-primary-foreground"
-                                        : "border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                                    className={`relative min-h-10 rounded-xl border-2 px-4 py-2 text-sm font-medium transition-all duration-150 ${isSelected
+                                            ? "border-amber-500 bg-amber-500 text-white shadow-sm shadow-amber-200"
+                                            : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50"
                                         }`}
                                 >
                                     {option.value}
+                                    {isSelected && (
+                                        <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 border-2 border-white" />
+                                    )}
                                 </button>
                             );
                         })}
@@ -46,8 +59,6 @@ export function ProductVariantPickerView({
 }
 
 // ── Smart (Container) ────────────────────────────────────────────────────────
-import { useState, useEffect } from "react";
-
 interface ProductVariantPickerProps {
     product: Product;
     onVariantChange?: (variant: Variant | null) => void;
@@ -57,7 +68,6 @@ export function ProductVariantPicker({ product, onVariantChange }: ProductVarian
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
     const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
 
-    // Sync variant with URL (initial load + updates)
     useSyncVariantToUrl({
         product,
         selectedVariant,
@@ -65,7 +75,6 @@ export function ProductVariantPicker({ product, onVariantChange }: ProductVarian
         setSelectedOptions,
     });
 
-    // Notify parent whenever the selected variant changes
     useEffect(() => {
         onVariantChange?.(selectedVariant);
     }, [selectedVariant, onVariantChange]);
@@ -73,14 +82,12 @@ export function ProductVariantPicker({ product, onVariantChange }: ProductVarian
     const handleOptionSelect = (groupId: number, optionId: number) => {
         setSelectedOptions((prev) => {
             const updated = { ...prev, [groupId]: optionId };
-
-            // Find the variant that matches the new combination of selected options
-            const matchingVariant = product.variants?.find((variant) =>
-                Object.entries(updated).every(([gId, oId]) =>
-                    variant.variant_options?.some((opt) => opt.id === oId)
-                )
-            ) || null;
-
+            const matchingVariant =
+                product.variants?.find((variant) =>
+                    Object.entries(updated).every(([gId, oId]) =>
+                        variant.variant_options?.some((opt) => opt.id === oId)
+                    )
+                ) || null;
             setSelectedVariant(matchingVariant);
             return updated;
         });
