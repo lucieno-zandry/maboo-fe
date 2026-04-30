@@ -11,8 +11,8 @@ import frCommon from "./locales/fr/common.json";
 import enAddresses from "./locales/en/addresses.json";
 import frAddresses from "./locales/fr/addresses.json";
 
-import enCheckout from "./locales/en/checkout.json";
-import frCheckout from "./locales/fr/checkout.json";
+import enCheckout from "~/routes/frontoffice/checkout/translation/locales/en.json";
+import frCheckout from "~/routes/frontoffice/checkout/translation/locales/fr.json";
 
 import enProduct from "./locales/en/product.json";
 import frProduct from "./locales/fr/product.json";

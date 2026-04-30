@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 
 import { createAddress, getAuthAddresses, removeAddresses, updateAddress } from "~/api/http-requests"
-import AddressDialog from "~/components/addresses/address-dialog"
+import AddressDialog from "~/components/address-dialog"
 import { toast } from "sonner"
 import AddressCard from "~/components/addresses/address-card"
 import { useUserStore } from "~/hooks/use-user"
@@ -26,7 +26,6 @@ import useAddressStore from "~/hooks/use-address-store"
 import ConfirmDeleteDialog from "~/components/addresses/confirm-delete-dialog"
 import { HttpException, ValidationException } from "~/api/app-fetch"
 import i18next from "i18next";
-import i18n from "~/i18n/i18n";
 
 export async function clientLoader() {
     const { authAddresses, setAuthAddresses } = useAddressStore.getState();
@@ -104,6 +103,8 @@ export default function AddressesPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const actionData = useActionData();
 
+    const errors = actionData instanceof ValidationException ? actionData.errors : null;
+
     useEffect(() => {
         if (navigation.state === "idle" && !(actionData instanceof HttpException || actionData instanceof ValidationException)) {
             setDialogOpen(false);
@@ -161,8 +162,8 @@ export default function AddressesPage() {
                     <div className="space-y-4">
                         {/* Contextual Bulk Action Bar */}
                         <div className={`flex items-center justify-between gap-4 p-3 rounded-lg border transition-all duration-300 ${selectedAddresses.length > 0
-                                ? "bg-muted/40 opacity-100 translate-y-0"
-                                : "opacity-0 -translate-y-2 pointer-events-none hidden"
+                            ? "bg-muted/40 opacity-100 translate-y-0"
+                            : "opacity-0 -translate-y-2 pointer-events-none hidden"
                             }`}>
                             <div className="flex items-center gap-3 px-2">
                                 <Checkbox
@@ -212,6 +213,7 @@ export default function AddressesPage() {
                 onOpenChange={setDialogOpen}
                 open={dialogOpen}
                 address={editing}
+                errors={errors}
             />
         </>
     );

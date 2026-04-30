@@ -1,5 +1,5 @@
 import { serializeProductParams, type ProductQueryParams } from "~/lib/serialize-product-params";
-import appFetch, { API_URL, type PaginatedResponse } from "./app-fetch";
+import appFetch, { API_URL, HttpException, type FormatedResponse, type PaginatedResponse } from "./app-fetch";
 import buildWhereParam, { type WhereConditions, type WhereInConditions } from "~/lib/build-where-param";
 import type { NotificationsQueryParams } from "~/components/notifications/types/notifications-query-params";
 import type { LandingBlocksRequestParams } from "~/routes/frontoffice/landing/types/landing-blocks-request-types";
@@ -85,8 +85,9 @@ export function getCartItems({
 }: {
     where?: WhereConditions<CartItem>;
     whereIn?: WhereInConditions;
-} = {}) {
+} = {}, init: RequestInit = {}) {
     return appFetch.get<{ cart_items: CartItem[] }>('/cart/all', {
+        ...init,
         params: {
             where: buildWhereParam(where, whereIn),
         },
@@ -135,17 +136,27 @@ export function checkout(payload: {
         body: JSON.stringify(payload),
         credentials: 'include',
         headers: {
-            'Content-type': 'application/json'
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
         }
     });
 }
 
-export function createOrder(payload: { cart_item_ids: number[], address_id: number, coupon_id?: number, shipping_method_id: number }) {
-    return appFetch.post<{ order: Order }>('/order/create', payload);
+export function createOrder(payload: { cart_item_ids: number[], address_id: number, coupon_id?: number, shipping_method_id: number }, init: RequestInit = {}) {
+    return appFetch.post<{ order: Order }>('/order/create', payload, init);
 }
 
-export function getCouponFromCode(code: string) {
+export function getCouponFromCode(code: string): Promise<FormatedResponse<{
+    coupon: Coupon;
+}>> {
+    if (!code) {
+        return new Promise((resolve) => ({ data: undefined }))
+    }
     return appFetch.get<{ coupon: Coupon }>(`/coupon/get/${code}`);
+}
+
+export function unuseCoupon() {
+    return appFetch.delete('/coupon/unuse');
 }
 
 export function getOrders() {
@@ -158,8 +169,8 @@ export function getOrder(uuid: string) {
     );
 }
 
-export function createTransaction(data: Pick<Transaction, 'method' | 'order_uuid' | 'amount'>) {
-    return appFetch.post<{ transaction: Transaction }>('/transactions', data)
+export function createTransaction(data: Pick<Transaction, 'payment_method' | 'order_uuid' | 'amount'>, init: RequestInit = {}) {
+    return appFetch.post<{ transaction: Transaction }>('/transactions', data, init)
 }
 
 export function getNotifications(params: NotificationsQueryParams) {

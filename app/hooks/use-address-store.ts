@@ -9,6 +9,8 @@ type AddressStore = {
     ) => void;
     selectedAddressId: number | null,
     setSelectedAddressId: (selectedAddressId: AddressStore['selectedAddressId']) => void,
+    loading: boolean,
+    setLoading: (loading: boolean) => void,
 }
 
 const useAddressStore = create<AddressStore>((set) => ({
@@ -26,6 +28,8 @@ const useAddressStore = create<AddressStore>((set) => ({
 
     selectedAddressId: null,
     setSelectedAddressId: (selectedAddressId) => set({ selectedAddressId }),
+    loading: false,
+    setLoading: (loading) => set({ loading })
 }));
 
 export default useAddressStore;

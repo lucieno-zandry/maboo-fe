@@ -250,6 +250,7 @@ type Order = {
   updated_at: string;
   total: number;
   user_id: number;
+  notes: string;
   address_id: number;
   coupon_id: number | null;
   coupon_discount_applied: number;
@@ -314,30 +315,36 @@ type TransactionType = "PAYMENT" | "REFUND" | "MANUAL";
 type DisputeStatus = "OPEN" | "RESOLVED" | "LOST";
 
 type Transaction = {
-  uuid: string;                       // primary key (UUID)
+  uuid: string;                          // primary key (UUID)
   created_at: string;
   updated_at: string;
   status: "FAILED" | "PENDING" | "SUCCESS";
-  informations: Record<string, any>;
+  informations: Record<string, any>;     // raw gateway payload / metadata
   user_id: number;
   order_uuid: string;
   deleted_at?: string;
-  method: "VISA" | "MASTERCARD" | "ORANGEMONEY" | "AIRTELMONEY" | "MVOLA" | "PAYPAL";
-  payment_url?: string;
+
+  // ── Payment instrument details (replaces the old `method` field) ──
+  payment_method: "card" | "paypal" | "apple_pay" | "google_pay" | "bank_transfer" | string;
+  card_brand?: "visa" | "mastercard" | "amex" | "discover" | "diners" | "jcb" | string;       // only meaningful for "card"
+  payment_method_label?: string;         // e.g., "Visa •••• 4242" for display purposes
+
   amount: number;
 
-  type: TransactionType;
+  type: TransactionType;                 // "PAYMENT" | "REFUND" | "MANUAL"
   parent_transaction_uuid?: string;
-  payment_reference?: string;
+  payment_reference?: string;            // gateway-side transaction ID
   reviewed_at?: string;
   reviewed_by?: number;
   notes?: string;
-  dispute_status?: DisputeStatus;
+
+  // ── Dispute fields ──
+  dispute_status?: DisputeStatus;        // "OPEN" | "RESOLVED" | "LOST"
   dispute_opened_at?: string;
   dispute_resolved_at?: string;
-  dispute_reason?: string;      // 👈 new field
+  dispute_reason?: string;               // could become a union of known reasons later
 
-  // Relations
+  // ── Relations ──
   user?: User;
   order?: Order;
   parent_transaction?: Transaction | null;
@@ -345,7 +352,7 @@ type Transaction = {
   audit_logs?: TransactionAuditLog[];
   webhook_logs?: PaymentWebhookLog[];
   refund_requests?: RefundRequest[];
-  reviewer?: User;   // 👈 new relation
+  reviewer?: User;
 };
 
 type TransactionAuditLog = {

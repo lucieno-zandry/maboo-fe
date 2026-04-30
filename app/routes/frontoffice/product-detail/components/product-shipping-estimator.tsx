@@ -1,7 +1,7 @@
 // routes/frontoffice/product-detail/components/product-shipping-estimator.tsx
 import { useEffect, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import { fetchAvailableShippingMethods } from "~/api/http-requests";
-import { useAddresses } from "../hooks/use-addresses";
+import { useAddresses } from "../../../../hooks/use-addresses";
 import { useFormatMoney } from "~/lib/format-money";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
@@ -197,9 +197,9 @@ export function ProductShippingEstimator({
             if (!variant) return;
 
             const cartItemPayload = {
-                weight: (variant.weight_kg ?? 0) * quantity,
+                weight: (variant.weight_kg ?? 0),
                 quantity,
-                price: (variant.effective_price ?? variant.price) * quantity,
+                price: (variant.effective_price ?? variant.price),
             };
 
             const payload: any = { cart_items: [cartItemPayload] };
@@ -242,6 +242,7 @@ export function ProductShippingEstimator({
 
         return () => clearTimeout(t);
     }, [
+        variant?.id,
         variant?.weight_kg,
         quantity,
         defaultAddress?.id,

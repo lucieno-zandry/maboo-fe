@@ -1,0 +1,51 @@
+{
+    "steps": {
+        "cart": "Cart",
+        "address": "Address",
+        "shipping": "Shipping",
+        "payment": "Payment"
+    },
+    "cart": {
+        "title": "Review your bag",
+        "empty": "Your cart is empty",
+        "no_image": "No image",
+        "continue_to_address": "Continue to address"
+    },
+    "address": {
+        "title": "Shipping address",
+        "no_addresses": "You have no saved addresses. Please add one.",
+        "add_new": "Add new address",
+        "continue_to_shipping": "Continue to shipping"
+    },
+    "shipping": {
+        "title": "Shipping method",
+        "select_address_first": "Please select a shipping address first.",
+        "continue_to_payment": "Continue to payment"
+    },
+    "coupon": {
+        "label": "Coupon code",
+        "apply": "Apply",
+        "remove": "Remove",
+        "code_placeholder": "Enter code",
+        "applied_success": "Coupon applied!",
+        "removed_success": "Coupon removed",
+        "invalid": "Invalid coupon"
+    },
+    "summary": {
+        "title": "Order Summary",
+        "subtotal": "Subtotal",
+        "coupon": "Coupon",
+        "shipping": "Shipping",
+        "free": "Free",
+        "weight": "Total weight",
+        "total": "Total"
+    },
+    "payment": {
+        "title": "Payment",
+        "method": "Payment method",
+        "mobile_phone": "Mobile Money phone number",
+        "order_notes": "Order notes (optional)",
+        "notes_placeholder": "Any special instructions?",
+        "pay_now": "Pay now"
+    }
+}

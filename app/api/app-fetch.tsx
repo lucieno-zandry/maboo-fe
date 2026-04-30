@@ -73,13 +73,10 @@ const getEndpointUrl = (path: string) => API_URL + path;
 
 async function get<T>(
     path: string,
-    options: RequestInit & { params?: Record<string, any> } = {}
+    { params, headers, ...options }: RequestInit & { params?: Record<string, any> } = {}
 ): Promise<FormatedResponse<T>> {
-    const { params, ...init } = options;
+    const init: RequestInit = { headers: { ...defaultHeaders(), ...headers }, ...options }
 
-    if (!options.headers) {
-        init.headers = defaultHeaders();
-    }
     const url = buildQuery(path, params);
 
     return executeRequest<T>(() =>
@@ -91,8 +88,9 @@ async function get<T>(
     );
 }
 
-async function post<T>(path: string, payload: FormData | Object, init: RequestInit = { headers: defaultHeaders() }): Promise<FormatedResponse<T>> {
+async function post<T>(path: string, payload: FormData | Object, { headers, ...options }: RequestInit = {}): Promise<FormatedResponse<T>> {
     let body: BodyInit;
+    const init: RequestInit = { headers: { ...defaultHeaders(), ...headers }, ...options }
 
     if (payload instanceof FormData) {
         body = payload
@@ -114,8 +112,9 @@ async function post<T>(path: string, payload: FormData | Object, init: RequestIn
     return response;
 }
 
-async function put<T>(path: string, payload: FormData | Object, init: RequestInit = { headers: defaultHeaders() }): Promise<FormatedResponse<T>> {
+async function put<T>(path: string, payload: FormData | Object, { headers, ...options }: RequestInit = {}): Promise<FormatedResponse<T>> {
     let body: BodyInit;
+    const init: RequestInit = { headers: { ...defaultHeaders(), ...headers }, ...options }
 
     if (payload instanceof FormData) {
         body = payload

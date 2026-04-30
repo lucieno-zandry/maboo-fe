@@ -1,17 +1,16 @@
-import { Form, useActionData, useNavigation } from "react-router";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Form, useNavigation } from "react-router";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
 import CustomField from "~/components/custom-components/field";
-import Button from "../custom-components/button";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
+import Button from "./custom-components/button";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
 import { useState, useMemo, type FocusEvent, useEffect } from "react";
 import z from "zod";
 import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
-import { ValidationException } from "~/api/app-fetch";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
 import getValidationError from "~/lib/get-validation-error";
 
 // Updated validation to comfortably handle spaces, parentheses, and dashes
@@ -46,11 +45,13 @@ const formatPhoneNumber = (value: string) => {
 
 type AddressDialogProps = {
     address?: Address;
-    isLoading?: boolean;
+    isLoading?: boolean; // legacy (still works)
+    loading?: boolean;   // new controlled loading
+    onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void; // new
     isEdit: boolean;
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onValidationChange: (errors: string[] | null, e: FocusEvent<HTMLInputElement, Element> | string) => void;
+    onValidationChange: (errors: string[] | null, e: FocusEvent<HTMLInputElement> | string) => void;
     formErrors: Record<string, string[]> | null;
     canSubmit: boolean;
     t: TFunction<"translation", undefined>,
@@ -65,7 +66,8 @@ export function AddressDialog({
     canSubmit,
     formErrors,
     onValidationChange,
-    t
+    t,
+    onSubmit
 }: AddressDialogProps) {
 
     // Intercept phone input to auto-format
@@ -73,6 +75,8 @@ export function AddressDialog({
         const formatted = formatPhoneNumber(e.target.value);
         e.target.value = formatted;
     };
+
+    const FormComponent = onSubmit ? "form" : Form;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -85,14 +89,18 @@ export function AddressDialog({
                         {isEdit ? "Update your address details below." : "Enter the details for your new address."}
                     </DialogDescription>
                 </DialogHeader>
-
-                <Form method="post" className="space-y-6">
-                    {/* Action Intent */}
-                    <input type="hidden" name="_intent" value={isEdit ? "update-address" : "create-address"} />
-                    <input type="hidden" name="_module" value="address" />
-
-                    {isEdit && <input type="hidden" name="id" value={address!.id} />}
-
+                <FormComponent
+                    method={onSubmit ? undefined : "post"}
+                    onSubmit={onSubmit}
+                    className="space-y-6"
+                >
+                    {!onSubmit && (
+                        <>
+                            <input type="hidden" name="_intent" value={isEdit ? "update-address" : "create-address"} />
+                            <input type="hidden" name="_module" value="address" />
+                            {isEdit && <input type="hidden" name="id" value={address!.id} />}
+                        </>
+                    )}
                     <FieldGroup className="space-y-4">
                         <CustomField
                             name="recipient_name"
@@ -262,25 +270,28 @@ export function AddressDialog({
                             {isEdit ? t("addresses:dialog.save_changes") : t("addresses:dialog.create_address")}
                         </Button>
                     </div>
-                </Form>
+                </FormComponent>
             </DialogContent>
         </Dialog>
     );
 }
 
-export default function ({ address, ...props }: Pick<AddressDialogProps, "address" | "open" | "onOpenChange">) {
+export default function ({
+    address, loading, errors, ...props
+}: Pick<AddressDialogProps, "address" | "open" | "onOpenChange" | "loading" | "onSubmit"> & { errors?: null | Record<string, string[]> }) {
     const isEdit = useMemo(() => Boolean(address), [address]);
     const navigation = useNavigation();
+
     const isLoading = useMemo(() => navigation.state === "submitting" || navigation.state === "loading", [navigation.state]);
+    const computedLoading = loading ?? isLoading ?? false;
 
     const [formErrors, setFormErrors] = useState<Record<string, string[]> | null>(null);
-    const actionData = useActionData();
 
     useEffect(() => {
-        if (actionData && actionData instanceof ValidationException) {
-            setFormErrors(actionData.errors);
+        if (errors) {
+            setFormErrors(errors);
         }
-    }, [actionData]);
+    }, [errors]);
 
     const handleValidationChange = (errors: string[] | null, e: FocusEvent<HTMLInputElement> | string) => {
         const updatedErrors = getUpdatedFormErrors({
@@ -298,7 +309,7 @@ export default function ({ address, ...props }: Pick<AddressDialogProps, "addres
         <AddressDialog
             address={address}
             isEdit={isEdit}
-            isLoading={isLoading}
+            isLoading={computedLoading}
             canSubmit={canSubmit}
             formErrors={formErrors}
             onValidationChange={handleValidationChange}

@@ -1,0 +1,51 @@
+{
+    "steps": {
+        "cart": "Panier",
+        "address": "Adresse",
+        "shipping": "Livraison",
+        "payment": "Paiement"
+    },
+    "cart": {
+        "title": "Vérifiez votre panier",
+        "empty": "Votre panier est vide",
+        "no_image": "Pas d'image",
+        "continue_to_address": "Continuer vers l'adresse"
+    },
+    "address": {
+        "title": "Adresse de livraison",
+        "no_addresses": "Vous n'avez aucune adresse enregistrée. Veuillez en ajouter une.",
+        "add_new": "Ajouter une nouvelle adresse",
+        "continue_to_shipping": "Continuer vers la livraison"
+    },
+    "shipping": {
+        "title": "Méthode de livraison",
+        "select_address_first": "Veuillez d'abord sélectionner une adresse de livraison.",
+        "continue_to_payment": "Continuer vers le paiement"
+    },
+    "coupon": {
+        "label": "Code promo",
+        "apply": "Appliquer",
+        "remove": "Supprimer",
+        "code_placeholder": "Entrez le code",
+        "applied_success": "Code promo appliqué !",
+        "removed_success": "Code promo supprimé",
+        "invalid": "Code promo invalide"
+    },
+    "summary": {
+        "title": "Récapitulatif de la commande",
+        "subtotal": "Sous-total",
+        "coupon": "Code promo",
+        "shipping": "Livraison",
+        "free": "Gratuit",
+        "weight": "Poids total",
+        "total": "Total"
+    },
+    "payment": {
+        "title": "Paiement",
+        "method": "Méthode de paiement",
+        "mobile_phone": "Numéro de téléphone Mobile Money",
+        "order_notes": "Notes de commande (optionnel)",
+        "notes_placeholder": "Des instructions spéciales ?",
+        "pay_now": "Payer maintenant"
+    }
+}

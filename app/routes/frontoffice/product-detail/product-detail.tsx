@@ -52,16 +52,6 @@ export default function ProductDetailPage() {
 
     return (
         <>
-            {/* Font preload */}
-            <link
-                rel="preconnect"
-                href="https://fonts.googleapis.com"
-            />
-            <link
-                rel="stylesheet"
-                href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap"
-            />
-
             <div
                 className="min-h-screen bg-[#FAFAF8]"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
