@@ -1,9 +1,12 @@
-import { redirect, useLoaderData, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
+import { redirect, useActionData, useLoaderData, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { parseCookies } from "~/lib/cookie-helpers";
 import { getCartItems, getCouponFromCode, createOrder, createTransaction } from "~/api/http-requests";
 import { HttpException } from "~/api/app-fetch";
 import appPathname from "~/lib/app-pathname";
 import CheckoutPageContent from "./components/checkout-page-content";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import useCheckoutStore, { defaultCheckoutStoreState } from "./stores/use-checkout-store";
 
 // loader as before
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -36,9 +39,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
     const cookies = request.headers.get('cookie');
     const parsedCookies = parseCookies(cookies);
-    const headers: HeadersInit = {
-        
-    };
+    const headers: HeadersInit = {};
 
     if (cookies) headers['Cookie'] = cookies;
 
@@ -79,13 +80,13 @@ export async function action({ request }: ActionFunctionArgs) {
             shipping_method_id: shippingMethodId,
             ...(couponId ? { coupon_id: couponId } : {}),
         }, { headers });
-        
+
         order = orderResp.data!.order;
     } catch (err) {
         if (err instanceof HttpException) {
             return { error: err.data?.message || "Order creation failed" };
         }
-        
+
         return { error: "Order creation failed" };
     }
 
@@ -99,24 +100,38 @@ export async function action({ request }: ActionFunctionArgs) {
             },
             { headers } // pass cookies for authentication
         );
+
+        console.log(transactionResp);
+
         const transaction = transactionResp.data!.transaction;
 
         // If the transaction contains a payment_url, redirect there
         if (transaction.informations?.payment_url) {
-            return redirect(transaction.informations.payment_url);
+            const paymentUrl = decodeURIComponent(transaction.informations.payment_url);
+            return redirect(paymentUrl);
         }
 
+        throw new HttpException(500, { message: "Transaction created, but no payment_url returned!" });
+
         // Otherwise, redirect to a success/pending page
-        return redirect(appPathname(`/order/confirmation?order=${order.uuid}`));
     } catch (err) {
-        if (err instanceof HttpException) {
-            return { error: err.data?.message || "Payment initiation failed" };
-        }
-        return { error: "Payment initiation failed" };
+        console.log(err);
+        return redirect(appPathname(`/orders/${order.uuid}`));
     }
 }
 
 export default function () {
     const data = useLoaderData<typeof loader>();
+    const actionData = useActionData();
+    const resetStore = () => useCheckoutStore.setState(defaultCheckoutStoreState);
+
+    useEffect(() => {
+        if (actionData && actionData.error) {
+            toast.error(actionData.error);
+        }
+    }, [actionData?.error]);
+
+    useEffect(() => resetStore, [])
+
     return <CheckoutPageContent initialData={data} />;
 }

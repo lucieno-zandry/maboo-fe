@@ -4,8 +4,8 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
 
 interface PaymentMethodProps {
-    currentMethod: Transaction['method'];
-    onMethodChange: (value: Transaction['method']) => void;
+    currentMethod: Transaction['payment_method'];
+    onMethodChange: (value: Transaction['payment_method']) => void;
 }
 
 export default function PaymentMethodSelector({ currentMethod, onMethodChange }: PaymentMethodProps) {

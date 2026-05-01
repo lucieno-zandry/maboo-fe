@@ -18,7 +18,7 @@ export function registerUser(data: {
     email: FormDataEntryValue,
     password: FormDataEntryValue,
     password_confirmation: FormDataEntryValue,
-    name: string,
+    name?: string,
     preferred_language: string,
     preferred_currency: string,
     preferred_timezone: string,

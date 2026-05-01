@@ -1,6 +1,14 @@
 // stores/use-checkout-store.ts
 import { create } from "zustand";
 
+export const defaultCheckoutStoreState = {
+    step: 0,
+    selectedAddressId: null,
+    selectedShippingMethodId: null,
+    shippingCost: null,
+    paymentMethod: null,
+}
+
 type CheckoutState = {
     step: number;
     selectedAddressId: number | null;
@@ -16,11 +24,7 @@ type CheckoutState = {
 };
 
 const useCheckoutStore = create<CheckoutState>((set) => ({
-    step: 0,
-    selectedAddressId: null,
-    selectedShippingMethodId: null,
-    shippingCost: null,
-    paymentMethod: null,
+    ...defaultCheckoutStoreState,
     setStep: (step) => set({ step }),
     setSelectedAddressId: (id) => set({ selectedAddressId: id }),
     setSelectedShippingMethodId: (id) => set({ selectedShippingMethodId: id }),

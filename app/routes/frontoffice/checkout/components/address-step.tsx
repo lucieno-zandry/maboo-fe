@@ -1,5 +1,5 @@
 // routes/checkout/components/address-step.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAddresses } from "~/hooks/use-addresses";
 import useCheckoutStore from "../stores/use-checkout-store";
@@ -17,6 +17,13 @@ export default function AddressStep() {
     const handleContinue = () => {
         if (selectedAddressId) setStep(2); // move to shipping
     };
+
+    useEffect(() => {
+        console.log(addresses);
+        if (!addresses || loading) return;
+        const defaultAddress = addresses.find(address => address.is_default) || addresses.at(0);
+        if (defaultAddress) setSelectedAddressId(defaultAddress.id);
+    }, [addresses, loading]);
 
     return (
         <section>

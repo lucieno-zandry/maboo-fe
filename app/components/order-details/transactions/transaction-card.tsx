@@ -34,7 +34,7 @@ export function TransactionCard({ transaction, onActionComplete }: TransactionCa
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-base">
-                        {transaction.type} · {transaction.method}
+                        {transaction.type} · {transaction.payment_method}
                     </CardTitle>
                     <Badge variant={transaction.status === "SUCCESS" ? "default" : "secondary"}>
                         {transaction.status}

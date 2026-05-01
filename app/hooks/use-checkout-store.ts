@@ -8,7 +8,7 @@ type CheckoutStore = {
     setAppliedCoupon: (appliedCoupon: CheckoutStore['appliedCoupon']) => void;
     cartItems: CartItem[];
     setCartItems: (cartItems: CheckoutStore['cartItems']) => void;
-    method: Transaction['method'];
+    method: Transaction['payment_method'];
     setMethod: (method: CheckoutStore['method']) => void;
     selectedShipping: {
         method: ShippingMethod,

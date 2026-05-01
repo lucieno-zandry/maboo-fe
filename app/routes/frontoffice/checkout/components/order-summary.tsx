@@ -2,6 +2,7 @@
 import { useTranslation } from "react-i18next";
 import useCheckoutStore from "../stores/use-checkout-store";
 import { useFormatMoney } from "~/lib/format-money";
+import { useMemo } from "react";
 
 type Props = {
     cartItems: CartItem[];
@@ -15,8 +16,13 @@ export default function OrderSummary({ cartItems, coupon }: Props) {
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.total, 0);
 
+    const couponIsApplicable = useMemo(() => {
+        return !!(coupon && subtotal >= coupon.min_order_value);
+    }, [coupon, subtotal]);
+
     // Coupon discount calculated from coupon object (not order-level coupon_discount_applied yet)
     let couponDiscount = 0;
+
     if (coupon) {
         if (coupon.type === "FIXED_AMOUNT") {
             couponDiscount = Math.min(coupon.discount, subtotal);
@@ -25,6 +31,10 @@ export default function OrderSummary({ cartItems, coupon }: Props) {
         }
         // Round to 2 decimals
         couponDiscount = Math.round(couponDiscount * 100) / 100;
+    }
+
+    if (!couponIsApplicable) {
+        couponDiscount = 0;
     }
 
     const shipping = shippingCost ?? 0;

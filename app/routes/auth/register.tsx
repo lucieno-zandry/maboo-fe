@@ -1,5 +1,5 @@
 import Button from "~/components/custom-components/button"
-import { Field, FieldGroup, FieldLabel, FieldSeparator } from "~/components/ui/field"
+import { Field, FieldGroup } from "~/components/ui/field"
 import CustomField from "~/components/custom-components/field";
 import z from "zod";
 import { redirect, useLoaderData, useNavigate, useParams } from "react-router";
@@ -7,7 +7,6 @@ import type { Route } from "./+types";
 import { getEmailInfo, registerUser } from "~/api/http-requests";
 import React, { useMemo, useState, type FormEventHandler } from "react";
 import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
-import randomString from "~/lib/random-string";
 import { toast } from "sonner";
 import { ValidationException } from "~/api/app-fetch";
 import BackButton from "~/components/custom-components/back-button";
@@ -73,7 +72,6 @@ export default function () {
       email: formData.get("email")!,
       password: formData.get("password")!,
       password_confirmation: formData.get("password_confirmation")!,
-      name: randomString(8),
       preferred_currency: currency,
       preferred_language: language,
       preferred_timezone: timezone,

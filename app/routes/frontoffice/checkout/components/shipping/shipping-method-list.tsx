@@ -1,22 +1,15 @@
 import { cn } from "~/lib/utils";
 import { Truck, BadgeCheck } from "lucide-react";
-import useCheckoutStore from "../../stores/use-checkout-store";
 import { useFormatMoney } from "~/lib/format-money";
 
 type Props = {
     methods: { method: ShippingMethod; cost: number }[];
     selectedId: number | null;
-    onSelect: (id: number) => void;
+    onSelect: (id: number, cost: number) => void;
 };
 
 export default function ShippingMethodList({ methods, selectedId, onSelect }: Props) {
-    const { setShippingCost } = useCheckoutStore();
     const formatMoney = useFormatMoney();
-
-    const handleSelect = (id: number, cost: number) => {
-        onSelect(id);
-        setShippingCost(cost);
-    };
 
     if (methods.length === 0) {
         return <div className="text-center py-12 text-muted-foreground border rounded-xl">No shipping methods available.</div>;
@@ -34,7 +27,7 @@ export default function ShippingMethodList({ methods, selectedId, onSelect }: Pr
                                 ? "border-primary bg-primary/5 ring-1 ring-primary"
                                 : "border-border"
                         )}
-                        onClick={() => handleSelect(method.id, cost)}
+                        onClick={() => onSelect(method.id, cost)}
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-start gap-3">

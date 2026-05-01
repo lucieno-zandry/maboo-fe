@@ -11,15 +11,23 @@ import { toast } from "sonner";
 import { HttpException } from "~/api/app-fetch";
 import useCheckoutStore from "../stores/use-checkout-store";
 
+let promise: Promise<void> | null = null;
+
 export default function ShippingStep() {
     const { t } = useTranslation("checkout");
-    const { selectedAddressId, selectedShippingMethodId, setSelectedShippingMethodId, setStep } = useCheckoutStore();
+    const { selectedAddressId, selectedShippingMethodId, setSelectedShippingMethodId, setShippingCost, setStep } = useCheckoutStore();
     const { addresses } = useAddresses();
     const loaderData = useLoaderData() as { cart_items: CartItem[] }; // from loader
     const [available, setAvailable] = useState<{ method: ShippingMethod; cost: number }[] | null>(null);
     const [loading, setLoading] = useState(false);
 
     const selectedAddress = addresses?.find(a => a.id === selectedAddressId) ?? null;
+
+
+    const handleSelect = (methodId: number, cost: number) => {
+        setSelectedShippingMethodId(methodId);
+        setShippingCost(cost);
+    }
 
     useEffect(() => {
         if (!selectedAddressId || !selectedAddress || !loaderData?.cart_items) {
@@ -33,27 +41,44 @@ export default function ShippingStep() {
             price: item.unit_price,
         }));
 
+        if (promise) return;
+
         setLoading(true);
-        fetchAvailableShippingMethods({
+
+        promise = fetchAvailableShippingMethods({
             address_id: selectedAddressId,
             cart_items: cartItems,
         })
             .then(response => {
-                setAvailable(response.data?.available ?? []);
-                // if no method selected yet, maybe auto-select cheapest? We'll leave for now.
+                if (response.data?.available) {
+                    setAvailable(response.data.available);
+                    const toSelect = response.data.available.at(0);
+
+                    if (toSelect)
+                        handleSelect(toSelect.method.id, toSelect.cost)
+
+                    return
+                }
+
+                throw new HttpException(500, { message: "Failed to fetch available shipping methods" });
             })
             .catch(err => {
                 if (err instanceof HttpException) {
                     toast.error(err.data?.message || "Failed to load shipping methods");
                 }
+
                 setAvailable([]);
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(false);
+                promise = null;
+            });
     }, [selectedAddressId, selectedAddress, loaderData.cart_items]);
 
     const handleContinue = () => {
         if (selectedShippingMethodId) setStep(3);
     };
+
 
     return (
         <section>
@@ -67,7 +92,7 @@ export default function ShippingStep() {
                 <ShippingMethodList
                     methods={available}
                     selectedId={selectedShippingMethodId}
-                    onSelect={setSelectedShippingMethodId}
+                    onSelect={handleSelect}
                 />
             ) : (
                 <div className="text-center py-12 text-muted-foreground">

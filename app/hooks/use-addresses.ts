@@ -5,6 +5,8 @@ import { createAddress, getAuthAddresses } from "~/api/http-requests";
 import useAddressStore from "~/hooks/use-address-store";
 import { useUserStore } from "./use-user";
 
+let promise: Promise<any> | null = null;
+
 export function useAddresses() {
     const { authAddresses: addresses, setAuthAddresses: setAddresses, loading, setLoading } = useAddressStore();
     const { user } = useUserStore();
@@ -13,13 +15,17 @@ export function useAddresses() {
     const [submitting, setSubmitting] = useState(false);
 
     const fetchAddresses = useCallback(() => {
-        if (!loading) setLoading(true);
-        getAuthAddresses()
-            .then(response => {
-                if (response.data?.addresses)
-                    return setAddresses(response.data.addresses);
+        if (promise) return promise;
 
-                throw new HttpException(500, { message: "No Address returned" });
+        if (!loading) setLoading(true);
+
+        promise = getAuthAddresses()
+            .then(response => {
+                if (response.data?.addresses) {
+                    setAddresses(response.data.addresses);
+                } else {
+                    throw new HttpException(500, { message: "No Address returned" });
+                }
             })
             .catch(e => {
                 if (e instanceof HttpException)
@@ -29,7 +35,10 @@ export function useAddresses() {
             })
             .finally(() => {
                 setLoading(false);
-            })
+                promise = null; // reset after completion
+            });
+
+        return promise;
     }, [loading]);
 
     const addAddress = useCallback(async (payload: FormData,
@@ -56,9 +65,9 @@ export function useAddresses() {
     }, []);
 
     useEffect(() => {
-        if (user?.id)
+        if (user?.id && addresses === null)
             fetchAddresses()
-    }, [user?.id]);
+    }, [user?.id, addresses]);
 
     return {
         addresses,

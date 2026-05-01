@@ -189,7 +189,7 @@ export function ProductShippingEstimator({
 
     const formatMoney = useFormatMoney();
     const { addresses } = useAddresses();
-    const defaultAddress = addresses?.find((a) => a.is_default);
+    const defaultAddress = addresses?.find((a) => a.is_default) || addresses?.at(0);
     const quantity = useDebounce(props.quantity || 1);
 
     const fetchRates = useCallback(
@@ -236,6 +236,8 @@ export function ProductShippingEstimator({
     );
 
     useEffect(() => {
+        if (addresses === null) return;
+
         const t = setTimeout(() => {
             fetchRates();
         }, 300);
@@ -246,6 +248,7 @@ export function ProductShippingEstimator({
         variant?.weight_kg,
         quantity,
         defaultAddress?.id,
+        addresses
     ]);
 
     return (

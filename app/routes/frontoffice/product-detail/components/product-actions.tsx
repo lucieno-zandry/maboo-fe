@@ -19,6 +19,8 @@ interface ProductActionsViewProps {
     addToCartLabel: string;
     buyNowLabel: string;
     outOfStockMessage: string;
+    canIncrement: boolean;
+    canDecrement: boolean;
 }
 
 export function ProductActionsView({
@@ -32,6 +34,8 @@ export function ProductActionsView({
     addToCartLabel,
     buyNowLabel,
     outOfStockMessage,
+    canDecrement,
+    canIncrement
 }: ProductActionsViewProps) {
     return (
         <div className="space-y-3">
@@ -40,7 +44,7 @@ export function ProductActionsView({
                 {/* Quantity selector */}
                 <div className="flex items-center rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden shrink-0">
                     <button
-                        disabled={isDisabled || quantity <= 1}
+                        disabled={!canDecrement}
                         onClick={onDecrease}
                         className="flex h-11 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
@@ -50,7 +54,7 @@ export function ProductActionsView({
                         {quantity}
                     </span>
                     <button
-                        disabled={isDisabled}
+                        disabled={!canIncrement}
                         onClick={onIncrease}
                         className="flex h-11 w-10 items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
@@ -102,6 +106,9 @@ export function ProductActions({ variant, couponCode, quantity, setQuantity }: P
     const isOutOfStock = variant ? variant.stock <= 0 : false;
     const isDisabled = buyNow.loading || !variant || isOutOfStock;
 
+    const canIncrement = !isDisabled && variant.stock > quantity;
+    const canDecrement = !isDisabled && quantity > 1;
+
     const handleAddToCart = () => {
         if (!variant) return;
         addToCart({ variant_id: variant.id, count: quantity });
@@ -118,8 +125,8 @@ export function ProductActions({ variant, couponCode, quantity, setQuantity }: P
     return (
         <ProductActionsView
             quantity={quantity}
-            onIncrease={() => setQuantity((q) => q + 1)}
-            onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
+            onIncrease={() => canIncrement && setQuantity((q) => q + 1)}
+            onDecrease={() => canDecrement && setQuantity((q) => Math.max(1, q - 1))}
             onAddToCart={handleAddToCart}
             onBuyNow={handleBuyNow}
             isDisabled={isDisabled}
@@ -127,6 +134,8 @@ export function ProductActions({ variant, couponCode, quantity, setQuantity }: P
             addToCartLabel={t("actions.addToCart")}
             buyNowLabel={t("actions.buyNow")}
             outOfStockMessage={t("actions.outOfStockMessage")}
+            canIncrement={canIncrement}
+            canDecrement={canDecrement}
         />
     );
 }

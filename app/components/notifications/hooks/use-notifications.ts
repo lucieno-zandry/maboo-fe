@@ -7,13 +7,18 @@ import {
 } from "../actions/notification-actions";
 import type { NotificationFilter } from "../types/notification-types";
 
+let promise: Promise<void> | null = null;
+
 export function useNotifications() {
   const store = useNotificationsStore();
 
   // Initial load
   useEffect(() => {
+    if (promise) return;
+
     if (!store.notifications && !store.isLoading)
-      loadNotifications(1);
+      promise = loadNotifications(1)
+        .finally(() => promise = null); 
   }, [store.notifications, store.isLoading]);
 
   const handleFilterChange = useCallback((filter: NotificationFilter) => {

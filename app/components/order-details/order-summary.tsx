@@ -9,8 +9,9 @@ import Button from "../custom-components/button";
 import { DeleteOrderDialog } from "~/components/orders/delete-order-dialog";
 import appNavigate from "~/lib/app-navigate";
 import { useFormatMoney } from "~/lib/format-money";
+import { HttpException, ValidationException } from "~/api/app-fetch";
 
-function OrderSummary({ order, statusConfig, method }: { order: Order; statusConfig: any; method: Transaction['method'] }) {
+function OrderSummary({ order, statusConfig, method }: { order: Order; statusConfig: any; method: Transaction['payment_method'] }) {
     const subtotal = order.cart_items?.reduce((acc, item) => acc + item.total, 0) ?? 0;
     const shippingCost = order.shipping_cost ?? 0;
     const shippingMethodName = order.shipping_method_snapshot?.name;
@@ -22,15 +23,21 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
         setLoading(true);
         createTransaction({
             amount: order.total,
-            method,
+            payment_method: method,
             order_uuid: order.uuid,
         })
             .then(response => {
-                if (response.data?.transaction.payment_url)
-                    location.href = response.data.transaction.payment_url;
+                if (response.data?.transaction.informations?.payment_url)
+                    location.href = response.data.transaction.informations.payment_url;
             })
             .catch((error) => {
-                toast.error(`Failed to initiate transaction with status : ${error.status}`);
+                if (error instanceof HttpException) {
+                    toast.error(error.data?.message || `Failed to initiate transaction with status: ${error.status}`);
+                } else if (error instanceof ValidationException) {
+                    toast.error(error.message);
+                } else {
+                    toast.error('Something went wrong', { description: error?.toString?.() });
+                }
             })
             .finally(() => {
                 setLoading(false);
