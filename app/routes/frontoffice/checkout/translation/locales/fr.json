@@ -9,7 +9,11 @@
         "title": "Vérifiez votre panier",
         "empty": "Votre panier est vide",
         "no_image": "Pas d'image",
-        "continue_to_address": "Continuer vers l'adresse"
+        "continue_to_address": "Continuer vers l'adresse",
+        "updating": "Mise a jour du panier...",
+        "syncing": "Synchronisation...",
+        "update_quantity_failed": "Echec de la mise a jour de la quantite",
+        "remove_item_failed": "Echec de la suppression de l'article"
     },
     "address": {
         "title": "Adresse de livraison",
@@ -29,12 +33,14 @@
         "code_placeholder": "Entrez le code",
         "applied_success": "Code promo appliqué !",
         "removed_success": "Code promo supprimé",
-        "invalid": "Code promo invalide"
+        "invalid": "Code promo invalide",
+        "remove_failed": "Echec de la suppression du code promo"
     },
     "summary": {
         "title": "Récapitulatif de la commande",
         "subtotal": "Sous-total",
         "coupon": "Code promo",
+        "coupon_not_applicable": "Code promo non applicable pour le moment. Ajoutez plus d'articles pour atteindre {{min}}.",
         "shipping": "Livraison",
         "free": "Gratuit",
         "weight": "Poids total",
@@ -46,6 +52,22 @@
         "mobile_phone": "Numéro de téléphone Mobile Money",
         "order_notes": "Notes de commande (optionnel)",
         "notes_placeholder": "Des instructions spéciales ?",
-        "pay_now": "Payer maintenant"
+        "pay_now": "Payer maintenant",
+        "coming_soon": "Bientot disponible",
+        "methods": {
+            "card": "Carte de credit / debit",
+            "paypal": "PayPal",
+            "orangemoney": "Orange Money",
+            "airtelmoney": "Airtel Money",
+            "mvola": "MVola"
+        }
+    },
+    "shipping_toasts": {
+        "load_methods_failed": "Echec du chargement des methodes de livraison"
+    },
+    "common": {
+        "back_to_cart": "Retour au panier",
+        "back_to_address": "Retour a l'adresse",
+        "back_to_shipping": "Retour a la livraison"
     }
 }

@@ -1,5 +1,6 @@
+// routes/checkout/components/shipping/shipping-method-list.tsx
 import { cn } from "~/lib/utils";
-import { Truck, BadgeCheck } from "lucide-react";
+import { Truck, CheckCircle2, Clock } from "lucide-react";
 import { useFormatMoney } from "~/lib/format-money";
 
 type Props = {
@@ -12,46 +13,68 @@ export default function ShippingMethodList({ methods, selectedId, onSelect }: Pr
     const formatMoney = useFormatMoney();
 
     if (methods.length === 0) {
-        return <div className="text-center py-12 text-muted-foreground border rounded-xl">No shipping methods available.</div>;
+        return (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+                <p>No shipping methods available for your location.</p>
+            </div>
+        );
     }
 
     return (
         <ul className="grid gap-3">
-            {methods.map(({ method, cost }) => (
-                <li key={method.id}>
-                    <button
-                        type="button"
-                        className={cn(
-                            "w-full text-left border rounded-xl p-4 transition-colors hover:border-primary/50",
-                            selectedId === method.id
-                                ? "border-primary bg-primary/5 ring-1 ring-primary"
-                                : "border-border"
-                        )}
-                        onClick={() => onSelect(method.id, cost)}
-                    >
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-start gap-3">
-                                <Truck className="h-5 w-5 text-muted-foreground mt-0.5" />
-                                <div>
-                                    <p className="font-semibold">{method.name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {method.carrier} ·{" "}
-                                        {method.min_delivery_days !== undefined && method.max_delivery_days !== undefined
-                                            ? `${method.min_delivery_days}–${method.max_delivery_days} business days`
-                                            : "Delivery time not specified"}
-                                    </p>
+            {methods.map(({ method, cost }) => {
+                const isSelected = selectedId === method.id;
+                return (
+                    <li key={method.id}>
+                        <button
+                            type="button"
+                            className={cn(
+                                "relative flex w-full items-center justify-between gap-4 rounded-xl border-2 p-5 text-left transition-all duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/20",
+                                isSelected
+                                    ? "border-primary bg-primary/[0.03] shadow-sm"
+                                    : "border-transparent bg-muted/40 hover:bg-muted/60"
+                            )}
+                            onClick={() => onSelect(method.id, cost)}
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className={cn(
+                                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
+                                    isSelected ? "bg-primary/10 text-primary" : "bg-background text-muted-foreground shadow-sm"
+                                )}>
+                                    <Truck className="h-5 w-5" />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="font-semibold text-foreground leading-none">{method.name}</p>
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+                                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                            {method.carrier}
+                                        </p>
+                                        <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                                            <Clock className="h-3 w-3" />
+                                            {method.min_delivery_days !== undefined && method.max_delivery_days !== undefined
+                                                ? `${method.min_delivery_days}–${method.max_delivery_days} business days`
+                                                : "Delivery time not specified"}
+                                        </p>
+                                    </div>
                                     {method.free_shipping_threshold && cost === 0 && (
-                                        <span className="mt-1 inline-flex items-center text-xs text-green-600">
-                                            <BadgeCheck className="mr-1 h-3 w-3" /> Free shipping
+                                        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                                            Free shipping
                                         </span>
                                     )}
                                 </div>
                             </div>
-                            <div className="text-right font-semibold">{formatMoney(cost)}</div>
-                        </div>
-                    </button>
-                </li>
-            ))}
+                            <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                    <p className="text-lg font-bold tabular-nums text-foreground">{formatMoney(cost)}</p>
+                                </div>
+                                {isSelected && (
+                                    <CheckCircle2 className="h-6 w-6 shrink-0 text-primary animate-in zoom-in-50 duration-200" />
+                                )}
+                            </div>
+                        </button>
+                    </li>
+                );
+            })}
         </ul>
     );
 }

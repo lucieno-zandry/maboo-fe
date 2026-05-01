@@ -1,5 +1,5 @@
 // routes/checkout/components/coupon-section.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRevalidator } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
@@ -7,6 +7,7 @@ import { Input } from "~/components/ui/input";
 import { getCouponFromCode, unuseCoupon } from "~/api/http-requests";
 import { toast } from "sonner";
 import { HttpException } from "~/api/app-fetch";
+import { Ticket, X, CheckCircle2 } from "lucide-react";
 
 type CouponSectionSmartProps = {
     initialCoupon: Coupon | null;
@@ -26,30 +27,48 @@ function CouponSectionView({ coupon, codeInput, onCodeChange, onApply, onRemove,
     const { t } = useTranslation("checkout");
 
     return (
-        <div className="border rounded-xl p-4 bg-muted/30">
-            <p className="text-sm font-medium mb-3">{t("coupon.label")}</p>
+        <div className="group relative overflow-hidden rounded-2xl border border-dashed bg-card p-5 transition-all focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5">
+            <div className="mb-4 flex items-center gap-2 text-sm font-medium text-foreground">
+                <Ticket className="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                {t("coupon.label", "Have a promo code?")}
+            </div>
+
             {coupon ? (
-                <div className="flex items-center justify-between">
-                    <div>
-                        <span className="font-semibold">{coupon.code}</span>
-                        <span className="ml-2 text-xs text-muted-foreground">
-                            ({coupon.type === "PERCENTAGE" ? `${coupon.discount}%` : `${coupon.discount} €`})
-                        </span>
+                <div className="flex items-center justify-between rounded-xl border bg-emerald-50/50 p-3 px-4 dark:bg-emerald-950/20 dark:border-emerald-900/50">
+                    <div className="flex items-center gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                        <div>
+                            <p className="font-semibold text-emerald-700 dark:text-emerald-400">{coupon.code}</p>
+                            <p className="text-xs text-emerald-600/80 dark:text-emerald-500/80">
+                                {coupon.type === "PERCENTAGE" ? `${coupon.discount}% off` : `${coupon.discount} € off`} applied
+                            </p>
+                        </div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={onRemove} disabled={loading}>
-                        {t("coupon.remove")}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
+                        onClick={onRemove}
+                        disabled={loading}
+                    >
+                        <X className="h-4 w-4" />
                     </Button>
                 </div>
             ) : (
                 <div className="flex gap-2">
                     <Input
-                        placeholder={t("coupon.code_placeholder")}
+                        placeholder={t("coupon.code_placeholder", "Enter code")}
                         value={codeInput}
                         onChange={(e) => onCodeChange(e.target.value)}
-                        className="h-9"
+                        className="h-10 flex-1 rounded-xl bg-background shadow-none"
                     />
-                    <Button size="sm" onClick={onApply} disabled={loading || !codeInput.trim()}>
-                        {t("coupon.apply")}
+                    <Button
+                        size="sm"
+                        className="h-10 rounded-xl px-6"
+                        onClick={onApply}
+                        disabled={loading || !codeInput.trim()}
+                    >
+                        {t("coupon.apply", "Apply")}
                     </Button>
                 </div>
             )}
@@ -65,14 +84,18 @@ export default function CouponSection({ initialCoupon }: CouponSectionSmartProps
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation("checkout");
 
+    useEffect(() => {
+        setCoupon(initialCoupon);
+    }, [initialCoupon]);
+
     const handleApply = async () => {
         if (!codeInput.trim()) return;
         setLoading(true);
         try {
             await getCouponFromCode(codeInput.trim().toUpperCase());
-            revalidator.revalidate(); // reload loader, which reads new coupon cookie
-            // The coupon might be returned, but we rely on revalidation
+            revalidator.revalidate();
             toast.success(t("coupon.applied_success"));
+            setCodeInput("");
         } catch (err) {
             if (err instanceof HttpException) {
                 toast.error(err.data?.message || t("coupon.invalid"));
@@ -90,7 +113,7 @@ export default function CouponSection({ initialCoupon }: CouponSectionSmartProps
             toast.success(t("coupon.removed_success"));
         } catch (err) {
             if (err instanceof HttpException) {
-                toast.error(err.data?.message || "Failed to remove coupon");
+                toast.error(err.data?.message || t("coupon.remove_failed"));
             }
         } finally {
             setLoading(false);

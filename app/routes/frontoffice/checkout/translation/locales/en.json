@@ -9,7 +9,11 @@
         "title": "Review your bag",
         "empty": "Your cart is empty",
         "no_image": "No image",
-        "continue_to_address": "Continue to address"
+        "continue_to_address": "Continue to address",
+        "updating": "Updating your cart...",
+        "syncing": "Syncing...",
+        "update_quantity_failed": "Failed to update quantity",
+        "remove_item_failed": "Failed to remove item"
     },
     "address": {
         "title": "Shipping address",
@@ -29,12 +33,14 @@
         "code_placeholder": "Enter code",
         "applied_success": "Coupon applied!",
         "removed_success": "Coupon removed",
-        "invalid": "Invalid coupon"
+        "invalid": "Invalid coupon",
+        "remove_failed": "Failed to remove coupon"
     },
     "summary": {
         "title": "Order Summary",
         "subtotal": "Subtotal",
         "coupon": "Coupon",
+        "coupon_not_applicable": "Coupon not applicable yet. Add more items to reach {{min}}.",
         "shipping": "Shipping",
         "free": "Free",
         "weight": "Total weight",
@@ -46,6 +52,22 @@
         "mobile_phone": "Mobile Money phone number",
         "order_notes": "Order notes (optional)",
         "notes_placeholder": "Any special instructions?",
-        "pay_now": "Pay now"
+        "pay_now": "Pay now",
+        "coming_soon": "Coming soon",
+        "methods": {
+            "card": "Credit / Debit Card",
+            "paypal": "PayPal",
+            "orangemoney": "Orange Money",
+            "airtelmoney": "Airtel Money",
+            "mvola": "MVola"
+        }
+    },
+    "shipping_toasts": {
+        "load_methods_failed": "Failed to load shipping methods"
+    },
+    "common": {
+        "back_to_cart": "Back to cart",
+        "back_to_address": "Back to address",
+        "back_to_shipping": "Back to shipping"
     }
 }

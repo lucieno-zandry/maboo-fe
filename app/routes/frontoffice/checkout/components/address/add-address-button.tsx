@@ -16,17 +16,18 @@ export default function AddAddressButton() {
 
         const formData = new FormData(e.currentTarget);
         addAddress(formData, { onSuccess: () => setDialogOpen(false) });
-    }, []);
+    }, [addAddress]);
 
     return (
         <>
             <Button
                 variant="outline"
                 size="sm"
+                className="rounded-full shadow-sm transition-colors hover:bg-primary/5 hover:text-primary hover:border-primary/30"
                 onClick={() => setDialogOpen(true)}
             >
                 <Plus className="mr-2 h-4 w-4" />
-                {t("address.add_new")}
+                {t("address.add_new", "Add New Address")}
             </Button>
             <AddressDialog
                 open={dialogOpen}

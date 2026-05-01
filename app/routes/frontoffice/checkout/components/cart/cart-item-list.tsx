@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { HttpException } from "~/api/app-fetch";
 import { useTranslation } from "react-i18next";
+import { Loader2, ShoppingCart } from "lucide-react";
 
 type CartItemListSmartProps = {
     items: CartItem[];
@@ -14,78 +15,110 @@ type CartItemListSmartProps = {
 // Dumb view
 type CartItemListViewProps = {
     items: CartItem[];
-    onQuantityChange: (id: number, newCount: number) => void;
+    onQuantityCommit: (id: number, newCount: number) => void;
     onRemove: (id: number) => void;
-    disabled?: boolean;
+    updatingIds: Set<number>;
+    isLoading: boolean;
 };
 
-function CartItemListView({ items, onQuantityChange, onRemove, disabled }: CartItemListViewProps) {
+function CartItemListView({ items, onQuantityCommit, onRemove, updatingIds, isLoading }: CartItemListViewProps) {
     const { t } = useTranslation("checkout");
 
     if (items.length === 0) {
         return (
-            <div className="text-center py-12 text-muted-foreground">
-                {t("cart.empty")}
+            <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                    <ShoppingCart className="h-8 w-8 text-muted-foreground/60" />
+                </div>
+                <h3 className="text-lg font-medium">{t("cart.empty_title", "Your cart is empty")}</h3>
+                <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+                    {t("cart.empty_description", "Looks like you haven't added anything to your cart yet.")}
+                </p>
             </div>
         );
     }
 
     return (
-        <ul className="divide-y">
-            {items.map((item) => (
-                <li key={item.id}>
-                    <CartItemRow
-                        item={item}
-                        onQuantityChange={(newCount) => onQuantityChange(item.id, newCount)}
-                        onRemove={() => onRemove(item.id)}
-                        disabled={disabled}
-                    />
-                </li>
-            ))}
-        </ul>
+        <div className="relative">
+            {/* Loading Overlay Bar */}
+            <div className="absolute -top-10 right-0 flex h-8 items-center">
+                {isLoading && (
+                    <div className="inline-flex animate-pulse items-center gap-2 rounded-full bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        {t("cart.updating")}
+                    </div>
+                )}
+            </div>
+
+            <ul className="divide-y divide-border/50">
+                {items.map((item) => (
+                    <li key={item.id} className="transition-colors hover:bg-muted/10 first:rounded-t-2xl last:rounded-b-2xl">
+                        <CartItemRow
+                            item={item}
+                            onQuantityCommit={(newCount) => onQuantityCommit(item.id, newCount)}
+                            onRemove={() => onRemove(item.id)}
+                            isUpdating={updatingIds.has(item.id)}
+                        />
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 
 // Smart wrapper
 export default function CartItemList({ items }: CartItemListSmartProps) {
     const revalidator = useRevalidator();
-    const [isMutating, setIsMutating] = useState(false);
+    const [updatingIds, setUpdatingIds] = useState<Set<number>>(new Set());
+    const [isRemoving, setIsRemoving] = useState(false);
+    const { t } = useTranslation("checkout");
 
-    const handleQuantityChange = async (id: number, newCount: number) => {
+    const handleQuantityCommit = async (id: number, newCount: number) => {
         if (newCount < 1) return;
-        setIsMutating(true);
+
+        setUpdatingIds((prev) => {
+            const next = new Set(prev);
+            next.add(id);
+            return next;
+        });
+
         try {
             await updateCartItem(id, { count: newCount });
             revalidator.revalidate();
         } catch (err) {
             if (err instanceof HttpException) {
-                toast.error(err.data?.message || "Failed to update quantity");
+                toast.error(err.data?.message || t("cart.update_quantity_failed"));
             }
         } finally {
-            setIsMutating(false);
+            setUpdatingIds((prev) => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+            });
         }
     };
 
     const handleRemove = async (id: number) => {
-        setIsMutating(true);
+        setIsRemoving(true);
         try {
             await removeCartItem(id);
             revalidator.revalidate();
         } catch (err) {
             if (err instanceof HttpException) {
-                toast.error(err.data?.message || "Failed to remove item");
+                toast.error(err.data?.message || t("cart.remove_item_failed"));
             }
         } finally {
-            setIsMutating(false);
+            setIsRemoving(false);
         }
     };
 
     return (
         <CartItemListView
             items={items}
-            onQuantityChange={handleQuantityChange}
+            onQuantityCommit={handleQuantityCommit}
             onRemove={handleRemove}
-            disabled={isMutating}
+            updatingIds={updatingIds}
+            isLoading={isRemoving || revalidator.state !== "idle" || updatingIds.size > 0}
         />
     );
 }
