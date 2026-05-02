@@ -6,7 +6,6 @@ import appPathname from "~/lib/app-pathname";
 export const QUERY_PLACEHOLDER = "all"; // path segment when no keyword
 
 export function useSearchUrlSync() {
-    const navigate = useNavigate();
     const { query: urlQuery } = useParams<{ query: string }>();
     const [searchParams] = useSearchParams();
 
@@ -68,6 +67,6 @@ export function useSearchUrlSync() {
         const qs = params.toString();
         const newPath = appPathname(`/search/${keyword}${qs ? `?${qs}` : ""}`);
 
-        navigate(newPath, { replace: true });
+        history.replaceState({}, "", newPath);
     }, [filters, hydratedRef]);
 }

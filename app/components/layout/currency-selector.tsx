@@ -10,6 +10,7 @@ import { defaultPreference, usePreferencesStore } from '~/hooks/use-user-prefere
 import { useUserStore } from '~/hooks/use-user';
 import { CircleDollarSign } from 'lucide-react';
 import { useUpdatePreferences } from '~/hooks/use-update-preferences';
+import { useSettings } from '~/hooks/use-settings';
 
 const CURRENCIES = [
     { code: 'USD', label: 'US Dollar' },
@@ -85,6 +86,9 @@ const CurrencySelect = ({ value, onChange, disabled }: CurrencySelectProps) => (
 export const CurrencySelector = ({ type = 'navbar' }: { type?: 'navbar' | 'dropdown' }) => {
     const { authStatus } = useUserStore();
     const { preferences } = usePreferencesStore();
+    const { get } = useSettings();
+
+    if (!get('currency_enabled')) return null;
 
     const updatePreferences = useUpdatePreferences();
 

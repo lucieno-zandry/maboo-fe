@@ -8,6 +8,7 @@ import { SkeletonCard } from "./skeleton-card";
 import { EmptyState } from "./empty-state";
 import { ErrorState } from "./error-state";
 import { useLocation, useParams } from "react-router";
+import { useFormatMoney } from "~/lib/format-money";
 
 export function ProductGrid() {
     const products = useSearchStore((s) => s.products);
@@ -27,6 +28,8 @@ export function ProductGrid() {
     const filters = useSearchStore((s) => s.filters);
     // ← Gate: don't fetch until the URL has been read into the store
     const urlHydrated = useSearchStore((s) => s.urlHydrated);
+
+    const { currency } = useFormatMoney();
 
     const { search } = useLocation();
     const { query = '' } = useParams();
@@ -52,7 +55,7 @@ export function ProductGrid() {
 
         setProductsLoading(false);
         isFetchingRef.current = false;
-    }, [filters, query, search]);
+    }, [filters, query, search, currency]);
 
     // Only start fetching once the URL params have been written to the store
     useEffect(() => {

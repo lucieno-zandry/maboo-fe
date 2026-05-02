@@ -11,6 +11,8 @@ import { FilterSidebar } from "./filter-sidebar";
 import { ActiveFilterTags } from "./active-filter-tags";
 import { ProductGrid } from "./product-grid";
 import { MobileFilterDrawer } from "./mobile-filter-drawer";
+import { useSettings } from "~/hooks/use-settings";
+import { useFormatMoney } from "~/lib/format-money";
 
 // ─── View (unchanged) ─────────────────────────────────────────────────────────
 
@@ -67,27 +69,32 @@ export function SearchPageView({
 // ─── Smart (updated) ──────────────────────────────────────────────────────────
 
 export function SearchPage() {
-    const setPriceRangeMeta = useSearchStore((s) => s.setPriceRangeMeta);
-    const setPriceRangeLoading = useSearchStore((s) => s.setPriceRangeLoading);
-    const setCategories = useSearchStore((s) => s.setCategories);
-    const setCategoriesLoading = useSearchStore((s) => s.setCategoriesLoading);
+    const { setCategoriesLoading, setCategories, setPriceRangeLoading, setPriceRangeMeta } = useSearchStore();
+    const { currency } = useFormatMoney();
 
     useSearchUrlSync();
 
-    useEffect(() => {
-        const loadMeta = async () => {
-            setPriceRangeLoading(true);
-            const { data: priceData } = await getPriceRange();
-            if (priceData) setPriceRangeMeta(priceData);
-            setPriceRangeLoading(false);
+    const loadCategories = async () => {
+        setCategoriesLoading(true);
+        const { data: catData } = await getCategories();
+        if (catData) setCategories(catData.categories);
+        setCategoriesLoading(false);
+    }
 
-            setCategoriesLoading(true);
-            const { data: catData } = await getCategories();
-            if (catData) setCategories(catData.categories);
-            setCategoriesLoading(false);
-        };
-        loadMeta();
+    const loadRange = async () => {
+        setPriceRangeLoading(true);
+        const { data: priceData } = await getPriceRange();
+        if (priceData) setPriceRangeMeta(priceData);
+        setPriceRangeLoading(false);
+    }
+
+    useEffect(() => {
+        loadCategories();
     }, []);
+
+    useEffect(() => {
+        loadRange();
+    }, [currency]);
 
     return (
         <SearchPageView
