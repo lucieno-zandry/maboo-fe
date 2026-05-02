@@ -17,8 +17,8 @@ import frCheckout from "~/routes/frontoffice/checkout/translation/locales/fr.jso
 import enProduct from "./locales/en/product.json";
 import frProduct from "./locales/fr/product.json";
 
-import enSearchResults from "./locales/en/search-results.json";
-import frSearchResults from "./locales/fr/search-results.json";
+import enSearchResults from "~/routes/frontoffice/search/translation/locales/en.json";
+import frSearchResults from "~/routes/frontoffice/search/translation/locales/fr.json";
 
 import enProducts from "./locales/en/products.json";
 import frProducts from "./locales/fr/products.json";
