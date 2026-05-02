@@ -1,7 +1,7 @@
 import { Search, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useSearchStore } from "~/hooks/use-search-store";
-import { Input } from "../ui/input";
+import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
+import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 
 export interface SearchBarViewProps {

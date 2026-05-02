@@ -1,11 +1,11 @@
 import { RotateCcw, SlidersHorizontal } from "lucide-react";
-import { useSearchStore, type PriceRange, type SearchFilters, type SortOption, SORT_OPTIONS } from "~/hooks/use-search-store";
+import { useSearchStore, type PriceRange, type SearchFilters, type SortOption, SORT_OPTIONS } from "~/routes/frontoffice/search/stores/use-search-store";
 import { cn } from "~/lib/utils";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Slider } from "../ui/slider";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Slider } from "~/components/ui/slider";
 import { getCurrencySymbol } from "~/lib/format-money";
 import { FilterSection } from "./filter-section";
 

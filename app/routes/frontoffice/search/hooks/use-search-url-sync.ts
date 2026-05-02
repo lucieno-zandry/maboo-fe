@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router";
-import { useSearchStore } from "./use-search-store";
+import { useParams, useSearchParams } from "react-router";
+import { useSearchStore } from "../stores/use-search-store";
 import appPathname from "~/lib/app-pathname";
 
 export const QUERY_PLACEHOLDER = "all"; // path segment when no keyword

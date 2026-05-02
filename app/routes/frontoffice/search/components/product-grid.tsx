@@ -1,9 +1,9 @@
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { getProducts } from "~/api/http-requests";
-import { useSearchStore } from "~/hooks/use-search-store";
+import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
 import { cn } from "~/lib/utils";
-import { ProductCard } from "./product-card";
+import { ProductCard } from "../../../../components/product-card";
 import { SkeletonCard } from "./skeleton-card";
 import { EmptyState } from "./empty-state";
 import { ErrorState } from "./error-state";

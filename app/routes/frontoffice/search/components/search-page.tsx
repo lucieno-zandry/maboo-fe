@@ -3,8 +3,8 @@
 
 import { useEffect, type ReactNode } from "react";
 import { getCategories, getPriceRange } from "~/api/http-requests";
-import { useSearchStore } from "~/hooks/use-search-store";
-import { useSearchUrlSync } from "~/hooks/use-search-url-sync";
+import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
+import { useSearchUrlSync } from "~/routes/frontoffice/search/hooks/use-search-url-sync";
 import { SearchBar } from "./search-bar";
 import { TopBar } from "./top-bar";
 import { FilterSidebar } from "./filter-sidebar";

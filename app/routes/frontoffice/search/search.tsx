@@ -1,4 +1,4 @@
-import { SearchPage } from "~/components/search/search-page";
+import { SearchPage } from "./components/search-page";
 
 export default function SearchRoute() {
     return <SearchPage />;

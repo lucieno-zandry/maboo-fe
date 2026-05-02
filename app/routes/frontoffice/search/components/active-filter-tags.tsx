@@ -1,7 +1,7 @@
-import { SORT_OPTIONS, useSearchStore } from "~/hooks/use-search-store";
-import { Badge } from "../ui/badge";
+import { SORT_OPTIONS, useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
 import { X } from "lucide-react";
 import { useFormatMoney } from "~/lib/format-money";
+import { Badge } from "~/components/ui/badge";
 
 
 export interface ActiveFilterTag {

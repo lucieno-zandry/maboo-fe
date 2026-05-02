@@ -1,6 +1,6 @@
 import { ShoppingCart } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
 import { PriceDisplay } from "./price-display";
 import { ProductImage } from "./product-image";
 import { PromotionPill } from "./promotion-pill";

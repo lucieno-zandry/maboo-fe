@@ -1,7 +1,7 @@
-import { useSearchStore, type ViewMode } from "~/hooks/use-search-store";
-import { Button } from "../ui/button";
+import { useSearchStore, type ViewMode } from "~/routes/frontoffice/search/stores/use-search-store";
+import { Button } from "~/components/ui/button";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { Badge } from "~/components/ui/badge";
 import { cn } from "~/lib/utils";
 
 export interface TopBarViewProps {

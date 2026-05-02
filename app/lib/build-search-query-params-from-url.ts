@@ -1,6 +1,6 @@
-import { SORT_OPTIONS, type SearchFilters } from "~/hooks/use-search-store";
+import { SORT_OPTIONS, type SearchFilters } from "~/routes/frontoffice/search/stores/use-search-store";
 import type { ProductQueryParams } from "./serialize-product-params";
-import { QUERY_PLACEHOLDER } from "~/hooks/use-search-url-sync";
+import { QUERY_PLACEHOLDER } from "~/routes/frontoffice/search/hooks/use-search-url-sync";
 
 const getFiltersFromUrl = ({ searchParams, query }: { query: string, searchParams: URLSearchParams }) => {
     const urlCategoryId = searchParams.get('category_id');

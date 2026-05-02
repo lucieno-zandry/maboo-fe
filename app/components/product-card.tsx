@@ -1,10 +1,7 @@
-import { toast } from "sonner";
-import { addVariantToCart } from "~/api/http-requests";
-import { useSearchStore } from "~/hooks/use-search-store";
+import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
 import appNavigate from "~/lib/app-navigate";
-import { GridCard } from "./grid-card";
-import { ListCard } from "./list-card";
-import { useRefreshCart } from "~/hooks/use-cart";
+import { GridCard } from "../routes/frontoffice/search/components/grid-card";
+import { ListCard } from "../routes/frontoffice/search/components/list-card";
 import { useAddToCart } from "~/routes/frontoffice/product-detail/hooks/use-add-to-cart";
 
 export interface ProductCardViewProps {

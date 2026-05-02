@@ -1,5 +1,5 @@
-import { useSearchStore } from "~/hooks/use-search-store";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "~/components/ui/sheet";
 import { FilterSidebar } from "./filter-sidebar";
 
 export interface MobileFilterDrawerViewProps {
