@@ -2,9 +2,11 @@ import { useNavigate } from "react-router";
 import { LockKeyhole, ShieldCheck, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import appPathname from "~/lib/app-pathname";
+import { useTranslation } from "react-i18next";
 
 export default function () {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     return (
         <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12">
@@ -19,11 +21,10 @@ export default function () {
                 </div>
 
                 <h1 className="mb-2 text-4xl font-extrabold tracking-tight sm:text-5xl italic">
-                    Access Denied
+                    {t("common:accessDeniedTitle")}
                 </h1>
                 <p className="mb-8 text-muted-foreground leading-relaxed">
-                    You don't have permission to access this page. Please contact your
-                    administrator if you believe this is a mistake.
+                    {t("common:accessDeniedDescription")}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -33,7 +34,7 @@ export default function () {
                         className="gap-2 px-8"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Go Back
+                        {t("common:goBack")}
                     </Button>
 
                     {/* Option to switch accounts if they are in the wrong one */}
@@ -46,7 +47,7 @@ export default function () {
                         className="gap-2 px-8"
                     >
                         <LogOut className="h-4 w-4" />
-                        Switch Account
+                        {t("common:switchAccount")}
                     </Button>
                 </div>
 
@@ -55,11 +56,11 @@ export default function () {
                     <div className="flex items-center gap-2 text-muted-foreground">
                         <ShieldCheck className="h-4 w-4 text-green-600" />
                         <span className="text-xs font-medium uppercase tracking-widest">
-                            Secure Session Active
+                            {t("common:secureSessionActive")}
                         </span>
                     </div>
                     <p className="text-xs text-muted-foreground max-w-[280px]">
-                        Your current account permissions do not allow viewing
+                        {t("common:permissionsDoNotAllowViewing")}
                         <span className="font-mono bg-muted px-1 mx-1 rounded text-[10px]">
                             {window.location.pathname}
                         </span>

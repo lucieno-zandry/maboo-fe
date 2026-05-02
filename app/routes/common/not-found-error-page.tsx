@@ -2,9 +2,11 @@ import { useNavigate } from "react-router";
 import { MoveLeft, Home, FileQuestion } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import appPathname from "~/lib/app-pathname";
+import { useTranslation } from "react-i18next";
 
 export default function () {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12">
@@ -18,11 +20,10 @@ export default function () {
         </div>
 
         <h1 className="mb-2 text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Page not found
+          {t("common:pageNotFoundTitle")}
         </h1>
         <p className="mb-10 text-muted-foreground">
-          Sorry, we couldn’t find the page you’re looking for. It might have been moved,
-          deleted, or the URL might be incorrect.
+          {t("common:pageNotFoundDescription")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -32,7 +33,7 @@ export default function () {
             className="gap-2"
           >
             <MoveLeft className="h-4 w-4" />
-            Go Back
+            {t("common:goBack")}
           </Button>
 
           <Button
@@ -40,27 +41,27 @@ export default function () {
             className="gap-2"
           >
             <Home className="h-4 w-4" />
-            Back to Home
+            {t("common:backToHome")}
           </Button>
         </div>
 
         {/* Optional: Helpful links for a dashboard app */}
         <div className="mt-12 border-t pt-8 w-full">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-            Need help?
+            {t("common:needHelp")}
           </p>
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => navigate(appPathname("/support"))}
               className="text-sm text-left hover:text-primary transition-colors font-medium"
             >
-              Contact Support
+              {t("common:contactSupport")}
             </button>
             <button
               onClick={() => navigate(appPathname("/orders"))}
               className="text-sm text-left hover:text-primary transition-colors font-medium"
             >
-              View Recent Orders
+              {t("common:viewRecentOrders")}
             </button>
           </div>
         </div>
