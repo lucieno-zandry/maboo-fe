@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { useFormatMoney } from "~/lib/format-money";
 import { isCategory } from "../../helpers/landing-able-guards";
 import appPathname, { useAppPathname } from "~/lib/app-pathname";
+import { useTranslation } from "react-i18next";
 
 // ----------------------------------------------------------------------------
 // View Component (dumb)
@@ -17,6 +18,8 @@ type CollectionItemViewProps = {
     index: number;             // animation delay index
     formatMoney: (value: number) => string;
     appPathname: typeof appPathname;
+    fromLabel: string;
+    shopLabel: string;
 };
 
 export function CollectionItemView({
@@ -27,7 +30,9 @@ export function CollectionItemView({
     startingPrice,
     index,
     formatMoney,
-    appPathname
+    appPathname,
+    fromLabel,
+    shopLabel
 }: CollectionItemViewProps) {
     return (
         <Link
@@ -65,11 +70,11 @@ export function CollectionItemView({
 
                 <div className="collection-card__footer">
                     <span className="collection-card__price">
-                        From {formatMoney(startingPrice)}
+                        {fromLabel} {formatMoney(startingPrice)}
                     </span>
 
                     <span className="collection-card__cta">
-                        Shop{" "}
+                        {shopLabel}{" "}
                         <ArrowRight className="w-3.5 h-3.5 ml-1 inline-item" />
                     </span>
                 </div>
@@ -87,6 +92,7 @@ type CollectionItemProps = {
 };
 
 export function CollectionItem({ item, index }: CollectionItemProps) {
+    const { t } = useTranslation("landing");
     const formatMoney = useFormatMoney();
     const appPathname = useAppPathname();
 
@@ -103,7 +109,7 @@ export function CollectionItem({ item, index }: CollectionItemProps) {
     }
 
     // Subtitle: use item.subtitle, otherwise fallback to a generic text
-    const subtitle = item.subtitle ?? `Discover our ${category?.title} collection`;
+    const subtitle = item.subtitle ?? t("landing:collections.discoverCollection", { title: category?.title });
 
     return (
         <CollectionItemView
@@ -116,6 +122,8 @@ export function CollectionItem({ item, index }: CollectionItemProps) {
             index={index}
             formatMoney={formatMoney}
             appPathname={appPathname}
+            fromLabel={t("landing:collections.from")}
+            shopLabel={t("landing:collections.shop")}
         />
     );
 }

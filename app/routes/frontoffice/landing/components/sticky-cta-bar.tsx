@@ -3,6 +3,7 @@ import { Button } from "~/components/ui/button";
 import { useLandingUIStore } from "../stores/use-landing-ui-store";
 import { useAddToCart } from "~/routes/frontoffice/product-detail/hooks/use-add-to-cart";
 import { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 interface StickyCTABarViewProps {
   isVisible: boolean;
@@ -11,6 +12,9 @@ interface StickyCTABarViewProps {
   thumbnailUrl: string | null;
   onAddToCart: () => void;
   onDismiss: () => void;
+  quickAddAriaLabel: string;
+  addToCartLabel: string;
+  dismissAriaLabel: string;
 }
 
 export function StickyCTABarView({
@@ -20,13 +24,16 @@ export function StickyCTABarView({
   thumbnailUrl,
   onAddToCart,
   onDismiss,
+  quickAddAriaLabel,
+  addToCartLabel,
+  dismissAriaLabel,
 }: StickyCTABarViewProps) {
   return (
     <div
       className={`sticky-cta ${isVisible ? "sticky-cta--visible" : ""}`}
       aria-hidden={!isVisible}
       role="complementary"
-      aria-label="Quick add to cart"
+      aria-label={quickAddAriaLabel}
     >
       <div className="sticky-cta__inner">
         <div className="sticky-cta__product">
@@ -47,10 +54,10 @@ export function StickyCTABarView({
 
         <Button onClick={onAddToCart} size="sm" className="sticky-cta__btn">
           <ShoppingCart className="w-4 h-4 mr-1.5" />
-          Add to Cart
+          {addToCartLabel}
         </Button>
 
-        <button onClick={onDismiss} className="sticky-cta__dismiss" aria-label="Dismiss">
+        <button onClick={onDismiss} className="sticky-cta__dismiss" aria-label={dismissAriaLabel}>
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -65,6 +72,7 @@ interface StickyCTABarProps {
 export function StickyCTABar({
   product,
 }: StickyCTABarProps) {
+  const { t } = useTranslation("landing");
   const { isStickyCTAVisible, setStickyCTAVisible, selectedHeroVariantId } = useLandingUIStore();
 
   const addToCart = useAddToCart();
@@ -95,6 +103,9 @@ export function StickyCTABar({
       thumbnailUrl={thumbnailUrl}
       onAddToCart={handleAddToCart}
       onDismiss={handleDismiss}
+      quickAddAriaLabel={t("landing:stickyCta.quickAddToCart")}
+      addToCartLabel={t("landing:common.addToCart")}
+      dismissAriaLabel={t("landing:common.dismiss")}
     />
   );
 }

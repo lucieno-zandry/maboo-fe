@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useLandingUIStore } from "../stores/use-landing-ui-store";
+import { useTranslation } from "react-i18next";
 
 interface FaqViewProps {
   eyebrow?: string;
@@ -60,6 +61,7 @@ export function FaqView({ eyebrow, title, items, openId, onToggle }: FaqViewProp
 }
 
 export function Faq({ block }: { block: LandingBlock<FaqContent> }) {
+  const { t } = useTranslation("landing");
   const { openFaqId, toggleFaq } = useLandingUIStore();
 
   const content = block.content ?? {} as FaqContent;
@@ -69,7 +71,7 @@ export function Faq({ block }: { block: LandingBlock<FaqContent> }) {
   return (
     <FaqView
       eyebrow={eyebrow}
-      title={block.title ?? "Everything you need to know"}
+      title={block.title ?? t("landing:faq.everythingYouNeedToKnow")}
       items={items}
       openId={openFaqId}
       onToggle={toggleFaq}

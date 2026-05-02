@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 interface StoryViewProps {
   eyebrow?: string;
   title: string;
@@ -5,9 +7,10 @@ interface StoryViewProps {
   imageUrl: string | null;
   imageCaption?: string;
   stats: Array<{ value: string; label: string }>;
+  defaultImageAlt: string;
 }
 
-export function StoryView({ eyebrow, title, body, imageUrl, imageCaption, stats }: StoryViewProps) {
+export function StoryView({ eyebrow, title, body, imageUrl, imageCaption, stats, defaultImageAlt }: StoryViewProps) {
   const headlineLines = title.split("\n");
 
   return (
@@ -16,7 +19,7 @@ export function StoryView({ eyebrow, title, body, imageUrl, imageCaption, stats 
         <div className="story__img-wrap">
           <img
             src={imageUrl ?? "/images/placeholder-story.jpg"}
-            alt={imageCaption || "Brand story image"}
+            alt={imageCaption || defaultImageAlt}
             className="story__img"
             loading="lazy"
           />
@@ -55,17 +58,19 @@ export function StoryView({ eyebrow, title, body, imageUrl, imageCaption, stats 
 }
 
 export function Story({ block }: { block: LandingBlock<StoryContent> }) {
+  const { t } = useTranslation("landing");
   const content = block.content ?? {} as StoryContent;
   const stats = content.stats ?? [];
 
   return (
     <StoryView
       eyebrow={content.eyebrow}
-      title={block.title ?? "Our Story"}
+      title={block.title ?? t("landing:story.ourStory")}
       body={content.body ?? ""}
       imageUrl={block.image?.url ?? null}
       imageCaption={content.imageCaption}
       stats={stats}
+      defaultImageAlt={t("landing:story.brandStoryImage")}
     />
   );
 }

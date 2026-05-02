@@ -10,6 +10,7 @@ import formatMoney, { useFormatMoney } from "~/lib/format-money";
 import { getEffectivePrice, getOriginalPrice, getPromotionBadge, getVariantLabel } from "./helpers";
 import { toast } from "sonner";
 import { useAddToCart } from "~/routes/frontoffice/product-detail/hooks/use-add-to-cart";
+import { useTranslation } from "react-i18next";
 
 
 // ----------------------------------------------------------------------------
@@ -29,6 +30,8 @@ interface HeroViewProps {
     eyebrow: string;
     headlineSuffix: string;
     trustLine: string;
+    addToCartLabel: string;
+    scrollDownAriaLabel: string;
 }
 
 export function HeroView({
@@ -44,7 +47,9 @@ export function HeroView({
     eyebrow,
     formatMoney,
     headlineSuffix,
-    trustLine
+    trustLine,
+    addToCartLabel,
+    scrollDownAriaLabel
 }: HeroViewProps) {
     const selected = variants.find((v) => v.id === Number(selectedVariantId)) ?? variants[0];
 
@@ -113,7 +118,7 @@ export function HeroView({
 
                     <Button onClick={onAddToCart} className="hero__add-btn" size="lg">
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add to Cart
+                        {addToCartLabel}
                     </Button>
                 </div>
 
@@ -121,7 +126,7 @@ export function HeroView({
             </div>
 
             <div ref={sentinelRef} className="hero__sentinel" aria-hidden />
-            <button onClick={onScrollDown} className="hero__scroll-cue" aria-label="Scroll down">
+            <button onClick={onScrollDown} className="hero__scroll-cue" aria-label={scrollDownAriaLabel}>
                 <ChevronDown className="w-5 h-5" />
             </button>
         </section>
@@ -132,6 +137,7 @@ export function HeroView({
 // Hero Smart Component
 // ----------------------------------------------------------------------------
 export function Hero({ block }: { block: LandingBlock }) {
+    const { t } = useTranslation("landing");
     const { selectedHeroVariantId, setSelectedHeroVariantId } = useLandingUIStore();
     const sentinelRef = useStickyCtaTrigger();
     const formatMoney = useFormatMoney();
@@ -142,8 +148,8 @@ export function Hero({ block }: { block: LandingBlock }) {
     };
 
     const backgroundImageUrl = block.image?.url ?? null;
-    const headline = block.title ?? "Default Headline";
-    const subline = block.subtitle ?? "Default subline";
+    const headline = block.title ?? t("landing:hero.defaultHeadline");
+    const subline = block.subtitle ?? t("landing:hero.defaultSubline");
 
     if (!block.landing_able || !isProduct(block.landing_able)) return null;
 
@@ -153,14 +159,14 @@ export function Hero({ block }: { block: LandingBlock }) {
 
     const handleAddToCart = () => {
         const variant = variants.at(0);
-        if (!variant) return toast.error("There's nothing to add to the cart");
+        if (!variant) return toast.error(t("landing:hero.nothingToAdd"));
         addToCart({ count: 1, variant_id: variant.id });
     };
 
     const content = block.content ?? {};
-    const eyebrow = content.eyebrow ?? "Directly from SAVA, Madagascar";
-    const headlineSuffix = content.headlineSuffix ?? "Uncompromised.";
-    const trustLine = content.trustLine ?? "🔒 Secure payment · Free returns · Colissimo tracked";
+    const eyebrow = content.eyebrow ?? t("landing:hero.defaultEyebrow");
+    const headlineSuffix = content.headlineSuffix ?? t("landing:hero.defaultHeadlineSuffix");
+    const trustLine = content.trustLine ?? t("landing:hero.defaultTrustLine");
 
     // Variants already include `applied_promotions` and `effective_price` from backend
     return (
@@ -178,6 +184,8 @@ export function Hero({ block }: { block: LandingBlock }) {
             eyebrow={eyebrow}
             headlineSuffix={headlineSuffix}
             trustLine={trustLine}
+            addToCartLabel={t("landing:common.addToCart")}
+            scrollDownAriaLabel={t("landing:hero.scrollDown")}
         />
     );
 }

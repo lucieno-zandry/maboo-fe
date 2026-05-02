@@ -1,0 +1,60 @@
+{
+  "common": {
+    "addToCart": "Add to Cart",
+    "dismiss": "Dismiss",
+    "somethingWentWrong": "Something went wrong!"
+  },
+  "stickyCta": {
+    "quickAddToCart": "Quick add to cart"
+  },
+  "hero": {
+    "defaultHeadline": "Default Headline",
+    "defaultSubline": "Default subline",
+    "nothingToAdd": "There's nothing to add to the cart",
+    "defaultEyebrow": "Directly from SAVA, Madagascar",
+    "defaultHeadlineSuffix": "Uncompromised.",
+    "defaultTrustLine": "🔒 Secure payment · Free returns · Colissimo tracked",
+    "scrollDown": "Scroll down"
+  },
+  "collections": {
+    "exploreRange": "Explore the range",
+    "from": "From",
+    "shop": "Shop",
+    "discoverCollection": "Discover our {{title}} collection"
+  },
+  "featured": {
+    "viewAllProducts": "View all products",
+    "bestsellers": "Bestsellers",
+    "reorderedMost": "The products our customers reorder most."
+  },
+  "story": {
+    "ourStory": "Our Story",
+    "brandStoryImage": "Brand story image"
+  },
+  "comparison": {
+    "criteria": "Criteria",
+    "whyItMatters": "Why it matters",
+    "defaultTitle": "Le Goût du Vrai",
+    "defaultSubtitle": "Not all vanilla is created equal. Here's what sets ours apart.",
+    "ourLabel": "🌿 Épices SAVA",
+    "theirLabel": "Supermarket Spices"
+  },
+  "testimonials": {
+    "ratingOutOfFive": "{{rating}} out of 5 stars",
+    "verifiedPurchase": "Verified purchase",
+    "securePaymentVia": "Secure payment via",
+    "trustedAcrossFrance": "Trusted across France"
+  },
+  "faq": {
+    "everythingYouNeedToKnow": "Everything you need to know"
+  },
+  "ctaBanner": {
+    "defaultHeadline": "Your kitchen deserves the real thing.",
+    "defaultSubline": "Free shipping on orders over €50 · Tracked Colissimo delivery"
+  },
+  "ctaActions": {
+    "shopNow": "Shop Now",
+    "browseAllProducts": "Browse all products",
+    "shopCategory": "Shop Category"
+  }
+}

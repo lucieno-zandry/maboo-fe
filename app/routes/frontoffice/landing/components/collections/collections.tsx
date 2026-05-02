@@ -1,4 +1,5 @@
 import { CollectionItem } from "./collection-item";
+import { useTranslation } from "react-i18next";
 
 interface CollectionsProps {
   block: LandingBlock<CollectionContent>;
@@ -6,8 +7,9 @@ interface CollectionsProps {
 
 
 export function Collections({ block }: CollectionsProps) {
+  const { t } = useTranslation("landing");
   const items = block.content?.items ?? [];
-  const eyebrow = block.content?.eyebrow ?? "Explore the range";
+  const eyebrow = block.content?.eyebrow ?? t("landing:collections.exploreRange");
 
   return (
     <section className="collections">

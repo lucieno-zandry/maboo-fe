@@ -5,6 +5,7 @@ import { isCategory, isProduct } from "../../helpers/landing-able-guards";
 import { useAddToCart } from "~/routes/frontoffice/product-detail/hooks/use-add-to-cart";
 import { useAppPathname } from "~/lib/app-pathname";
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 
 type ActionsViewProps = {
     appPathname: (pathname: string) => string
@@ -15,19 +16,33 @@ type ActionsViewProps = {
         variant_id: number;
         count: number;
     }) => void;
+    shopNowLabel: string;
+    browseAllProductsLabel: string;
+    addToCartLabel: string;
+    shopCategoryLabel: string;
 }
 
-export const ActionsView = ({ appPathname, related, addToCart, isCategory, isProduct }: ActionsViewProps) => {
+export const ActionsView = ({
+    appPathname,
+    related,
+    addToCart,
+    isCategory,
+    isProduct,
+    shopNowLabel,
+    browseAllProductsLabel,
+    addToCartLabel,
+    shopCategoryLabel
+}: ActionsViewProps) => {
     let primary: JSX.Element | null = <Button asChild size="lg" className="cta-banner__btn-primary">
         <Link to={appPathname('/search/*')}>
             <ShoppingCart className="w-4 h-4 mr-2" />
-            Shop Now
+            {shopNowLabel}
         </Link>
     </Button>
 
     let secondary = <Button asChild variant="ghost" size="lg" className="cta-banner__btn-ghost">
         <Link to={appPathname("/products")}>
-            Browse all products
+            {browseAllProductsLabel}
         </Link>
     </Button>
 
@@ -41,14 +56,14 @@ export const ActionsView = ({ appPathname, related, addToCart, isCategory, isPro
                     className="cta-banner__btn-primary"
                     onClick={handleAddToCart}>
                     <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add to cart
+                    {addToCartLabel}
                 </Button>
             }
         } else if (isCategory(related)) {
             primary = <Button asChild size="lg" className="cta-banner__btn-primary">
                 <Link to={appPathname(`/search/${related.title.toLocaleLowerCase()}`)}>
                     <ShoppingCart className="w-4 h-4 mr-2" />
-                    Shop Category
+                    {shopCategoryLabel}
                 </Link>
             </Button>
         }
@@ -62,6 +77,7 @@ export const ActionsView = ({ appPathname, related, addToCart, isCategory, isPro
 }
 
 export const Actions = ({ related }: Pick<ActionsViewProps, 'related'>) => {
+    const { t } = useTranslation("landing");
 
     const addToCart = useAddToCart();
     const appPathname = useAppPathname();
@@ -71,5 +87,10 @@ export const Actions = ({ related }: Pick<ActionsViewProps, 'related'>) => {
         appPathname={appPathname}
         isCategory={isCategory}
         isProduct={isProduct}
-        related={related} />
+        related={related}
+        shopNowLabel={t("landing:ctaActions.shopNow")}
+        browseAllProductsLabel={t("landing:ctaActions.browseAllProducts")}
+        addToCartLabel={t("landing:common.addToCart")}
+        shopCategoryLabel={t("landing:ctaActions.shopCategory")}
+    />
 }

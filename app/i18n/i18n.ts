@@ -1,10 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-/* 🔹 import translations */
-import enHome from "./locales/en/home.json";
-import frHome from "./locales/fr/home.json";
-
 import enCommon from "~/translation/locales/en.json";
 import frCommon from "~/translation/locales/fr.json";
 
@@ -13,6 +9,10 @@ import frAddresses from "./locales/fr/addresses.json";
 
 import enCheckout from "~/routes/frontoffice/checkout/translation/locales/en.json";
 import frCheckout from "~/routes/frontoffice/checkout/translation/locales/fr.json";
+
+import enLanding from "~/routes/frontoffice/landing/translation/locales/fr.json";
+import frLanding from "~/routes/frontoffice/landing/translation/locales/fr.json";
+
 
 import enProduct from "./locales/en/product.json";
 import frProduct from "./locales/fr/product.json";
@@ -36,31 +36,31 @@ i18n
     supportedLngs: ["en", "fr"],
     debug: import.meta.env.DEV,
 
-    ns: ["common", "home", "addresses", "checkout", "product", "search_results", "products", "settings", "product-detail"],
+    ns: ["common", "home", "addresses", "checkout", "product", "search_results", "products", "settings", "product-detail", "landing"],
     defaultNS: "common",
 
     resources: {
       en: {
         common: enCommon,
-        home: enHome,
         addresses: enAddresses,
         checkout: enCheckout,
         product: enProduct,
         search_results: enSearchResults,
         products: enProducts,
         settings: enSettings,
-        "product-detail": enProductDetail
+        "product-detail": enProductDetail,
+        landing: enLanding,
       },
       fr: {
         common: frCommon,
-        home: frHome,
         addresses: frAddresses,
         checkout: frCheckout,
         product: frProduct,
         search_results: frSearchResults,
         products: frProducts,
         settings: frSettings,
-        "product-detail": frProductDetail
+        "product-detail": frProductDetail,
+        landing: frLanding,
       },
     },
 

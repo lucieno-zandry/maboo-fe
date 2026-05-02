@@ -1,4 +1,5 @@
 import { Check, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ComparisonViewProps {
   eyebrow: string;
@@ -7,9 +8,10 @@ interface ComparisonViewProps {
   ourLabel: string;
   theirLabel: string;
   rows: Array<{ criteria: string; ours: string | boolean; theirs: string | boolean }>;
+  criteriaLabel: string;
 }
 
-export function ComparisonView({ eyebrow, title, subtitle, ourLabel, theirLabel, rows }: ComparisonViewProps) {
+export function ComparisonView({ eyebrow, title, subtitle, ourLabel, theirLabel, rows, criteriaLabel }: ComparisonViewProps) {
   return (
     <section className="comparison" id="comparison">
       <div className="comparison__inner">
@@ -22,7 +24,7 @@ export function ComparisonView({ eyebrow, title, subtitle, ourLabel, theirLabel,
           <table className="comparison__table">
             <thead>
               <tr>
-                <th className="comparison__th comparison__th--criteria">Criteria</th>
+                <th className="comparison__th comparison__th--criteria">{criteriaLabel}</th>
                 <th className="comparison__th comparison__th--ours">
                   <span className="comparison__ours-label">{ourLabel}</span>
                 </th>
@@ -58,15 +60,17 @@ export function ComparisonView({ eyebrow, title, subtitle, ourLabel, theirLabel,
 }
 
 export function Comparison({ block }: { block: LandingBlock<ComparisonContent> }) {
+  const { t } = useTranslation("landing");
   const content = block.content ?? {} as ComparisonContent;
   return (
     <ComparisonView
-      eyebrow={content.eyebrow ?? "Why it matters"}
-      title={block.title ?? "Le Goût du Vrai"}
-      subtitle={block.subtitle ?? "Not all vanilla is created equal. Here's what sets ours apart."}
-      ourLabel={content.ourLabel ?? "🌿 Épices SAVA"}
-      theirLabel={content.theirLabel ?? "Supermarket Spices"}
+      eyebrow={content.eyebrow ?? t("landing:comparison.whyItMatters")}
+      title={block.title ?? t("landing:comparison.defaultTitle")}
+      subtitle={block.subtitle ?? t("landing:comparison.defaultSubtitle")}
+      ourLabel={content.ourLabel ?? t("landing:comparison.ourLabel")}
+      theirLabel={content.theirLabel ?? t("landing:comparison.theirLabel")}
       rows={content.rows ?? []}
+      criteriaLabel={t("landing:comparison.criteria")}
     />
   );
 }

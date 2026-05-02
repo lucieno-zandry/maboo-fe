@@ -1,4 +1,5 @@
 import { Actions } from "./actions";
+import { useTranslation } from "react-i18next";
 
 interface CtaBannerViewProps {
   eyebrow?: string;
@@ -26,10 +27,11 @@ export function CtaBannerView({ eyebrow, headline, subline, backgroundImageUrl, 
 }
 
 export function CtaBanner({ block }: { block: LandingBlock<CtaBannerContent> }) {
+  const { t } = useTranslation("landing");
   const content = block.content ?? {};
   const eyebrow = content.eyebrow;
-  const headline = block.title ?? "Your kitchen deserves the real thing.";
-  const subline = block.subtitle ?? "Free shipping on orders over €50 · Tracked Colissimo delivery";
+  const headline = block.title ?? t("landing:ctaBanner.defaultHeadline");
+  const subline = block.subtitle ?? t("landing:ctaBanner.defaultSubline");
   const backgroundImageUrl = block.image?.url ?? null;
 
   const related = block.landing_able;

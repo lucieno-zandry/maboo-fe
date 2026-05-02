@@ -1,8 +1,9 @@
 import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-function StarRating({ rating }: { rating: number }) {
+function StarRating({ rating, ariaLabel }: { rating: number; ariaLabel: string }) {
   return (
-    <div className="star-rating" aria-label={`${rating} out of 5 stars`}>
+    <div className="star-rating" aria-label={ariaLabel}>
       {Array.from({ length: 5 }, (_, i) => (
         <Star
           key={i}
@@ -27,9 +28,19 @@ interface TestimonialsViewProps {
     text: string;
     verified: boolean;
   }>;
+  verifiedPurchaseLabel: string;
+  securePaymentViaLabel: string;
+  ratingLabel: (rating: number) => string;
 }
 
-export function TestimonialsView({ eyebrow, title, testimonials }: TestimonialsViewProps) {
+export function TestimonialsView({
+  eyebrow,
+  title,
+  testimonials,
+  verifiedPurchaseLabel,
+  securePaymentViaLabel,
+  ratingLabel
+}: TestimonialsViewProps) {
   return (
     <section className="testimonials" id="reviews">
       <div className="testimonials__inner">
@@ -42,7 +53,7 @@ export function TestimonialsView({ eyebrow, title, testimonials }: TestimonialsV
           {testimonials.map((t, i) => (
             <div key={t.id} className="testimonial-card" style={{ animationDelay: `${i * 100}ms` }}>
               <span className="testimonial-card__quote-mark" aria-hidden>"</span>
-              <StarRating rating={t.rating} />
+              <StarRating rating={t.rating} ariaLabel={ratingLabel(t.rating)} />
               <p className="testimonial-card__text">{t.text}</p>
               <div className="testimonial-card__author">
                 <div className="testimonial-card__avatar-wrap">
@@ -58,7 +69,7 @@ export function TestimonialsView({ eyebrow, title, testimonials }: TestimonialsV
                   <p className="testimonial-card__name">
                     {t.author}
                     {t.verified && (
-                      <span className="testimonial-card__verified" title="Verified purchase">✓</span>
+                      <span className="testimonial-card__verified" title={verifiedPurchaseLabel}>✓</span>
                     )}
                   </p>
                   <p className="testimonial-card__location">{t.location}</p>
@@ -70,7 +81,7 @@ export function TestimonialsView({ eyebrow, title, testimonials }: TestimonialsV
 
         {/* Payment trust strip – static (could be moved to settings later) */}
         <div className="testimonials__payment-strip">
-          <p className="testimonials__payment-label">Secure payment via</p>
+          <p className="testimonials__payment-label">{securePaymentViaLabel}</p>
           <div className="testimonials__payment-icons">
             {["VISA", "Mastercard", "PayPal"].map((method) => (
               <span key={method} className="payment-badge">{method}</span>
@@ -84,14 +95,18 @@ export function TestimonialsView({ eyebrow, title, testimonials }: TestimonialsV
 }
 
 export function Testimonials({ block }: { block: LandingBlock<TestimonialsContent> }) {
+  const { t } = useTranslation("landing");
   const content = block.content ?? {} as TestimonialsContent;
   const testimonials = content.testimonials ?? [];
 
   return (
     <TestimonialsView
       eyebrow={content.eyebrow}
-      title={block.title ?? "Trusted across France"}
+      title={block.title ?? t("landing:testimonials.trustedAcrossFrance")}
       testimonials={testimonials}
+      verifiedPurchaseLabel={t("landing:testimonials.verifiedPurchase")}
+      securePaymentViaLabel={t("landing:testimonials.securePaymentVia")}
+      ratingLabel={(rating) => t("landing:testimonials.ratingOutOfFive", { rating })}
     />
   );
 }

@@ -1,0 +1,60 @@
+{
+  "common": {
+    "addToCart": "Ajouter au panier",
+    "dismiss": "Fermer",
+    "somethingWentWrong": "Une erreur s'est produite !"
+  },
+  "stickyCta": {
+    "quickAddToCart": "Ajout rapide au panier"
+  },
+  "hero": {
+    "defaultHeadline": "Titre par defaut",
+    "defaultSubline": "Sous-titre par defaut",
+    "nothingToAdd": "Il n'y a rien a ajouter au panier",
+    "defaultEyebrow": "Directement de SAVA, Madagascar",
+    "defaultHeadlineSuffix": "Sans compromis.",
+    "defaultTrustLine": "🔒 Paiement securise · Retours gratuits · Colissimo suivi",
+    "scrollDown": "Defiler vers le bas"
+  },
+  "collections": {
+    "exploreRange": "Explorer la gamme",
+    "from": "A partir de",
+    "shop": "Acheter",
+    "discoverCollection": "Decouvrez notre collection {{title}}"
+  },
+  "featured": {
+    "viewAllProducts": "Voir tous les produits",
+    "bestsellers": "Meilleures ventes",
+    "reorderedMost": "Les produits que nos clients recommandent le plus."
+  },
+  "story": {
+    "ourStory": "Notre histoire",
+    "brandStoryImage": "Image de l'histoire de la marque"
+  },
+  "comparison": {
+    "criteria": "Critere",
+    "whyItMatters": "Pourquoi c'est important",
+    "defaultTitle": "Le Gout du Vrai",
+    "defaultSubtitle": "Toutes les vanilles ne se valent pas. Voici ce qui distingue la notre.",
+    "ourLabel": "🌿 Epices SAVA",
+    "theirLabel": "Epices de supermarche"
+  },
+  "testimonials": {
+    "ratingOutOfFive": "{{rating}} sur 5 etoiles",
+    "verifiedPurchase": "Achat verifie",
+    "securePaymentVia": "Paiement securise via",
+    "trustedAcrossFrance": "Adopte dans toute la France"
+  },
+  "faq": {
+    "everythingYouNeedToKnow": "Tout ce qu'il faut savoir"
+  },
+  "ctaBanner": {
+    "defaultHeadline": "Votre cuisine merite l'authentique.",
+    "defaultSubline": "Livraison gratuite des 50 € d'achat · Livraison Colissimo suivie"
+  },
+  "ctaActions": {
+    "shopNow": "Acheter maintenant",
+    "browseAllProducts": "Parcourir tous les produits",
+    "shopCategory": "Acheter cette categorie"
+  }
+}

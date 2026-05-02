@@ -32,6 +32,7 @@ import "./landing.css";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { isProduct } from "./helpers/landing-able-guards";
+import { useTranslation } from "react-i18next";
 
 // ─── Loader ───────────────────────────────────────────────────────────────────
 export const loader = async (args: LoaderFunctionArgs) => {
@@ -157,6 +158,7 @@ export function LandingPageView({
 }
 
 export default function LandingPage() {
+    const { t } = useTranslation("landing");
     const { error, landingBlocks } = useLoaderData<typeof loader>();
 
     // -------------------------
@@ -165,9 +167,9 @@ export default function LandingPage() {
 
     useEffect(() => {
         if (error && error instanceof HttpException) {
-            toast.error(error.data?.message || "Something went wrong!");
+            toast.error(error.data?.message || t("landing:common.somethingWentWrong"));
         }
-    }, [error]);
+    }, [error, t]);
 
     // -------------------------
     // Derived state (FIXED)
