@@ -8,7 +8,7 @@ type AvatarProps = {
 export default function UserAvatar({ avatarFallBack, avatarImageUrl }: AvatarProps) {
     return (
         <Avatar>
-            <AvatarImage src={avatarImageUrl} />
+            <AvatarImage src={avatarImageUrl} className="fit-cover"/>
             <AvatarFallback>{avatarFallBack}</AvatarFallback>
         </Avatar>
     );

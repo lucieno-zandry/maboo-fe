@@ -7,9 +7,11 @@ import { useAuthDialog } from "~/hooks/use-auth-dialog";
 import { sendEmailVerificationCode } from "~/api/http-requests";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, AlertCircle } from "lucide-react"; // Make sure to install lucide-react
+import { useTranslation } from "react-i18next";
 
 export function AuthDialog() {
   const auth = useAuthDialog();
+  const { t } = useTranslation();
   if (!auth.open) return null;
 
   return (
@@ -25,14 +27,14 @@ export function AuthDialog() {
             {/* Prioritize dynamic title, fallback to default step names */}
             {auth.title || (
               auth.action === "VERIFY_EMAIL"
-                ? "Verify your email"
+                ? t("common:verifyYourEmail")
                 : auth.step === "email"
-                  ? "Welcome back"
+                  ? t("common:welcomeBack")
                   : auth.step === "password"
-                    ? "Enter your password"
+                    ? t("common:enterYourPassword")
                     : auth.step === "verification"
-                      ? "Check your email"
-                      : "Reset password"
+                      ? t("common:checkYourEmail")
+                      : t("common:resetPassword")
             )}
           </DialogTitle>
 
@@ -68,6 +70,7 @@ function ErrorMessage({ message }: { message: string }) {
 
 // ---------- Email Step ----------
 function EmailStep() {
+  const { t } = useTranslation();
   const { email, setEmail, loading, error, handleEmailInfo } = useAuthDialog();
 
   const onSubmit = (e: React.FormEvent) => {
@@ -78,11 +81,11 @@ function EmailStep() {
   return (
     <form onSubmit={onSubmit} className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="space-y-2">
-        <Label htmlFor="email" className="sr-only">Email</Label>
+        <Label htmlFor="email" className="sr-only">{t("common:email")}</Label>
         <Input
           id="email"
           type="email"
-          placeholder="name@example.com"
+          placeholder={t("common:emailPlaceholder")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -93,7 +96,7 @@ function EmailStep() {
       <ErrorMessage message={error || ""} />
       <Button type="submit" className="w-full h-11" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Checking..." : "Continue with Email"}
+        {loading ? t("common:checking") : t("common:continueWithEmail")}
       </Button>
 
       {/* OAuth buttons */}
@@ -102,7 +105,7 @@ function EmailStep() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          <span className="bg-background px-2 text-muted-foreground">{t("common:orContinueWith")}</span>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -119,6 +122,7 @@ function EmailStep() {
 
 // ---------- Password Step ----------
 function PasswordStep() {
+  const { t } = useTranslation();
   const { email, password, setPassword, loading, error, handleLogIn, goToEmail, goToForgotPassword } = useAuthDialog();
 
   const onSubmit = (e: React.FormEvent) => {
@@ -133,14 +137,14 @@ function PasswordStep() {
           {email}
         </p>
         <Button variant="ghost" size="sm" className="h-auto p-0 text-primary hover:bg-transparent hover:underline" onClick={goToEmail} type="button">
-          Change
+          {t("common:change")}
         </Button>
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("common:password")}</Label>
           <Button variant="link" size="sm" type="button" className="h-auto p-0 text-xs font-normal" onClick={goToForgotPassword} disabled={loading}>
-            Forgot password?
+            {t("common:forgotPassword")}
           </Button>
         </div>
         <Input
@@ -157,7 +161,7 @@ function PasswordStep() {
       <ErrorMessage message={error || ""} />
       <Button type="submit" className="w-full h-11" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Logging in..." : "Log in"}
+        {loading ? t("common:loggingIn") : t("common:logIn")}
       </Button>
     </form>
   );
@@ -165,6 +169,7 @@ function PasswordStep() {
 
 // ---------- Forgot Password Step ----------
 function ForgotPasswordStep() {
+  const { t } = useTranslation();
   const { email, loading, error, forgotPasswordSent, handleForgotPassword, goToPassword } = useAuthDialog();
 
   const onSubmit = (e: React.FormEvent) => {
@@ -176,10 +181,10 @@ function ForgotPasswordStep() {
     return (
       <div className="space-y-6 text-center animate-in fade-in zoom-in-95 duration-300">
         <div className="bg-green-50 text-green-700 p-4 rounded-lg text-sm border border-green-200">
-          If an account with <strong>{email}</strong> exists, a reset link has been sent. Check your inbox.
+          {t("common:forgotPasswordSentMessage", { email })}
         </div>
         <Button variant="ghost" onClick={goToPassword} className="w-full">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
+          <ArrowLeft className="mr-2 h-4 w-4" /> {t("common:backToLogin")}
         </Button>
       </div>
     );
@@ -188,7 +193,7 @@ function ForgotPasswordStep() {
   return (
     <form onSubmit={onSubmit} className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="space-y-2">
-        <Label htmlFor="reset-email">We’ll send a reset link to:</Label>
+        <Label htmlFor="reset-email">{t("common:sendResetLinkTo")}</Label>
         <Input
           id="reset-email"
           type="email"
@@ -200,10 +205,10 @@ function ForgotPasswordStep() {
       <ErrorMessage message={error || ""} />
       <Button type="submit" className="w-full h-11" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Sending..." : "Send reset link"}
+        {loading ? t("common:sending") : t("common:sendResetLink")}
       </Button>
       <Button variant="ghost" type="button" className="w-full" onClick={goToPassword} disabled={loading}>
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
+        <ArrowLeft className="mr-2 h-4 w-4" /> {t("common:backToLogin")}
       </Button>
     </form>
   );
@@ -211,6 +216,7 @@ function ForgotPasswordStep() {
 
 // ---------- Verification Step ----------
 function VerificationStep() {
+  const { t } = useTranslation();
   const { email, code, setCode, loading, error, handleVerify, goToEmail } = useAuthDialog();
 
   const onSubmit = (e: React.FormEvent) => {
@@ -221,9 +227,9 @@ function VerificationStep() {
   const resendCode = async () => {
     try {
       await sendEmailVerificationCode();
-      toast.success('A new verification code was sent!');
+      toast.success(t("common:newVerificationCodeSent"));
     } catch (e) {
-      toast.error('Failed to send email verification code');
+      toast.error(t("common:failedToSendVerificationCode"));
       console.log(e);
     }
   };
@@ -235,11 +241,11 @@ function VerificationStep() {
           {email}
         </p>
         <Button variant="ghost" size="sm" className="h-auto p-0 text-primary hover:bg-transparent hover:underline" onClick={goToEmail} type="button">
-          Wrong email?
+          {t("common:wrongEmail")}
         </Button>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="code">Verification code</Label>
+        <Label htmlFor="code">{t("common:verificationCode")}</Label>
         {/* For even better UX here, consider replacing this with shadcn's InputOTP component */}
         <Input
           id="code"
@@ -247,7 +253,7 @@ function VerificationStep() {
           inputMode="numeric"
           pattern="[0-9]*"
           maxLength={6}
-          placeholder="Enter 6-digit code"
+          placeholder={t("common:enterSixDigitCode")}
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} // only allow digits
           required
@@ -258,12 +264,12 @@ function VerificationStep() {
       <ErrorMessage message={error || ""} />
       <Button type="submit" className="w-full h-11" disabled={loading || code.length < 6}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Verifying..." : "Verify account"}
+        {loading ? t("common:verifying") : t("common:verifyAccount")}
       </Button>
       <div className="text-center mt-4">
-        <span className="text-sm text-muted-foreground">Didn't receive the code? </span>
+        <span className="text-sm text-muted-foreground">{t("common:didntReceiveCode")} </span>
         <Button variant="link" type="button" className="h-auto p-0 text-sm font-normal" onClick={resendCode}>
-          Click to resend
+          {t("common:clickToResend")}
         </Button>
       </div>
     </form>

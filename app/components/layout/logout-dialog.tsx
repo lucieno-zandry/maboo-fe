@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/dialog"
 import { useUserStore } from "~/hooks/use-user"
 import Button from "../custom-components/button"
+import { useTranslation } from "react-i18next";
 
 export type LogoutDialogProps = {
     open: boolean,
@@ -20,45 +21,46 @@ export type LogoutDialogProps = {
 
 export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
     const { setUser } = useUserStore();
+    const { t } = useTranslation();
 
     const handleLogout = React.useCallback(() => {
-        const loading = toast.loading('Logging you out!');
+        const loading = toast.loading(t('common:loggingOutLoading'));
 
         logout()
             .then(res => {
-                toast.success(res.data?.message || "You are now logged out!");
+                toast.success(res.data?.message || t('common:loggedOutSuccess'));
                 onOpenChange(false);
             })
-            .catch(e => {
-                toast.error('Loggin out may have failed, please, make sure that your account has been removed from this device!');
+            .catch(() => {
+                toast.error(t('common:logoutFailedWarning'));
             })
             .finally(() => {
                 setUser(null);
                 localStorage.removeItem('token');
                 toast.dismiss(loading);
             });
-    }, [setUser, onOpenChange]);
+    }, [setUser, onOpenChange, t]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md" aria-describedby="Confirm logout">
+            <DialogContent className="sm:max-w-md" aria-describedby={t('common:confirmLogout')}>
                 <DialogHeader>
-                    <DialogTitle>Logout?</DialogTitle>
+                    <DialogTitle>{t('common:logoutTitle')}</DialogTitle>
                     <DialogDescription>
-                        Your session will be terminated!
+                        {t('common:logoutDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
                         <Button type="button" variant="secondary">
-                            Close
+                            {t('common:close')}
                         </Button>
                     </DialogClose>
                     <DialogClose asChild>
                         <Button
                             type="button"
                             variant="destructive"
-                            onClick={handleLogout}> Log out</Button>
+                            onClick={handleLogout}>{t('common:logOut')}</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

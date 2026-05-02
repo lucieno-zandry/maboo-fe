@@ -9,6 +9,7 @@ import { getCategories, getProducts } from "~/api/http-requests";
 import { Search, X, ArrowRight, Tag, Package, Clock, Loader2, TrendingUp } from "lucide-react";
 import { cn } from "~/lib/utils";
 import appNavigate from "~/lib/app-navigate";
+import { useTranslation } from "react-i18next";
 
 export interface NavSearchViewProps {
     value: string;
@@ -38,6 +39,7 @@ function SuggestionRow({
     active: boolean;
     onSelect: () => void;
 }) {
+    const { t } = useTranslation();
     return (
         <button
             onMouseDown={(e) => { e.preventDefault(); onSelect(); }}
@@ -77,7 +79,7 @@ function SuggestionRow({
                     ? "bg-violet-500/10 text-violet-600 dark:text-violet-400 dark:bg-violet-500/20"
                     : "bg-primary/10 text-primary"
             )}>
-                {suggestion.type === "category" ? "Category" : "Product"}
+                {suggestion.type === "category" ? t("common:category") : t("common:product")}
             </span>
         </button>
     );
@@ -109,6 +111,7 @@ export function NavSearchView({
     onRemoveRecent,
     onClear,
 }: NavSearchViewProps) {
+    const { t } = useTranslation();
     const productSuggestions = suggestions.filter((s) => s.type === "product");
     const categorySuggestions = suggestions.filter((s) => s.type === "category");
     const hasAnySuggestions = suggestions.length > 0;
@@ -138,7 +141,7 @@ export function NavSearchView({
                     onChange={(e) => onChange(e.target.value)}
                     onFocus={onFocus}
                     onKeyDown={onKeyDown}
-                    placeholder="Search…"
+                    placeholder={t("common:search")}
                     className="h-9 sm:h-10 flex-1 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
                     autoComplete="off"
                     spellCheck={false}
@@ -177,7 +180,7 @@ export function NavSearchView({
                     )}
                 >
                     {/* 👇 hide text on very small screens */}
-                    <span className="hidden xs:inline text-xs font-medium">Search</span>
+                    <span className="hidden xs:inline text-xs font-medium">{t("common:searchButton")}</span>
                     <ArrowRight className="size-3 sm:ml-1.5" />
                 </button>
             </div>
@@ -205,7 +208,7 @@ export function NavSearchView({
                         <div className="p-2">
                             {categorySuggestions.length > 0 && (
                                 <div className="mb-1">
-                                    <SectionLabel label="Categories" />
+                                    <SectionLabel label={t("common:categories")} />
                                     {categorySuggestions.map((s, i) => (
                                         <SuggestionRow
                                             key={s.id}
@@ -218,7 +221,7 @@ export function NavSearchView({
                             )}
                             {productSuggestions.length > 0 && (
                                 <div>
-                                    <SectionLabel label="Products" />
+                                    <SectionLabel label={t("common:products")} />
                                     {productSuggestions.map((s, i) => (
                                         <SuggestionRow
                                             key={s.id}
@@ -236,10 +239,10 @@ export function NavSearchView({
                         <div className="flex flex-col items-center gap-1 px-4 py-8 text-center">
                             <Package className="size-8 text-muted-foreground/40" />
                             <p className="text-sm text-muted-foreground">
-                                No results for <span className="font-medium text-foreground">"{value}"</span>
+                                {t("common:noResultsFor")} <span className="font-medium text-foreground">"{value}"</span>
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                Press Enter to search anyway
+                                {t("common:pressEnterToSearch")}
                             </p>
                         </div>
                     )}
@@ -248,7 +251,7 @@ export function NavSearchView({
                         <>
                             {hasAnySuggestions && <div className="mx-3 my-1 border-t border-border/40" />}
                             <div className="p-2">
-                                <SectionLabel label="Recent searches" />
+                                <SectionLabel label={t("common:recentSearches")} />
                                 {recentSearches.map((term) => (
                                     <div
                                         key={term}
@@ -277,11 +280,11 @@ export function NavSearchView({
                         <div className="border-t border-border/40 px-4 py-2">
                             <p className="text-[10px] text-muted-foreground">
                                 <kbd className="rounded border border-border/60 bg-muted px-1 py-0.5 font-mono text-[9px]">↑↓</kbd>
-                                {" "}navigate{" · "}
+                                {" "}{t("common:navigate")}{" · "}
                                 <kbd className="rounded border border-border/60 bg-muted px-1 py-0.5 font-mono text-[9px]">↵</kbd>
-                                {" "}search{" · "}
+                                {" "}{t("common:searchButton")}{" · "}
                                 <kbd className="rounded border border-border/60 bg-muted px-1 py-0.5 font-mono text-[9px]">Esc</kbd>
-                                {" "}close
+                                {" "}{t("common:close")}
                             </p>
                         </div>
                     )}

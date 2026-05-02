@@ -18,18 +18,22 @@ import z from "zod";
 import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import { useRevalidator } from "react-router";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
-
-const dataFormat = {
-    code: z.string().min(1, "Client code is required").regex(/^[A-Z0-9]+$/, "Code must contain only letters and numbers")
-};
+import { useTranslation } from "react-i18next";
 
 export function ClientCodeDialog() {
+    const { t } = useTranslation();
     const [code, setCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [formValidationErrors, setFormValidationErrors] = useState<{ code?: string[] } | null>(null);
     const { user, setUser, authStatus } = useUserStore();
     const { isOpen, setIsOpen } = useClientCodeDialogStore();
     const revalidator = useRevalidator();
+    const dataFormat = useMemo(() => ({
+        code: z
+            .string()
+            .min(1, t("common:clientCodeRequired"))
+            .regex(/^[A-Z0-9]+$/, t("common:clientCodeLettersAndNumbers"))
+    }), [t]);
 
     const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
 
@@ -63,12 +67,12 @@ export function ClientCodeDialog() {
 
             if (updateUserResponse.data?.user) {
                 setUser(updateUserResponse.data.user);
-                toast.success("You are now a special customer!");
+                toast.success(t("common:specialCustomerSuccess"));
                 revalidator.revalidate();
             }
         } catch (error) {
             setIsOpen(true);
-            toast.error("Failed to apply client code. Please try again.");
+            toast.error(t("common:applyClientCodeFailed"));
         }
     };
 
@@ -101,19 +105,19 @@ export function ClientCodeDialog() {
                         await handleApply(response.data.client_code.id);
                     } else {
                         localStorage.setItem("client_code_id_to_apply", response.data.client_code.id.toString());
-                        toast.success("Client code saved! It will be applied when you log in.");
+                        toast.success(t("common:clientCodeSaved"));
                     }
                     setIsOpen(false);
                 } else {
-                    setFormValidationErrors({ code: ["Invalid client code"] });
+                    setFormValidationErrors({ code: [t("common:invalidClientCode")] });
                 }
             })
             .catch((error) => {
                 if (error instanceof ValidationException) {
                     return setFormValidationErrors(error.errors);
                 }
-                toast.error(`Failed to apply client code: ${error.status}`, {
-                    description: error.data?.message || "Please check your code and try again."
+                toast.error(`${t("common:applyClientCodeFailedStatus")}: ${error.status}`, {
+                    description: error.data?.message || t("common:checkCodeAndRetry")
                 });
             })
             .finally(() => {
@@ -129,9 +133,9 @@ export function ClientCodeDialog() {
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                             <TicketPercent className="h-6 w-6 text-primary" />
                         </div>
-                        <DialogTitle className="text-xl">Client Partner Access</DialogTitle>
+                        <DialogTitle className="text-xl">{t("common:clientPartnerAccessTitle")}</DialogTitle>
                         <DialogDescription className="text-center">
-                            If you have a client code, enter it below to unlock exclusive pricing on our products.
+                            {t("common:clientPartnerAccessDescription")}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -139,7 +143,7 @@ export function ClientCodeDialog() {
                         <CustomField
                             name="code"
                             id="code"
-                            placeholder="Enter your code (e.g. PARTNER20)"
+                            placeholder={t("common:enterClientCodePlaceholder")}
                             value={code}
                             onChange={(e) => setCode(e.target.value.toUpperCase())}
                             className="text-center font-mono uppercase tracking-widest"
@@ -157,7 +161,7 @@ export function ClientCodeDialog() {
                             isLoading={isLoading}
                             disabled={!canSubmit}
                         >
-                            Apply Code
+                            {t("common:applyCode")}
                         </Button>
                         <Button
                             variant="ghost"
@@ -165,7 +169,7 @@ export function ClientCodeDialog() {
                             className="w-full text-muted-foreground"
                             type="button"
                         >
-                            I don't have a code
+                            {t("common:iDontHaveCode")}
                         </Button>
                     </DialogFooter>
                 </form>

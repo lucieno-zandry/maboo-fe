@@ -5,8 +5,8 @@ import { initReactI18next } from "react-i18next";
 import enHome from "./locales/en/home.json";
 import frHome from "./locales/fr/home.json";
 
-import enCommon from "./locales/en/common.json";
-import frCommon from "./locales/fr/common.json";
+import enCommon from "~/translation/locales/en.json";
+import frCommon from "~/translation/locales/fr.json";
 
 import enAddresses from "./locales/en/addresses.json";
 import frAddresses from "./locales/fr/addresses.json";
