@@ -1,0 +1,128 @@
+{
+    "header": {
+        "backToOrders": "Retour aux commandes",
+        "orderNumber": "Commande n°{{id}}",
+        "placedOn": "Passée le {{date}}"
+    },
+    "order": {
+        "status": {
+            "pending": "En attente",
+            "processing": "En traitement",
+            "completed": "Terminée",
+            "cancelled": "Annulée",
+            "refunded": "Remboursée"
+        }
+    },
+    "items": {
+        "title_one": "Article ({{count}})",
+        "title_other": "Articles ({{count}})",
+        "sku": "SKU : {{sku}}"
+    },
+    "summary": {
+        "title": "Récapitulatif de la commande",
+        "subtotal": "Sous-total",
+        "shipping": "Livraison",
+        "shippingWithMethod": "Livraison ({{method}})",
+        "coupon": "Code promo ({{code}})",
+        "total": "Total",
+        "pay": "Payer {{amount}}",
+        "downloadInvoice": "Télécharger la facture",
+        "deleteOrder": "Supprimer la commande",
+        "toast": {
+            "failedToInitiate": "Échec de l'initialisation du paiement (Statut {{status}})",
+            "somethingWentWrong": "Une erreur s'est produite"
+        }
+    },
+    "paymentMethod": {
+        "title": "Mode de paiement",
+        "creditCard": "Carte bancaire",
+        "paypalBrand": "PayPal",
+        "paypalCheckout": "Paiement PayPal"
+    },
+    "paymentIncomplete": {
+        "title": "Paiement incomplet",
+        "description": "Votre paiement n'a pas encore été effectué. Veuillez choisir un moyen de paiement et finaliser le paiement."
+    },
+    "shipment": {
+        "title": "Statut de l'expédition",
+        "status": {
+            "processing": "Préparation",
+            "shipped": "Expédié",
+            "delivered": "Livré",
+            "pending": "En attente"
+        },
+        "processing": {
+            "description": "Votre commande est en cours de préparation pour l'expédition."
+        },
+        "estimatedDelivery": "Livraison estimée : {{date}}",
+        "carrier": "Transporteur",
+        "trackingNumber": "Numéro de suivi",
+        "shippedDate": "Date d'expédition",
+        "estimatedDeliveryLabel": "Livraison estimée : ",
+        "deliveredOn": "Livré le",
+        "deliveredMessage": "Votre commande a été livrée. Merci de votre confiance !",
+        "multipleShipments_one": "Cette commande comprend {{count}} envoi",
+        "multipleShipments_other": "Cette commande comprend {{count}} envois"
+    },
+    "shippingAddress": {
+        "title": "Adresse de livraison",
+        "altPhone": " (Alt: {{phone}})"
+    },
+    "cancelDispute": {
+        "cancel": "Annuler le litige",
+        "cancelling": "Annulation...",
+        "toast": {
+            "cancelledTitle": "Litige annulé",
+            "cancelledDescription": "Le litige a été annulé avec succès.",
+            "cancelFailed": "Échec de l'annulation du litige. Veuillez réessayer."
+        }
+    },
+    "disputeDialog": {
+        "title": "Ouvrir un litige",
+        "description": "Veuillez fournir une raison détaillée pour ouvrir ce litige.",
+        "reasonLabel": "Motif",
+        "reasonPlaceholder": "Décrivez le problème...",
+        "open": "Ouvrir le litige",
+        "opening": "Ouverture...",
+        "toast": {
+            "openedTitle": "Litige ouvert",
+            "openedDescription": "Votre litige a été soumis.",
+            "openFailed": "Échec de l'ouverture du litige. Veuillez réessayer."
+        }
+    },
+    "refundDialog": {
+        "title": "Demander un remboursement",
+        "description": "Veuillez indiquer le montant du remboursement et la raison.",
+        "amountLabel": "Montant",
+        "amountPlaceholder": "Entrez le montant (max {{amount}})",
+        "amountHint": "Vous pouvez demander un remboursement partiel en saisissant un montant inférieur.",
+        "reasonLabel": "Motif",
+        "reasonPlaceholder": "Expliquez pourquoi vous demandez un remboursement...",
+        "submit": "Envoyer la demande",
+        "submitting": "Envoi en cours...",
+        "toast": {
+            "submittedTitle": "Demande de remboursement soumise",
+            "submittedDescription": "Votre demande de remboursement a été soumise pour examen.",
+            "submitFailed": "Échec de l'envoi de la demande. Veuillez réessayer."
+        }
+    },
+    "transactions": {
+        "title": "Transactions",
+        "amount": "Montant",
+        "date": "Date",
+        "dispute": "Litige",
+        "refundRequests": "Demandes de remboursement",
+        "requestRefund": "Demander un remboursement",
+        "openDispute": "Ouvrir un litige",
+        "refundRequestAmount": "Remboursement : {{amount}}"
+    },
+    "common": {
+        "error": "Erreur",
+        "cancel": "Annuler"
+    },
+    "status": {
+        "paid": "Payé",
+        "paymentPending": "Paiement en attente",
+        "paymentRequired": "Paiement Requis"
+    }
+}

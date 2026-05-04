@@ -7,6 +7,7 @@ import { Label } from "~/components/ui/label";
 import { requestRefund } from "~/api/http-requests";
 import { toast } from "sonner";
 import { Textarea } from "~/components/ui/textarea";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     open: boolean;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function RefundRequestDialog({ open, onOpenChange, transaction, onSuccess }: Props) {
+    const { t } = useTranslation("order-details");
     const fetcher = useFetcher();
     const [amount, setAmount] = useState<string>(transaction.amount.toString());
     const [reason, setReason] = useState("");
@@ -29,11 +31,11 @@ export function RefundRequestDialog({ open, onOpenChange, transaction, onSuccess
                 amount: amount ? parseFloat(amount) : undefined,
                 reason,
             });
-            toast.success("Refund request submitted", { description: "We'll review it shortly." });
+            toast.success(t("refundDialog.toast.submittedTitle"), { description: t("refundDialog.toast.submittedDescription") });
             onSuccess();
             onOpenChange(false);
         } catch (error) {
-            toast.error("Error", { description: "Could not submit request." });
+            toast.error(t("common.error"), { description: t("refundDialog.toast.submitFailed") });
         }
     };
 
@@ -41,14 +43,14 @@ export function RefundRequestDialog({ open, onOpenChange, transaction, onSuccess
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Request a refund</DialogTitle>
+                    <DialogTitle>{t("refundDialog.title")}</DialogTitle>
                     <DialogDescription>
-                        You can request a full or partial refund. Provide a reason to help us process it faster.
+                        {t("refundDialog.description")}
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <Label htmlFor="amount">Amount (optional)</Label>
+                        <Label htmlFor="amount">{t("refundDialog.amountLabel")}</Label>
                         <Input
                             id="amount"
                             type="number"
@@ -57,27 +59,27 @@ export function RefundRequestDialog({ open, onOpenChange, transaction, onSuccess
                             max={transaction.amount}
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            placeholder={`Max ${transaction.amount}`}
+                            placeholder={t("refundDialog.amountPlaceholder", { amount: transaction.amount })}
                         />
-                        <p className="text-xs text-muted-foreground mt-1">Leave empty for full amount.</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t("refundDialog.amountHint")}</p>
                     </div>
                     <div>
-                        <Label htmlFor="reason">Reason</Label>
+                        <Label htmlFor="reason">{t("refundDialog.reasonLabel")}</Label>
                         <Textarea
                             id="reason"
                             required
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder="Tell us why you need a refund..."
+                            placeholder={t("refundDialog.reasonPlaceholder")}
                             rows={3}
                         />
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                            Cancel
+                            {t("common.cancel")}
                         </Button>
                         <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Submitting..." : "Submit request"}
+                            {isSubmitting ? t("refundDialog.submitting") : t("refundDialog.submit")}
                         </Button>
                     </div>
                 </form>

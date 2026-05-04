@@ -2,6 +2,7 @@ import { CreditCard, Wallet } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
+import { useTranslation } from "react-i18next";
 
 interface PaymentMethodProps {
     currentMethod: Transaction['payment_method'];
@@ -9,12 +10,14 @@ interface PaymentMethodProps {
 }
 
 export default function PaymentMethodSelector({ currentMethod, onMethodChange }: PaymentMethodProps) {
+    const { t } = useTranslation("order-details");
+
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                     <Wallet className="w-4 h-4 text-muted-foreground" />
-                    Payment Method
+                    {t("paymentMethod.title")}
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -31,7 +34,7 @@ export default function PaymentMethodSelector({ currentMethod, onMethodChange }:
                             className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                         >
                             <CreditCard className="mb-3 h-6 w-6" />
-                            <span className="text-sm font-medium">Credit Card</span>
+                            <span className="text-sm font-medium">{t("paymentMethod.creditCard")}</span>
                         </Label>
                     </div>
 
@@ -42,8 +45,8 @@ export default function PaymentMethodSelector({ currentMethod, onMethodChange }:
                             htmlFor="paypal"
                             className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                         >
-                            <div className="font-bold italic text-blue-600 mb-3">PayPal</div>
-                            <span className="text-sm font-medium">PayPal Checkout</span>
+                            <div className="font-bold italic text-blue-600 mb-3">{t("paymentMethod.paypalBrand")}</div>
+                            <span className="text-sm font-medium">{t("paymentMethod.paypalCheckout")}</span>
                         </Label>
                     </div>
                 </RadioGroup>

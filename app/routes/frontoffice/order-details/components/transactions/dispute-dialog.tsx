@@ -5,6 +5,7 @@ import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { openDispute } from "~/api/http-requests";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     open: boolean;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function DisputeDialog({ open, onOpenChange, transaction, onSuccess }: Props) {
+    const { t } = useTranslation("order-details");
     const [reason, setReason] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,11 +23,11 @@ export function DisputeDialog({ open, onOpenChange, transaction, onSuccess }: Pr
         setIsSubmitting(true);
         try {
             await openDispute(transaction.uuid, { reason });
-            toast.success("Dispute opened", { description: "We'll review your case." });
+            toast.success(t("disputeDialog.toast.openedTitle"), { description: t("disputeDialog.toast.openedDescription") });
             onSuccess();
             onOpenChange(false);
         } catch (error) {
-            toast.error("Error", { description: "Could not open dispute." });
+            toast.error(t("common.error"), { description: t("disputeDialog.toast.openFailed") });
         } finally {
             setIsSubmitting(false);
         }
@@ -35,29 +37,29 @@ export function DisputeDialog({ open, onOpenChange, transaction, onSuccess }: Pr
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Open a dispute</DialogTitle>
+                    <DialogTitle>{t("disputeDialog.title")}</DialogTitle>
                     <DialogDescription>
-                        If you have an issue with this payment, let us know the reason.
+                        {t("disputeDialog.description")}
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <Label htmlFor="reason">Reason</Label>
+                        <Label htmlFor="reason">{t("disputeDialog.reasonLabel")}</Label>
                         <Textarea
                             id="reason"
                             required
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder="Describe the problem..."
+                            placeholder={t("disputeDialog.reasonPlaceholder")}
                             rows={4}
                         />
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                            Cancel
+                            {t("common.cancel")}
                         </Button>
                         <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Opening..." : "Open dispute"}
+                            {isSubmitting ? t("disputeDialog.opening") : t("disputeDialog.open")}
                         </Button>
                     </div>
                 </form>

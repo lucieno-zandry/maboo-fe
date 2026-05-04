@@ -1,19 +1,19 @@
 import { useLoaderData, Link, type LoaderFunctionArgs, redirect, useRevalidator } from "react-router";
 
 // Local Sub-components
-import OrderHeader from "~/components/order-details/order-header";
-import OrderItemList from "~/components/order-details/order-item-list";
-import OrderSummary from "~/components/order-details/order-summary";
+import OrderHeader from "./components/order-header";
+import OrderItemList from "./components/order-item-list";
+import OrderSummary from "./components/order-summary";
 
 import { getOrder } from "~/api/http-requests";
 import NotFound from "~/components/common/not-found";
 import useCheckoutStore from "~/hooks/use-checkout-store";
 import { getOrderStatusConfig } from "~/lib/get-order-status-config";
-import { ShippingAddress } from "~/components/order-details/shipping-address";
-import PaymentMethodSelector from "~/components/order-details/payment-method-selector";
-import PaymentIncompleteAlert from "~/components/order-details/payment-incomplete-alert";
-import ShipmentStatus from "~/components/order-details/shipment-status";
-import { TransactionList } from "~/components/order-details/transactions/transaction-list";
+import { ShippingAddress } from "./components/shipping-address";
+import PaymentMethodSelector from "./components/payment-method-selector";
+import PaymentIncompleteAlert from "./components/payment-incomplete-alert";
+import ShipmentStatus from "./components/shipment-status";
+import { TransactionList } from "./components/transactions/transaction-list";
 import { useFormatMoney } from "~/lib/format-money";
 
 export const clientLoader = async ({ params }: LoaderFunctionArgs) => {

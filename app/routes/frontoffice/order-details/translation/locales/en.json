@@ -1,0 +1,128 @@
+{
+    "header": {
+        "backToOrders": "Back to Orders",
+        "orderNumber": "Order #{{id}}",
+        "placedOn": "Placed on {{date}}"
+    },
+    "order": {
+        "status": {
+            "pending": "Pending",
+            "processing": "Processing",
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "refunded": "Refunded"
+        }
+    },
+    "items": {
+        "title_one": "Item ({{count}})",
+        "title_other": "Items ({{count}})",
+        "sku": "SKU: {{sku}}"
+    },
+    "summary": {
+        "title": "Order Summary",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "shippingWithMethod": "Shipping ({{method}})",
+        "coupon": "Coupon ({{code}})",
+        "total": "Total",
+        "pay": "Pay {{amount}}",
+        "downloadInvoice": "Download Invoice",
+        "deleteOrder": "Delete Order",
+        "toast": {
+            "failedToInitiate": "Failed to initiate payment (Status {{status}})",
+            "somethingWentWrong": "Something went wrong"
+        }
+    },
+    "paymentMethod": {
+        "title": "Payment Method",
+        "creditCard": "Credit Card",
+        "paypalBrand": "PayPal",
+        "paypalCheckout": "PayPal Checkout"
+    },
+    "paymentIncomplete": {
+        "title": "Payment Incomplete",
+        "description": "Your payment has not been completed yet. Please choose a payment method and complete the payment."
+    },
+    "shipment": {
+        "title": "Shipment Status",
+        "status": {
+            "processing": "Processing",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "pending": "Pending"
+        },
+        "processing": {
+            "description": "Your order is being prepared for shipment."
+        },
+        "estimatedDelivery": "Estimated delivery: {{date}}",
+        "carrier": "Carrier",
+        "trackingNumber": "Tracking Number",
+        "shippedDate": "Shipped Date",
+        "estimatedDeliveryLabel": "Estimated delivery: ",
+        "deliveredOn": "Delivered on",
+        "deliveredMessage": "Your order has been delivered. Thank you for shopping with us!",
+        "multipleShipments_one": "This order has {{count}} shipment",
+        "multipleShipments_other": "This order has {{count}} shipments"
+    },
+    "shippingAddress": {
+        "title": "Shipping Address",
+        "altPhone": " (Alt: {{phone}})"
+    },
+    "cancelDispute": {
+        "cancel": "Cancel Dispute",
+        "cancelling": "Cancelling...",
+        "toast": {
+            "cancelledTitle": "Dispute Cancelled",
+            "cancelledDescription": "The dispute has been successfully cancelled.",
+            "cancelFailed": "Failed to cancel dispute. Please try again."
+        }
+    },
+    "disputeDialog": {
+        "title": "Open Dispute",
+        "description": "Please provide a detailed reason for opening this dispute.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Describe the issue...",
+        "open": "Open Dispute",
+        "opening": "Opening...",
+        "toast": {
+            "openedTitle": "Dispute Opened",
+            "openedDescription": "Your dispute has been submitted.",
+            "openFailed": "Failed to open dispute. Please try again."
+        }
+    },
+    "refundDialog": {
+        "title": "Request Refund",
+        "description": "Please provide the refund amount and reason.",
+        "amountLabel": "Amount",
+        "amountPlaceholder": "Enter amount (max {{amount}})",
+        "amountHint": "You can request a partial refund by entering a lower amount.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Explain why you are requesting a refund...",
+        "submit": "Submit Request",
+        "submitting": "Submitting...",
+        "toast": {
+            "submittedTitle": "Refund Request Submitted",
+            "submittedDescription": "Your refund request has been submitted for review.",
+            "submitFailed": "Failed to submit refund request. Please try again."
+        }
+    },
+    "transactions": {
+        "title": "Transactions",
+        "amount": "Amount",
+        "date": "Date",
+        "dispute": "Dispute",
+        "refundRequests": "Refund Requests",
+        "requestRefund": "Request Refund",
+        "openDispute": "Open Dispute",
+        "refundRequestAmount": "Refund: {{amount}}"
+    },
+    "common": {
+        "error": "Error",
+        "cancel": "Cancel"
+    },
+    "status": {
+        "paid": "Paid",
+        "status.paymentPending": "Payment Pending",
+        "paymentRequired": "Payment required"
+    }
+}

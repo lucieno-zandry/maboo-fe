@@ -1,18 +1,21 @@
 import { Package, Tag } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { Link } from "react-router";
 
-import { Badge } from "../ui/badge"; // assuming you have a Badge component
+import { Badge } from "../../../../components/ui/badge"; // assuming you have a Badge component
 import appPathname from "~/lib/app-pathname";
 import type { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 function OrderItemList({ items, formatMoney}: { items: CartItem[], formatMoney: ReturnType<typeof useFormatMoney> }) {
+    const { t } = useTranslation("order-details");
+
     return (
         <Card>
             <CardHeader className="border-b pb-4">
                 <CardTitle className="text-lg flex items-center gap-2">
                     <Package className="w-5 h-5 text-muted-foreground" />
-                    Items ({items.length})
+                    {t("items.title", { count: items.length })}
                 </CardTitle>
             </CardHeader>
             <CardContent className="divide-y p-0">
@@ -38,7 +41,7 @@ function OrderItemList({ items, formatMoney}: { items: CartItem[], formatMoney: 
                             </Link>
 
                             <div className="text-sm text-muted-foreground mt-1 flex flex-wrap gap-x-3">
-                                <span>SKU: {item.variant_snapshot.sku}</span>
+                                <span>{t("items.sku", { sku: item.variant_snapshot.sku })}</span>
                                 {Object.entries(item.variant_options_snapshot).map(([group, val]) => (
                                     <span key={group} className="flex items-center gap-1">
                                         <span className="capitalize text-xs font-medium text-foreground/70">{group}:</span> {val}

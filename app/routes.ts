@@ -13,7 +13,7 @@ export default [
             route("addresses", "routes/frontoffice/addresses.tsx"),
             route("checkout", "routes/frontoffice/checkout/checkout.tsx"),
             route("orders", "routes/frontoffice/orders/orders.tsx"),
-            route("orders/:uuid", "routes/frontoffice/order-details.tsx"),
+            route("orders/:uuid", "routes/frontoffice/order-details/order-details.tsx"),
             route("search/:query", "routes/frontoffice/search/search.tsx"),
         ]),
 

@@ -1,15 +1,16 @@
 import { CreditCard, Receipt, TicketPercent, Trash2, Truck } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 
-import { Separator } from "../ui/separator";
+import { Separator } from "../../../../components/ui/separator";
 import { useState } from "react";
 import { createTransaction } from "~/api/http-requests";
 import { toast } from "sonner";
-import Button from "../custom-components/button";
+import Button from "../../../../components/custom-components/button";
 import appNavigate from "~/lib/app-navigate";
 import { useFormatMoney } from "~/lib/format-money";
 import { HttpException, ValidationException } from "~/api/app-fetch";
-import { DeleteOrderDialog } from "../delete-order-dialog";
+import { DeleteOrderDialog } from "../../../../components/delete-order-dialog";
+import { useTranslation } from "react-i18next";
 
 function OrderSummary({ order, statusConfig, method }: { order: Order; statusConfig: any; method: Transaction['payment_method'] }) {
     const subtotal = order.cart_items?.reduce((acc, item) => acc + item.total, 0) ?? 0;
@@ -18,6 +19,7 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
     const [loading, setLoading] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const formatMoney = useFormatMoney();
+    const { t } = useTranslation("order-details");
 
     const handlePay = () => {
         setLoading(true);
@@ -32,11 +34,11 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
             })
             .catch((error) => {
                 if (error instanceof HttpException) {
-                    toast.error(error.data?.message || `Failed to initiate transaction with status: ${error.status}`);
+                    toast.error(error.data?.message || t("summary.toast.failedToInitiate", { status: error.status }));
                 } else if (error instanceof ValidationException) {
                     toast.error(error.message);
                 } else {
-                    toast.error('Something went wrong', { description: error?.toString?.() });
+                    toast.error(t("summary.toast.somethingWentWrong"), { description: error?.toString?.() });
                 }
             })
             .finally(() => {
@@ -54,21 +56,22 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
                 <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                         <Receipt className="w-4 h-4 text-muted-foreground" />
-                        Payment Summary
+                        {t("summary.title")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm text-muted-foreground">
-                            <span>Subtotal</span>
+                            <span>{t("summary.subtotal")}</span>
                             <span>{formatMoney(subtotal)}</span>
                         </div>
                         {shippingCost > 0 && (
                             <div className="flex justify-between text-sm text-muted-foreground">
                                 <span className="flex items-center gap-1">
                                     <Truck className="w-4 h-4" />
-                                    Shipping
-                                    {shippingMethodName && ` (${shippingMethodName})`}
+                                    {shippingMethodName
+                                        ? t("summary.shippingWithMethod", { method: shippingMethodName })
+                                        : t("summary.shipping")}
                                 </span>
                                 <span>{formatMoney(shippingCost)}</span>
                             </div>
@@ -77,14 +80,14 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
                             <div className="flex justify-between text-sm text-emerald-600">
                                 <span className="flex items-center gap-1">
                                     <TicketPercent className="w-4 h-4" />
-                                    Coupon ({order.coupon_snapshot.code})
+                                    {t("summary.coupon", { code: order.coupon_snapshot.code })}
                                 </span>
                                 <span>-{formatMoney(order.coupon_discount_applied)}</span>
                             </div>
                         )}
                         <Separator className="my-4" />
                         <div className="flex justify-between items-center pt-2">
-                            <span className="font-bold text-lg">Total</span>
+                            <span className="font-bold text-lg">{t("summary.total")}</span>
                             <span className="font-bold text-2xl text-primary">{formatMoney(order.total)}</span>
                         </div>
                     </div>
@@ -97,11 +100,11 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
                                 isLoading={loading}
                             >
                                 <CreditCard className="w-4 h-4" />
-                                Pay {formatMoney(order.total)}
+                                {t("summary.pay", { amount: formatMoney(order.total) })}
                             </Button>
                         ) : (
                             <Button variant="outline" className="w-full text-xs" onClick={() => window.print()}>
-                                Download Invoice (PDF)
+                                {t("summary.downloadInvoice")}
                             </Button>
                         )}
 
@@ -112,7 +115,7 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
                             className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
                         >
                             <Trash2 className="w-4 h-4 mr-2" />
-                            Delete Order
+                            {t("summary.deleteOrder")}
                         </Button>
                     </div>
                 </CardContent>

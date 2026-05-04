@@ -2,18 +2,20 @@ import { Button } from "~/components/ui/button";
 import { cancelDispute } from "~/api/http-requests";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function CancelDisputeButton({ transaction, onComplete }: { transaction: Transaction; onComplete: () => void }) {
+    const { t } = useTranslation("order-details");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleCancel = async () => {
         setIsLoading(true);
         try {
             await cancelDispute(transaction.uuid);
-            toast.success("Dispute cancelled", { description: "The dispute has been withdrawn." });
+            toast.success(t("cancelDispute.toast.cancelledTitle"), { description: t("cancelDispute.toast.cancelledDescription") });
             onComplete();
         } catch (error) {
-            toast("Error", { description: "Could not cancel dispute." });
+            toast(t("common.error"), { description: t("cancelDispute.toast.cancelFailed") });
         } finally {
             setIsLoading(false);
         }
@@ -21,7 +23,7 @@ export function CancelDisputeButton({ transaction, onComplete }: { transaction: 
 
     return (
         <Button size="sm" variant="outline" onClick={handleCancel} disabled={isLoading}>
-            {isLoading ? "Cancelling..." : "Cancel dispute"}
+            {isLoading ? t("cancelDispute.cancelling") : t("cancelDispute.cancel")}
         </Button>
     );
 }

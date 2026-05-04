@@ -1,11 +1,14 @@
 import { Package, Truck, CheckCircle, Clock } from 'lucide-react';
 import formatDate from '~/lib/format-date';
+import { useTranslation } from "react-i18next";
 
 type ShipmentStatusProps = {
   shipments: Shipment[];
 };
 
 export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
+  const { t } = useTranslation("order-details");
+
   // Get the most recent shipment
   const latestShipment = shipments.sort(
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
@@ -21,7 +24,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
         return {
           ...base,
           icon: Package,
-          label: 'Processing',
+          label: t("shipment.status.processing"),
           color: 'text-blue-600',
           bgColor: 'bg-blue-50',
           borderColor: 'border-blue-200',
@@ -32,7 +35,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
         return {
           ...base,
           icon: Truck,
-          label: 'Shipped',
+          label: t("shipment.status.shipped"),
           color: 'text-orange-600',
           bgColor: 'bg-orange-50',
           borderColor: 'border-orange-200',
@@ -43,7 +46,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
         return {
           ...base,
           icon: CheckCircle,
-          label: 'Delivered',
+          label: t("shipment.status.delivered"),
           color: 'text-green-600',
           bgColor: 'bg-green-50',
           borderColor: 'border-green-200',
@@ -54,7 +57,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
         return {
           ...base,
           icon: Clock,
-          label: 'Pending',
+          label: t("shipment.status.pending"),
           color: 'text-gray-600',
           bgColor: 'bg-gray-50',
           borderColor: 'border-gray-200',
@@ -75,7 +78,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
           <Icon className={`w-5 h-5 ${config.color}`} />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">Shipment Status</h3>
+          <h3 className="font-semibold text-gray-900">{t("shipment.title")}</h3>
           <p className={`text-sm font-medium ${config.color}`}>{config.label}</p>
         </div>
       </div>
@@ -84,11 +87,11 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
       <div className="space-y-3">
         {latestShipment.status === 'PROCESSING' && (
           <div className="text-sm text-gray-600">
-            <p>Your order is being prepared for shipment.</p>
+            <p>{t("shipment.processing.description")}</p>
             {shipmentData?.estimated_delivery && (
               <div className="flex items-center gap-2 mt-2 text-gray-700">
                 <Clock className="w-4 h-4" />
-                <span>Estimated delivery: {formatDate(shipmentData.estimated_delivery)}</span>
+                <span>{t("shipment.estimatedDelivery", { date: formatDate(shipmentData.estimated_delivery) })}</span>
               </div>
             )}
           </div>
@@ -98,14 +101,14 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
           <div className="space-y-2">
             {shipmentData?.carrier && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Carrier</span>
+                <span className="text-gray-600">{t("shipment.carrier")}</span>
                 <span className="font-medium text-gray-900">{shipmentData.carrier}</span>
               </div>
             )}
 
             {shipmentData?.tracking_number && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Tracking Number</span>
+                <span className="text-gray-600">{t("shipment.trackingNumber")}</span>
                 <span className="font-mono text-sm font-medium text-gray-900">
                   {shipmentData.tracking_number}
                 </span>
@@ -114,7 +117,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
 
             {shipmentData?.shipped_date && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipped Date</span>
+                <span className="text-gray-600">{t("shipment.shippedDate")}</span>
                 <span className="font-medium text-gray-900">
                   {formatDate(shipmentData.shipped_date)}
                 </span>
@@ -125,7 +128,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
               <div className="flex items-center gap-2 mt-3 p-3 bg-orange-50 rounded-lg">
                 <Clock className="w-4 h-4 text-orange-600" />
                 <div className="text-sm">
-                  <span className="text-gray-700">Estimated delivery: </span>
+                  <span className="text-gray-700">{t("shipment.estimatedDeliveryLabel")}</span>
                   <span className="font-medium text-gray-900">
                     {formatDate(shipmentData.estimated_delivery)}
                   </span>
@@ -138,7 +141,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
         {latestShipment.status === 'DELIVERED' && (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Delivered On</span>
+              <span className="text-gray-600">{t("shipment.deliveredOn")}</span>
               <span className="font-medium text-gray-900">
                 {formatDate(latestShipment.updated_at)}
               </span>
@@ -146,7 +149,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
 
             <div className="p-3 bg-green-50 rounded-lg">
               <p className="text-sm text-green-800">
-                Your order has been successfully delivered!
+                {t("shipment.deliveredMessage")}
               </p>
             </div>
           </div>
@@ -157,7 +160,7 @@ export default function ShipmentStatus({ shipments }: ShipmentStatusProps) {
       {shipments.length > 1 && (
         <div className="pt-3 border-t border-gray-200">
           <p className="text-xs text-gray-500">
-            This order has {shipments.length} shipments
+            {t("shipment.multipleShipments", { count: shipments.length })}
           </p>
         </div>
       )}
