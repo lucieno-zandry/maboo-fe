@@ -1,6 +1,8 @@
 import i18next from "i18next";
 import buildQuery from "~/lib/build-query";
 import executeRequest from "~/lib/execute-request";
+import { ALLOWED_LANGUAGES, extractLang, langIsValid } from "~/lib/lang-helpers";
+import isCsr from "~/lib/is-csr";
 
 export const API_URL = import.meta.env.VITE_API_URL;
 
@@ -61,9 +63,12 @@ export type PaginatedResponse<T> = {
 };
 
 const defaultHeaders = (): HeadersInit => {
+    let language = isCsr() ? extractLang(location.href) : i18next.language
+    if (!language || !langIsValid(language)) language = ALLOWED_LANGUAGES[0];
+
     const headers: HeadersInit = {
         'Accept': 'application/json',
-        'Accept-Language': i18next.language || 'en',
+        'Accept-Language': language,
     }
 
     return headers;

@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, useParams, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from "react-router";
+import { Outlet, redirect, useLoaderData, useParams, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import i18n from "~/i18n/i18n";
 import { useEffect } from "react";
 import { defaultPreference, usePreferencesStore } from "~/hooks/use-user-preference-store";
@@ -8,8 +8,13 @@ import useSettingsStore from "~/hooks/use-settings-store";
 import { useUpdatePreferences } from "~/hooks/use-update-preferences";
 import { ThemeProvider } from "~/components/theme/theme-provider";
 import { RouteProgress } from "~/components/layout/route-progress";
+import { ALLOWED_LANGUAGES, langIsValid } from "~/lib/lang-helpers";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
+  if (params.lang && !langIsValid(params.lang)) {
+    return redirect(`/${ALLOWED_LANGUAGES[0]}`)
+  }
+
   try {
     const cookie = request.headers.get('Cookie');
     const headers: HeadersInit = {};
