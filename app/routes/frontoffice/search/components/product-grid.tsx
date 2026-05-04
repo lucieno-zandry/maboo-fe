@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { getProducts } from "~/api/http-requests";
@@ -11,6 +12,7 @@ import { useLocation, useParams } from "react-router";
 import { useFormatMoney } from "~/lib/format-money";
 
 export function ProductGrid() {
+    const { t } = useTranslation("search");
     const products = useSearchStore((s) => s.products);
     const viewMode = useSearchStore((s) => s.viewMode);
     const loading = useSearchStore((s) => s.productsLoading);
@@ -26,18 +28,14 @@ export function ProductGrid() {
     const appendProducts = useSearchStore((s) => s.appendProducts);
     const buildQueryParams = useSearchStore((s) => s.buildQueryParams);
     const filters = useSearchStore((s) => s.filters);
-    // ← Gate: don't fetch until the URL has been read into the store
     const urlHydrated = useSearchStore((s) => s.urlHydrated);
 
     const { currency } = useFormatMoney();
-
     const { search } = useLocation();
-    const { query = '' } = useParams();
-
+    const { query = "" } = useParams();
     const sentinelRef = useRef<HTMLDivElement>(null);
     const isFetchingRef = useRef(false);
 
-    // ── Initial / filter-change fetch ─────────────────────────────────────────
     const fetchInitial = useCallback(async () => {
         if (isFetchingRef.current) return;
         isFetchingRef.current = true;
@@ -48,22 +46,20 @@ export function ProductGrid() {
         const { data, error } = await getProducts({ ...params, page: 1 });
 
         if (error || !data) {
-            setProductsError("Failed to load products. Please try again.");
+            setProductsError(t("search.error.fetch_failed"));
         } else {
             setProducts(data.data, data.current_page, data.last_page, data.total);
         }
 
         setProductsLoading(false);
         isFetchingRef.current = false;
-    }, [filters, query, search, currency]);
+    }, [filters, query, search, currency, t]);
 
-    // Only start fetching once the URL params have been written to the store
     useEffect(() => {
         if (!urlHydrated) return;
         fetchInitial();
     }, [fetchInitial, urlHydrated]);
 
-    // ── Load more ─────────────────────────────────────────────────────────────
     const fetchMore = useCallback(async () => {
         if (isFetchingRef.current || !hasMore) return;
         isFetchingRef.current = true;
@@ -81,20 +77,12 @@ export function ProductGrid() {
         isFetchingRef.current = false;
     }, [hasMore, currentPage, filters]);
 
-    // ── Intersection observer for infinite scroll ──────────────────────────────
     useEffect(() => {
         const el = sentinelRef.current;
         if (!el) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    fetchMore();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) fetchMore();
+        }, { threshold: 0.1 });
         observer.observe(el);
         return () => observer.disconnect();
     }, [fetchMore]);
@@ -137,6 +125,8 @@ export function ProductGridView({
     sentinelRef,
     onRetry,
 }: ProductGridViewProps) {
+    const { t } = useTranslation("search");
+
     if (loading) {
         return (
             <div
@@ -164,7 +154,7 @@ export function ProductGridView({
     return (
         <div>
             <p className="mb-4 text-sm text-muted-foreground">
-                {totalProducts} product{totalProducts !== 1 ? "s" : ""} found
+                {t("search.result_count", { total: totalProducts })}
             </p>
 
             <div
@@ -183,12 +173,12 @@ export function ProductGridView({
                 {loadingMore && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Loader2 className="size-4 animate-spin" />
-                        Loading more…
+                        {t("common.loading_more")}
                     </div>
                 )}
                 {!hasMore && products.length > 0 && (
                     <p className="text-xs text-muted-foreground">
-                        All {totalProducts} product{totalProducts !== 1 ? "s" : ""} loaded
+                        {t("search.all_loaded", { total: totalProducts })}
                     </p>
                 )}
             </div>

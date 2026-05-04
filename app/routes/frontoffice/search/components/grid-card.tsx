@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ShoppingCart } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -6,21 +7,12 @@ import { ProductImage } from "./product-image";
 import { PromotionPill } from "./promotion-pill";
 import { useFormatMoney } from "~/lib/format-money";
 
-export function GridCard({
-    product,
-    onAddToCart,
-}: {
-    product: Product;
-    onAddToCart: (variantId: number) => void;
-}) {
+export function GridCard({ product, onAddToCart }: { product: Product; onAddToCart: (variantId: number) => void }) {
+    const { t } = useTranslation("search");
     const defaultVariant = product.variants?.[0];
-    const allPromotions =
-        product.variants?.flatMap((v) => v.applied_promotions ?? []) ?? [];
-    const uniquePromotions = allPromotions.filter(
-        (p, i, arr) => arr.findIndex((x) => x.id === p.id) === i
-    );
-    const isLowStock =
-        defaultVariant && defaultVariant.stock > 0 && defaultVariant.stock <= 5;
+    const allPromotions = product.variants?.flatMap((v) => v.applied_promotions ?? []) ?? [];
+    const uniquePromotions = allPromotions.filter((p, i, arr) => arr.findIndex((x) => x.id === p.id) === i);
+    const isLowStock = defaultVariant && defaultVariant.stock > 0 && defaultVariant.stock <= 5;
     const isOutOfStock = defaultVariant && defaultVariant.stock === 0;
     const formatMoney = useFormatMoney();
 
@@ -33,9 +25,7 @@ export function GridCard({
                         {product.title}
                     </h3>
                     {product.description && (
-                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                            {product.description}
-                        </p>
+                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
                     )}
                 </div>
 
@@ -52,18 +42,14 @@ export function GridCard({
                         {defaultVariant ? (
                             <PriceDisplay variant={defaultVariant} formatMoney={formatMoney} />
                         ) : (
-                            <span className="text-sm text-muted-foreground">No variants</span>
+                            <span className="text-sm text-muted-foreground">{t("common.no_variants")}</span>
                         )}
                         {isLowStock && (
                             <p className="text-[10px] font-medium text-amber-500">
-                                Only {defaultVariant!.stock} left
+                                {t("common.low_stock", { count: defaultVariant!.stock })}
                             </p>
                         )}
-                        {isOutOfStock && (
-                            <p className="text-[10px] font-medium text-rose-500">
-                                Out of stock
-                            </p>
-                        )}
+                        {isOutOfStock && <p className="text-[10px] font-medium text-rose-500">{t("common.out_of_stock")}</p>}
                     </div>
 
                     {defaultVariant && !isOutOfStock && (
@@ -77,15 +63,14 @@ export function GridCard({
                             }}
                         >
                             <ShoppingCart className="size-3" />
-                            Add
+                            {t("common.add")}
                         </Button>
                     )}
                 </div>
 
                 {product.variants && product.variants.length > 1 && (
                     <p className="text-[10px] text-muted-foreground">
-                        +{product.variants.length - 1} more variant
-                        {product.variants.length > 2 ? "s" : ""}
+                        {t("common.more_variants", { count: product.variants.length - 1 })}
                     </p>
                 )}
             </CardContent>

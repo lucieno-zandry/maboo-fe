@@ -1,32 +1,59 @@
 {
-    "searchResultsFor": "Search Results for \"{{query}}\"",
-    "loading": "Loading...",
-    "productsFound": "{{count}} products found",
-    "searchPlaceholder": "Search for products...",
-    "activeFilters": "Active filters:",
-    "categoryLabel": "Category",
-    "priceLabel": "Price",
-    "clearAll": "Clear all",
-    "filters": "Filters",
-    "clear": "Clear",
-    "category": "Category",
-    "allCategories": "All Categories",
-    "noCategoriesAvailable": "No categories available",
-    "priceRange": "Price Range",
-    "sortBy": "Sort By",
-    "direction": "Direction",
-    "newest": "Newest",
-    "name": "Name",
-    "descending": "Descending",
-    "ascending": "Ascending",
-    "clearAllFilters": "Clear All Filters",
-    "showingProducts": "Showing {{count}} of {{total}} products",
-    "newestFirst": "Newest First",
-    "oldestFirst": "Oldest First",
-    "nameAZ": "Name A-Z",
-    "nameZA": "Name Z-A",
-    "noProductsFound": "No products found",
-    "tryAdjusting": "Try adjusting your search or filters",
-    "errorLoading": "Failed to load products. Please try again.",
-    "tryAgain": "Try Again"
+    "common": {
+        "reset": "Reset",
+        "try_again": "Try again",
+        "no_variants": "No variants",
+        "low_stock": "Only {{count}} left",
+        "out_of_stock": "Out of stock",
+        "add": "Add",
+        "add_to_cart": "Add to cart",
+        "more_variants": "+{{count}} more variant",
+        "more_variants_plural": "+{{count}} more variants",
+        "variants_count": "{{count}} variant",
+        "variants_count_plural": "{{count}} variants",
+        "loading_more": "Loading more…"
+    },
+    "search": {
+        "meta": {
+            "title": "Search Products",
+            "description": "Browse and filter our product catalog"
+        },
+        "search_placeholder": "Search products…",
+        "filter": {
+            "filters": "Filters",
+            "sort_by": "Sort by",
+            "category": "Category",
+            "price_range": "Price range",
+            "all_categories": "All categories",
+            "price_to": "to",
+            "price_unavailable": "Price range not available",
+            "price_min": "min",
+            "price_max": "max",
+            "price_range_label": "Price: {{min}} – {{max}}",
+            "sort_label": "Sort: {{label}}",
+            "category_fallback": "Category #{{id}}"
+        },
+        "view": {
+            "grid": "Grid view",
+            "list": "List view"
+        },
+        "empty": {
+            "title": "No products found",
+            "with_filters": "Try adjusting or clearing your filters to see more results.",
+            "no_products": "There are no products available at this time."
+        },
+        "error": {
+            "fetch_failed": "Failed to load products. Please try again."
+        },
+        "result_count": "{{total}} product found",
+        "result_count_plural": "{{total}} products found",
+        "all_loaded": "All {{total}} product loaded",
+        "all_loaded_plural": "All {{total}} products loaded"
+    },
+    "sort": {
+        "0": "Relevance",
+        "1": "Price: Low to High",
+        "2": "Price: High to Low",
+        "3": "Newest"
+    }
 }

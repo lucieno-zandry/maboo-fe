@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Search, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
@@ -11,12 +12,7 @@ export interface SearchBarViewProps {
     className?: string;
 }
 
-export function SearchBarView({
-    value,
-    onChange,
-    placeholder = "Search products…",
-    className,
-}: SearchBarViewProps) {
+export function SearchBarView({ value, onChange, placeholder, className }: SearchBarViewProps) {
     return (
         <div className={cn("relative flex items-center", className)}>
             <Search className="absolute left-3 size-4 text-muted-foreground pointer-events-none" />
@@ -39,32 +35,27 @@ export function SearchBarView({
 }
 
 export function SearchBar({ className }: { className?: string }) {
+    const { t } = useTranslation("search");
     const storeSearch = useSearchStore((s) => s.filters.search);
     const setFilter = useSearchStore((s) => s.setFilter);
-
     const [localValue, setLocalValue] = useState(storeSearch);
 
-    useEffect(() => {
-        setLocalValue(storeSearch);
-    }, [storeSearch]);
+    useEffect(() => setLocalValue(storeSearch), [storeSearch]);
 
     useEffect(() => {
         const id = setTimeout(() => {
-            if (localValue !== storeSearch) {
-                setFilter("search", localValue);
-            }
+            if (localValue !== storeSearch) setFilter("search", localValue);
         }, 400);
         return () => clearTimeout(id);
     }, [localValue]);
 
-    const handleChange = useCallback((value: string) => {
-        setLocalValue(value);
-    }, []);
+    const handleChange = useCallback((value: string) => setLocalValue(value), []);
 
     return (
         <SearchBarView
             value={localValue}
             onChange={handleChange}
+            placeholder={t("search.search_placeholder")}
             className={className}
         />
     );

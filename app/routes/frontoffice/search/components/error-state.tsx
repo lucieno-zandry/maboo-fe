@@ -1,12 +1,14 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+    const { t } = useTranslation("search");
     return (
         <div className="flex flex-col items-center justify-center py-24 text-center">
             <p className="text-sm text-destructive">{message}</p>
             {onRetry && (
                 <Button variant="outline" size="sm" className="mt-4" onClick={onRetry}>
-                    Try again
+                    {t("common.try_again")}
                 </Button>
             )}
         </div>

@@ -1,32 +1,59 @@
 {
-    "searchResultsFor": "Résultats de recherche pour \"{{query}}\"",
-    "loading": "Chargement...",
-    "productsFound": "{{count}} produits trouvés",
-    "searchPlaceholder": "Rechercher des produits...",
-    "activeFilters": "Filtres actifs :",
-    "categoryLabel": "Catégorie",
-    "priceLabel": "Prix",
-    "clearAll": "Tout effacer",
-    "filters": "Filtres",
-    "clear": "Effacer",
-    "category": "Catégorie",
-    "allCategories": "Toutes les catégories",
-    "noCategoriesAvailable": "Aucune catégorie disponible",
-    "priceRange": "Fourchette de prix",
-    "sortBy": "Trier par",
-    "direction": "Direction",
-    "newest": "Plus récent",
-    "name": "Nom",
-    "descending": "Décroissant",
-    "ascending": "Croissant",
-    "clearAllFilters": "Effacer tous les filtres",
-    "showingProducts": "Affichage de {{count}} sur {{total}} produits",
-    "newestFirst": "Plus récent d'abord",
-    "oldestFirst": "Plus ancien d'abord",
-    "nameAZ": "Nom A-Z",
-    "nameZA": "Nom Z-A",
-    "noProductsFound": "Aucun produit trouvé",
-    "tryAdjusting": "Essayez d'ajuster votre recherche ou vos filtres",
-    "errorLoading": "Échec du chargement des produits. Veuillez réessayer.",
-    "tryAgain": "Réessayer"
+    "common": {
+        "reset": "Réinitialiser",
+        "try_again": "Réessayer",
+        "no_variants": "Aucune variante",
+        "low_stock": "Plus que {{count}} en stock",
+        "out_of_stock": "Rupture de stock",
+        "add": "Ajouter",
+        "add_to_cart": "Ajouter au panier",
+        "more_variants": "+{{count}} variante supplémentaire",
+        "more_variants_plural": "+{{count}} variantes supplémentaires",
+        "variants_count": "{{count}} variante",
+        "variants_count_plural": "{{count}} variantes",
+        "loading_more": "Chargement…"
+    },
+    "search": {
+        "meta": {
+            "title": "Rechercher des produits",
+            "description": "Parcourir et filtrer notre catalogue de produits"
+        },
+        "search_placeholder": "Rechercher des produits…",
+        "filter": {
+            "filters": "Filtres",
+            "sort_by": "Trier par",
+            "category": "Catégorie",
+            "price_range": "Prix",
+            "all_categories": "Toutes les catégories",
+            "price_to": "à",
+            "price_unavailable": "Intervalle de prix indisponible",
+            "price_min": "min",
+            "price_max": "max",
+            "price_range_label": "Prix : {{min}} – {{max}}",
+            "sort_label": "Tri : {{label}}",
+            "category_fallback": "Catégorie #{{id}}"
+        },
+        "view": {
+            "grid": "Vue en grille",
+            "list": "Vue en liste"
+        },
+        "empty": {
+            "title": "Aucun produit trouvé",
+            "with_filters": "Essayez d’ajuster ou d’effacer vos filtres pour voir plus de résultats.",
+            "no_products": "Aucun produit n’est disponible pour le moment."
+        },
+        "error": {
+            "fetch_failed": "Échec du chargement des produits. Veuillez réessayer."
+        },
+        "result_count": "{{total}} produit trouvé",
+        "result_count_plural": "{{total}} produits trouvés",
+        "all_loaded": "{{total}} produit chargé",
+        "all_loaded_plural": "{{total}} produits chargés"
+    },
+    "sort": {
+        "0": "Pertinence",
+        "1": "Prix : croissant",
+        "2": "Prix : décroissant",
+        "3": "Nouveautés"
+    }
 }

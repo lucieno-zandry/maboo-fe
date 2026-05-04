@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useSearchStore, type ViewMode } from "~/routes/frontoffice/search/stores/use-search-store";
 import { Button } from "~/components/ui/button";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
@@ -17,17 +18,12 @@ export function TopBarView({
     onViewModeChange,
     onOpenFilters,
 }: TopBarViewProps) {
+    const { t } = useTranslation("search");
     return (
         <div className="flex items-center justify-between gap-3">
-            {/* Mobile filter toggle */}
-            <Button
-                variant="outline"
-                size="sm"
-                className="relative gap-2 lg:hidden"
-                onClick={onOpenFilters}
-            >
+            <Button variant="outline" size="sm" className="relative gap-2 lg:hidden" onClick={onOpenFilters}>
                 <SlidersHorizontal className="size-4" />
-                Filters
+                {t("search.filter.filters")}
                 {activeFiltersCount > 0 && (
                     <Badge
                         variant="default"
@@ -43,11 +39,9 @@ export function TopBarView({
                     onClick={() => onViewModeChange("grid")}
                     className={cn(
                         "flex h-7 w-7 items-center justify-center rounded-md transition-all",
-                        viewMode === "grid"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
+                        viewMode === "grid" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                     )}
-                    title="Grid view"
+                    title={t("search.view.grid")}
                 >
                     <LayoutGrid className="size-3.5" />
                 </button>
@@ -55,11 +49,9 @@ export function TopBarView({
                     onClick={() => onViewModeChange("list")}
                     className={cn(
                         "flex h-7 w-7 items-center justify-center rounded-md transition-all",
-                        viewMode === "list"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
+                        viewMode === "list" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                     )}
-                    title="List view"
+                    title={t("search.view.list")}
                 >
                     <List className="size-3.5" />
                 </button>
@@ -68,13 +60,11 @@ export function TopBarView({
     );
 }
 
-
 export function TopBar() {
     const viewMode = useSearchStore((s) => s.viewMode);
     const setViewMode = useSearchStore((s) => s.setViewMode);
     const setIsSidebarOpen = useSearchStore((s) => s.setIsSidebarOpen);
     const getActiveFiltersCount = useSearchStore((s) => s.getActiveFiltersCount);
-
     return (
         <TopBarView
             viewMode={viewMode}

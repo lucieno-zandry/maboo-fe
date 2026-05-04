@@ -1,13 +1,14 @@
+import { useTranslation } from "react-i18next";
 import { SearchPage } from "./components/search-page";
 
 export default function SearchRoute() {
     return <SearchPage />;
 }
 
-// Optional: set a document title
 export function meta() {
+    const { t } = useTranslation("search");
     return [
-        { title: "Search Products" },
-        { name: "description", content: "Browse and filter our product catalog" },
+        { title: t("search.meta.title") },
+        { name: "description", content: t("search.meta.description") },
     ];
 }

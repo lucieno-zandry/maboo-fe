@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { RotateCcw, SlidersHorizontal } from "lucide-react";
 import { useSearchStore, type PriceRange, type SearchFilters, type SortOption, SORT_OPTIONS } from "~/routes/frontoffice/search/stores/use-search-store";
 import { cn } from "~/lib/utils";
@@ -17,10 +18,7 @@ export interface FilterSidebarViewProps {
     categoriesLoading: boolean;
     sortOptions: SortOption[];
     activeFiltersCount: number;
-    onFilterChange: <K extends keyof SearchFilters>(
-        key: K,
-        value: SearchFilters[K]
-    ) => void;
+    onFilterChange: <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) => void;
     onReset: () => void;
     currencySymbol: string;
 }
@@ -37,6 +35,7 @@ export function FilterSidebarView({
     onReset,
     currencySymbol,
 }: FilterSidebarViewProps) {
+    const { t } = useTranslation("search");
     const priceValues = [
         filters.min_price ?? priceRangeMeta?.min ?? 0,
         filters.max_price ?? priceRangeMeta?.max ?? 1000,
@@ -47,7 +46,7 @@ export function FilterSidebarView({
             <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
                 <div className="flex items-center gap-2">
                     <SlidersHorizontal className="size-4 text-primary" />
-                    <span className="font-semibold text-foreground">Filters</span>
+                    <span className="font-semibold text-foreground">{t("search.filter.filters")}</span>
                     {activeFiltersCount > 0 && (
                         <Badge variant="default" className="h-5 rounded-full px-1.5 text-[10px]">
                             {activeFiltersCount}
@@ -62,33 +61,32 @@ export function FilterSidebarView({
                         onClick={onReset}
                     >
                         <RotateCcw className="size-3" />
-                        Reset
+                        {t("common.reset")}
                     </Button>
                 )}
             </div>
 
             <ScrollArea className="flex-1 px-5">
                 <div className="divide-y divide-border/40 py-2">
-
-                    <FilterSection title="Sort by">
-                        <Select
-                            value={String(filters.sortIndex)}
-                            onValueChange={(v) => onFilterChange("sortIndex", Number(v))}
-                        >
+                    <FilterSection title={t("search.filter.sort_by")}>
+                        <Select value={String(filters.sortIndex)} onValueChange={(v) => onFilterChange("sortIndex", Number(v))}>
                             <SelectTrigger className="h-9 text-sm">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {sortOptions.map((opt, i) => (
-                                    <SelectItem key={i} value={String(i)}>
-                                        {opt.label}
-                                    </SelectItem>
-                                ))}
+                                {sortOptions.map((opt, i) => {
+                                    const sortKey = `sort.${i}`;
+                                    return (
+                                        <SelectItem key={i} value={String(i)}>
+                                            {t(sortKey)}
+                                        </SelectItem>
+                                    );
+                                })}
                             </SelectContent>
                         </Select>
                     </FilterSection>
 
-                    <FilterSection title="Category">
+                    <FilterSection title={t("search.filter.category")}>
                         {categoriesLoading ? (
                             <div className="space-y-2">
                                 {[1, 2, 3].map((i) => (
@@ -106,7 +104,7 @@ export function FilterSidebarView({
                                             : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                     )}
                                 >
-                                    All categories
+                                    {t("search.filter.all_categories")}
                                     {filters.category_id === undefined && (
                                         <span className="size-1.5 rounded-full bg-primary-foreground" />
                                     )}
@@ -132,7 +130,7 @@ export function FilterSidebarView({
                         )}
                     </FilterSection>
 
-                    <FilterSection title="Price range">
+                    <FilterSection title={t("search.filter.price_range")}>
                         {priceRangeLoading ? (
                             <div className="h-10 animate-pulse rounded-md bg-muted" />
                         ) : priceRangeMeta ? (
@@ -150,21 +148,20 @@ export function FilterSidebarView({
                                 />
                                 <div className="flex items-center justify-between">
                                     <div className="flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm">
-                                        {currencySymbol}{priceValues[0]}
+                                        {currencySymbol}
+                                        {priceValues[0]}
                                     </div>
-                                    <span className="text-xs text-muted-foreground">to</span>
+                                    <span className="text-xs text-muted-foreground">{t("search.filter.price_to")}</span>
                                     <div className="flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm">
-                                        {currencySymbol}{priceValues[1]}
+                                        {currencySymbol}
+                                        {priceValues[1]}
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-xs text-muted-foreground">
-                                Price range not available
-                            </p>
+                            <p className="text-xs text-muted-foreground">{t("search.filter.price_unavailable")}</p>
                         )}
                     </FilterSection>
-
                 </div>
             </ScrollArea>
         </aside>

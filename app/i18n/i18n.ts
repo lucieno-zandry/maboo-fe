@@ -16,8 +16,8 @@ import frLanding from "~/routes/frontoffice/landing/translation/locales/fr.json"
 import enProduct from "./locales/en/product.json";
 import frProduct from "./locales/fr/product.json";
 
-import enSearchResults from "~/routes/frontoffice/search/translation/locales/en.json";
-import frSearchResults from "~/routes/frontoffice/search/translation/locales/fr.json";
+import enSearch from "~/routes/frontoffice/search/translation/locales/en.json";
+import frSearch from "~/routes/frontoffice/search/translation/locales/fr.json";
 
 import enProducts from "./locales/en/products.json";
 import frProducts from "./locales/fr/products.json";
@@ -41,7 +41,7 @@ i18n
     supportedLngs: ["en", "fr"],
     debug: import.meta.env.DEV,
 
-    ns: ["common", "home", "addresses", "checkout", "product", "search_results", "products", "settings", "product-detail", "landing", "orders", "order-details"],
+    ns: ["common", "home", "addresses", "checkout", "product", "search", "products", "settings", "product-detail", "landing", "orders", "order-details"],
     defaultNS: "common",
 
     resources: {
@@ -50,7 +50,7 @@ i18n
         addresses: enAddresses,
         checkout: enCheckout,
         product: enProduct,
-        search_results: enSearchResults,
+        search: enSearch,
         products: enProducts,
         settings: enSettings,
         "product-detail": enProductDetail,
@@ -63,7 +63,7 @@ i18n
         addresses: frAddresses,
         checkout: frCheckout,
         product: frProduct,
-        search_results: frSearchResults,
+        search: frSearch,
         products: frProducts,
         settings: frSettings,
         "product-detail": frProductDetail,

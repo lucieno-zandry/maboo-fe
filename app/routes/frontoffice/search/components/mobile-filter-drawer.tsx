@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useSearchStore } from "~/routes/frontoffice/search/stores/use-search-store";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "~/components/ui/sheet";
 import { FilterSidebar } from "./filter-sidebar";
@@ -7,15 +8,13 @@ export interface MobileFilterDrawerViewProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export function MobileFilterDrawerView({
-    open,
-    onOpenChange,
-}: MobileFilterDrawerViewProps) {
+export function MobileFilterDrawerView({ open, onOpenChange }: MobileFilterDrawerViewProps) {
+    const { t } = useTranslation("search");
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side="left" className="w-[300px] p-0 sm:w-[340px]">
                 <SheetHeader className="sr-only">
-                    <SheetTitle>Filters</SheetTitle>
+                    <SheetTitle>{t("search.filter.filters")}</SheetTitle>
                 </SheetHeader>
                 <div className="h-full">
                     <FilterSidebar />
@@ -28,11 +27,5 @@ export function MobileFilterDrawerView({
 export function MobileFilterDrawer() {
     const isSidebarOpen = useSearchStore((s) => s.isSidebarOpen);
     const setIsSidebarOpen = useSearchStore((s) => s.setIsSidebarOpen);
-
-    return (
-        <MobileFilterDrawerView
-            open={isSidebarOpen}
-            onOpenChange={setIsSidebarOpen}
-        />
-    );
+    return <MobileFilterDrawerView open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />;
 }
