@@ -5,4 +5,4 @@ export default {
     currency: 'EUR',
     maintenance_mode: false,
     client_code_enabled: false,
-}
+} as Record<string, any>

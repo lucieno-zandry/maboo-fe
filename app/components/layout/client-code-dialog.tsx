@@ -38,7 +38,12 @@ export function ClientCodeDialog() {
 
     const canSubmit = useMemo(() => !formValidationErrors, [formValidationErrors]);
 
+    const settings = useSettings();
+    const clientCodeEnabled = settings.get('client_code_enabled', false);
+
     useEffect(() => {
+        if (!clientCodeEnabled) return;
+
         const hasDeclined = sessionStorage.getItem("declined_client_code");
         if (user?.permissions?.can_use_special_prices || hasDeclined) return;
 
@@ -50,6 +55,8 @@ export function ClientCodeDialog() {
     }, [user]);
 
     useEffect(() => {
+        if (!clientCodeEnabled) return;
+
         const storedClientCodeId = localStorage.getItem("client_code_id_to_apply");
 
         if (storedClientCodeId && !user?.permissions?.can_use_special_prices) {
@@ -61,6 +68,8 @@ export function ClientCodeDialog() {
                 });
         }
     }, [user]);
+
+    if (!clientCodeEnabled) return null;
 
     const handleApply = async (clientCodeId: number) => {
         try {
@@ -125,9 +134,6 @@ export function ClientCodeDialog() {
                 setIsLoading(false);
             });
     };
-
-    const setting = useSettings();
-    if (!setting.get('client_code_enabled', false)) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={handleCloseDialog}>

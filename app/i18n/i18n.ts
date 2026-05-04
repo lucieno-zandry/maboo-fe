@@ -13,7 +13,6 @@ import frCheckout from "~/routes/frontoffice/checkout/translation/locales/fr.jso
 import enLanding from "~/routes/frontoffice/landing/translation/locales/en.json";
 import frLanding from "~/routes/frontoffice/landing/translation/locales/fr.json";
 
-
 import enProduct from "./locales/en/product.json";
 import frProduct from "./locales/fr/product.json";
 

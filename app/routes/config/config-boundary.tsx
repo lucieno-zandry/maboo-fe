@@ -7,10 +7,28 @@ import { fetchUserPreferences, getSettings } from "~/api/http-requests";
 import { ThemeProvider } from "~/components/theme/theme-provider";
 import { RouteProgress } from "~/components/layout/route-progress";
 import { ALLOWED_LANGUAGES, langIsValid } from "~/lib/lang-helpers";
+import { I18nextProvider } from "react-i18next";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
-  if (params.lang && !langIsValid(params.lang)) {
-    return redirect(`/${ALLOWED_LANGUAGES[0]}`)
+  let lang = params.lang;
+
+  if (lang) {
+    if (!langIsValid(lang)) {
+      return redirect(`/${ALLOWED_LANGUAGES[0]}`);
+    }
+
+    if (i18n.language !== lang) {
+      await i18n.changeLanguage(lang);
+    }
+  }
+
+  const data = {
+    settings: defaultSettings,
+    preferences: defaultPreference,
+    i18n: {
+      language: i18n.language,
+      store: i18n.services.resourceStore.data,
+    },
   }
 
   try {
@@ -25,27 +43,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       fetchUserPreferences({ headers })
     ]);
 
-    return {
-      settings: settingsResponse.data!,
-      preferences: preferencesResponse.data!
-    }
-  } catch (e) {
-    return {
-      settings: defaultSettings,
-      preferences: defaultPreference
-    }
-  }
+    if (settingsResponse.data) data.settings = settingsResponse.data;
+    if (preferencesResponse.data) data.preferences = preferencesResponse.data;
+  } catch (e) { }
+
+  return data;
 }
 
 export async function clientLoader({ serverLoader, params }: ClientLoaderFunctionArgs) {
   const loaderData = await serverLoader<typeof loader>();
-
-  const { lang = 'en' } = params;
-
-  if (i18n.language !== lang) {
-    await i18n.changeLanguage(lang);
-  }
-
   usePreferencesStore.setState({ preferences: loaderData.preferences });
 
   return loaderData;
@@ -56,10 +62,34 @@ clientLoader.hydrate = true;
 export default function ConfigBoundary() {
   const loaderData = useLoaderData<typeof clientLoader>();
 
-  return <>
-    <ThemeProvider theme={loaderData.preferences.theme}>
-      <RouteProgress />
-      <Outlet />
-    </ThemeProvider>
-  </>;
+  if (loaderData.i18n) {
+    const { language, store } = loaderData.i18n;
+
+    Object.keys(store).forEach((lng) => {
+      Object.keys(store[lng]).forEach((ns) => {
+        if (!i18n.hasResourceBundle(lng, ns)) {
+          i18n.addResourceBundle(
+            lng,
+            ns,
+            store[lng][ns],
+            true,
+            true
+          );
+        }
+      });
+    });
+
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language);
+    }
+  }
+
+  return (
+    <I18nextProvider i18n={i18n}>
+      <ThemeProvider theme={loaderData.preferences.theme}>
+        <RouteProgress />
+        <Outlet />
+      </ThemeProvider>
+    </I18nextProvider>
+  );
 }
