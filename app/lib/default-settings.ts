@@ -3,5 +3,6 @@ export default {
     app_name: 'Maboo',
     contact_email: 'support@alofo.com',
     currency: 'EUR',
-    maintenance_mode: false
+    maintenance_mode: false,
+    client_code_enabled: false,
 }

@@ -20,6 +20,7 @@ import appPathname from '~/lib/app-pathname';
 import { LanguageSwitcher } from './language-switcher';
 import { ThemeSelector } from './theme-selector';
 import { CurrencySelector } from './currency-selector';
+import { useSettings } from '~/hooks/use-settings';
 
 type UserDropdownProps = {
     user: User | null;
@@ -27,9 +28,10 @@ type UserDropdownProps = {
     setLogoutOpen: (open: boolean) => void;
     logoutOpen: boolean;
     t: any;
+    clientCodeEnabled: boolean
 };
 
-export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: UserDropdownProps) {
+export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t, clientCodeEnabled }: UserDropdownProps) {
     return (
         <>
             <DropdownMenu>
@@ -42,7 +44,7 @@ export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: 
                             />}
 
                         {(!user || user.role === 'guest') &&
-                            <User className='text-foreground'/>}
+                            <User className='text-foreground' />}
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64" align="end" sideOffset={8}>
@@ -103,7 +105,7 @@ export function UserDropdown({ user, setIsOpen, setLogoutOpen, logoutOpen, t }: 
 
                     <DropdownMenuSeparator />
 
-                    {!user || !user.permissions?.can_use_special_prices && (
+                    {clientCodeEnabled && (!user || !user.permissions?.can_use_special_prices) && (
                         <DropdownMenuItem
                             onClick={() => setIsOpen(true)}
                             className="text-primary focus:text-primary focus:bg-primary/5 cursor-pointer font-medium"
@@ -147,6 +149,9 @@ export default function UserDropdownWrapper() {
     const { t } = useTranslation();
     const [logoutOpen, setLogoutOpen] = React.useState(false);
 
+    const settings = useSettings();
+    const clientCodeEnabled = settings.get('client_code_enabled', false);
+
     return (
         <UserDropdown
             user={user}
@@ -154,6 +159,7 @@ export default function UserDropdownWrapper() {
             setLogoutOpen={setLogoutOpen}
             logoutOpen={logoutOpen}
             t={t}
+            clientCodeEnabled={clientCodeEnabled}
         />
     );
 }

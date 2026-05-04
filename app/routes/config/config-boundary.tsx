@@ -4,8 +4,6 @@ import { useEffect } from "react";
 import { defaultPreference, usePreferencesStore } from "~/hooks/use-user-preference-store";
 import defaultSettings from "~/lib/default-settings";
 import { fetchUserPreferences, getSettings } from "~/api/http-requests";
-import useSettingsStore from "~/hooks/use-settings-store";
-import { useUpdatePreferences } from "~/hooks/use-update-preferences";
 import { ThemeProvider } from "~/components/theme/theme-provider";
 import { RouteProgress } from "~/components/layout/route-progress";
 import { ALLOWED_LANGUAGES, langIsValid } from "~/lib/lang-helpers";
@@ -49,7 +47,6 @@ export async function clientLoader({ serverLoader, params }: ClientLoaderFunctio
   }
 
   usePreferencesStore.setState({ preferences: loaderData.preferences });
-  useSettingsStore.setState({ settings: loaderData.settings });
 
   return loaderData;
 }

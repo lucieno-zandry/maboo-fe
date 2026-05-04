@@ -5,15 +5,20 @@ import { CheckCircle, TicketPercent, ArrowRight } from "lucide-react";
 import { useUserStore } from "~/hooks/use-user";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
 import { useTranslation } from "react-i18next";
+import { useSettings } from "~/hooks/use-settings";
 
 export function PartnerCodeSettings() {
     const { user } = useUserStore();
     const { setIsOpen } = useClientCodeDialogStore();
     const { t } = useTranslation("settings");
+    const settings = useSettings();
+    const clientCodeEnabled = settings.get('client_code_enabled', false);
 
     const onOpenDialog = () => {
         setIsOpen(true);
     }
+
+    if(!clientCodeEnabled) return null;
 
     // Active partner
     if (user?.permissions?.can_use_special_prices && user.client_code) {

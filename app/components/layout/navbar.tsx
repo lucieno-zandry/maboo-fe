@@ -128,8 +128,6 @@ export default function Navbar() {
     const isUnAuthenticated = useMemo(() => authStatus === "unauthenticated", [authStatus])
     const navbarSearchVisible = useMemo(() => (!pathname.includes('/search') && !pathname.includes('/settings')), [pathname]);
 
-    const userCanUseNotifications = !!user?.permissions?.can_use_notifications;
-    const userCanUseSettings = !!user?.permissions?.can_use_settings;
     const showBackButton = pathname !== appPathname('') && pathname !== appPathname('/');
 
     const handleLogIn = () => {

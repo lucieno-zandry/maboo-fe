@@ -19,6 +19,7 @@ import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import { useRevalidator } from "react-router";
 import useClientCodeDialogStore from "~/hooks/use-client-code-dialog-store";
 import { useTranslation } from "react-i18next";
+import { useSettings } from "~/hooks/use-settings";
 
 export function ClientCodeDialog() {
     const { t } = useTranslation();
@@ -124,6 +125,9 @@ export function ClientCodeDialog() {
                 setIsLoading(false);
             });
     };
+
+    const setting = useSettings();
+    if (!setting.get('client_code_enabled', false)) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
