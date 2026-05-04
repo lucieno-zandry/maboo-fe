@@ -6,10 +6,10 @@ import { useState } from "react";
 import { createTransaction } from "~/api/http-requests";
 import { toast } from "sonner";
 import Button from "../custom-components/button";
-import { DeleteOrderDialog } from "~/components/orders/delete-order-dialog";
 import appNavigate from "~/lib/app-navigate";
 import { useFormatMoney } from "~/lib/format-money";
 import { HttpException, ValidationException } from "~/api/app-fetch";
+import { DeleteOrderDialog } from "../delete-order-dialog";
 
 function OrderSummary({ order, statusConfig, method }: { order: Order; statusConfig: any; method: Transaction['payment_method'] }) {
     const subtotal = order.cart_items?.reduce((acc, item) => acc + item.total, 0) ?? 0;

@@ -1,0 +1,40 @@
+{
+  "header": {
+    "title": "My Orders",
+    "subtitle": "Manage and track your recent purchases."
+  },
+  "empty": {
+    "title": "No orders yet",
+    "description": "When you buy items, they will appear here.",
+    "cta": "Start Shopping"
+  },
+  "status": {
+    "awaitingPayment": "Awaiting Payment",
+    "paid": "Paid",
+    "processing": "Processing"
+  },
+  "card": {
+    "orderNumber": "Order Number",
+    "datePlaced": "Date Placed",
+    "totalAmount": "Total Amount"
+  },
+  "items": {
+    "title": "Items in this order"
+  },
+  "info": {
+    "shippingTo": "Shipping to",
+    "couponUsed": "Coupon Used"
+  },
+  "actions": {
+    "reviewAndPay": "Review & Pay",
+    "viewOrder": "View Order"
+  },
+  "deleteDialog": {
+    "title": "Delete Order?",
+    "description": "Are you sure you want to delete order #{{orderNumber}}? This action cannot be undone and will permanently remove this order from your history.",
+    "cancel": "Cancel",
+    "confirm": "Delete Order",
+    "toastSuccess": "Order #{{orderNumber}} has been deleted.",
+    "toastError": "Failed to delete order #{{orderNumber}}. Please try again."
+  }
+}

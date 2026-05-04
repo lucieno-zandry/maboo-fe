@@ -1,8 +1,8 @@
 import { useLoaderData } from "react-router";
 import { useState } from "react";
-import { EmptyOrdersState } from "~/components/orders/empty-orders-state";
-import { OrdersHeader } from "~/components/orders/orders-header";
-import { OrderCard } from "~/components/orders/order-card";
+import { EmptyOrdersState } from "./components/empty-orders-state";
+import { OrdersHeader } from "./components/orders-header";
+import { OrderCard } from "./components/order-card";
 import { getOrders } from "~/api/http-requests";
 
 export const clientLoader = async () => {

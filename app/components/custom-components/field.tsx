@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type ChangeEventHandler } from "react";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import getValidationError from "~/lib/get-validation-error";
@@ -10,21 +10,19 @@ export type AppFieldInputProps = {
     label?: React.ReactNode,
     dataFormat?: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>,
     children?: React.ReactNode,
-    onValidationErrorsChange?: (validationErrors: string[] | null, e: React.FocusEvent<HTMLInputElement, Element>) => void,
+    onValidationErrorsChange?: (validationErrors: string[] | null, e: any) => void,
 } & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
-export default function ({ validationErrors, label, dataFormat, children, onValidationErrorsChange, onBlur, ...inputProps }: AppFieldInputProps) {
+export default function ({ validationErrors, label, dataFormat, children, onValidationErrorsChange, onBlur, onChange, ...inputProps }: AppFieldInputProps) {
     const [stateValidationErrors, setStateValidationErrors] = React.useState<string[] | null>(null);
 
     React.useEffect(() => {
         setStateValidationErrors(validationErrors || null);
     }, [validationErrors]);
 
-    const handleBlur: React.FocusEventHandler<HTMLInputElement> = React.useCallback((e) => {
-        const { value } = e.target;
-
+    const validateInput = React.useCallback(function <T extends { target: { name: string, value: string } }>(e: T) {
         if (dataFormat) {
-            const newValidationErrors = getValidationError({ value, dataFormat });
+            const newValidationErrors = getValidationError({ value: e.target.value, dataFormat });
 
             if (onValidationErrorsChange) {
                 onValidationErrorsChange?.(newValidationErrors, e);
@@ -35,9 +33,17 @@ export default function ({ validationErrors, label, dataFormat, children, onVali
 
             setStateValidationErrors(newValidationErrors);
         };
+    }, [dataFormat, onValidationErrorsChange, validationErrors]);
 
+    const handleBlur: React.FocusEventHandler<HTMLInputElement> = React.useCallback((e) => {
+        validateInput(e);
         onBlur?.(e);
-    }, [dataFormat, onValidationErrorsChange, validationErrors, onBlur]);
+    }, [validateInput, onBlur]);
+
+    const handleChange: ChangeEventHandler<HTMLInputElement> = React.useCallback((e) => {
+        validateInput(e);
+        onChange?.(e);
+    }, [validateInput, onChange]);
 
     return <Field data-invalid={!!stateValidationErrors}>
         {label &&
@@ -46,6 +52,7 @@ export default function ({ validationErrors, label, dataFormat, children, onVali
         <Input
             aria-invalid={!!stateValidationErrors}
             onBlur={handleBlur}
+            onChange={handleChange}
             {...inputProps}
         />
         {stateValidationErrors &&

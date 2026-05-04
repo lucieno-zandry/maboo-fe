@@ -1,4 +1,5 @@
 import { MapPin, Ticket } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface OrderInfoSectionProps {
     addressSnapshot: {
@@ -16,6 +17,8 @@ interface OrderInfoSectionProps {
 }
 
 export function OrderInfoSection({ addressSnapshot, couponSnapshot }: OrderInfoSectionProps) {
+    const { t } = useTranslation("orders");
+
     const fullAddress = [
         addressSnapshot.line1,
         addressSnapshot.line2,
@@ -32,7 +35,7 @@ export function OrderInfoSection({ addressSnapshot, couponSnapshot }: OrderInfoS
             <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
                 <div className="text-xs text-muted-foreground">
-                    <p className="font-semibold text-foreground/80">Shipping to</p>
+                    <p className="font-semibold text-foreground/80">{t("info.shippingTo")}</p>
                     <p className="font-medium text-foreground">{addressSnapshot.recipient_name}</p>
                     <p className="line-clamp-1">{fullAddress}</p>
                     <p>{addressSnapshot.phone}</p>
@@ -43,7 +46,7 @@ export function OrderInfoSection({ addressSnapshot, couponSnapshot }: OrderInfoS
                 <div className="flex items-start gap-2">
                     <Ticket className="w-4 h-4 text-emerald-600 mt-0.5" />
                     <div className="text-xs">
-                        <p className="font-semibold text-emerald-700">Coupon Used</p>
+                        <p className="font-semibold text-emerald-700">{t("info.couponUsed")}</p>
                         <p className="text-muted-foreground">{couponSnapshot.code}</p>
                     </div>
                 </div>

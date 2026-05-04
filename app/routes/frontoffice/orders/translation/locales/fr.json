@@ -1,0 +1,40 @@
+{
+  "header": {
+    "title": "Mes commandes",
+    "subtitle": "Gérez et suivez vos achats récents."
+  },
+  "empty": {
+    "title": "Pas encore de commandes",
+    "description": "Lorsque vous achetez des articles, ils apparaîtront ici.",
+    "cta": "Commencer vos achats"
+  },
+  "status": {
+    "awaitingPayment": "En attente de paiement",
+    "paid": "Payée",
+    "processing": "En cours"
+  },
+  "card": {
+    "orderNumber": "Numéro de commande",
+    "datePlaced": "Date de commande",
+    "totalAmount": "Montant total"
+  },
+  "items": {
+    "title": "Articles de cette commande"
+  },
+  "info": {
+    "shippingTo": "Livrer à",
+    "couponUsed": "Coupon utilisé"
+  },
+  "actions": {
+    "reviewAndPay": "Vérifier et payer",
+    "viewOrder": "Voir la commande"
+  },
+  "deleteDialog": {
+    "title": "Supprimer la commande ?",
+    "description": "Êtes-vous sûr de vouloir supprimer la commande n°{{orderNumber}} ? Cette action est irréversible et supprimera définitivement cette commande de votre historique.",
+    "cancel": "Annuler",
+    "confirm": "Supprimer la commande",
+    "toastSuccess": "La commande n°{{orderNumber}} a été supprimée.",
+    "toastError": "Échec de la suppression de la commande n°{{orderNumber}}. Veuillez réessayer."
+  }
+}

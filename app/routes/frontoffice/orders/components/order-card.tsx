@@ -6,15 +6,17 @@ import { OrderInfoSection } from "./order-info-section";
 import { OrderActionButton } from "./order-action-button";
 import { CheckCircle2, Clock, Wallet } from "lucide-react";
 import { useState } from "react";
-import { DeleteOrderDialog } from "./delete-order-dialog";
+import { DeleteOrderDialog } from "../../../../components/delete-order-dialog";
 import { useRevalidator } from "react-router";
 import { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 interface OrderCardProps {
     order: Order;
 }
 
 export function OrderCard({ order }: OrderCardProps) {
+    const { t } = useTranslation("orders");
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const transactions = order.transactions ?? [];
@@ -25,7 +27,7 @@ export function OrderCard({ order }: OrderCardProps) {
     const revalidator = useRevalidator();
 
     let statusConfig = {
-        label: "Awaiting Payment",
+        label: t("status.awaitingPayment"),
         variant: "secondary" as 'default' | 'outline' | 'secondary',
         icon: Wallet,
         colorClass: "text-muted-foreground",
@@ -34,7 +36,7 @@ export function OrderCard({ order }: OrderCardProps) {
 
     if (hasSucceeded) {
         statusConfig = {
-            label: "Paid",
+            label: t("status.paid"),
             variant: "default" as const,
             icon: CheckCircle2,
             colorClass: "text-primary",
@@ -42,7 +44,7 @@ export function OrderCard({ order }: OrderCardProps) {
         };
     } else if (hasPending) {
         statusConfig = {
-            label: "Processing",
+            label: t("status.processing"),
             variant: "outline" as const,
             icon: Clock,
             colorClass: "text-orange-500",

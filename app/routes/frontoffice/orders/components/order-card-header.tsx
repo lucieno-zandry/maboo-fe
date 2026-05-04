@@ -6,6 +6,7 @@ import { Package, ChevronRight, Trash2 } from "lucide-react";
 import { OrderStatusBadge } from "./order-status-badge";
 import appPathname from "~/lib/app-pathname";
 import type { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 interface OrderCardHeaderProps {
     order: Order;
@@ -17,7 +18,10 @@ interface OrderCardHeaderProps {
 }
 
 export function OrderCardHeader({ order, statusConfig, onDelete, formatMoney }: OrderCardHeaderProps) {
-    const date = new Date(order.created_at).toLocaleDateString("en-US", {
+    const { t, i18n } = useTranslation("orders");
+    const locale = i18n.resolvedLanguage === "fr" ? "fr-FR" : "en-US";
+
+    const date = new Date(order.created_at).toLocaleDateString(locale, {
         month: "long",
         day: "numeric",
         year: "numeric",
@@ -33,7 +37,7 @@ export function OrderCardHeader({ order, statusConfig, onDelete, formatMoney }: 
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider leading-none">
-                                Order Number
+                                {t("card.orderNumber")}
                             </p>
                             <OrderStatusBadge transactions={order.transactions ?? []} />
                         </div>
@@ -43,11 +47,11 @@ export function OrderCardHeader({ order, statusConfig, onDelete, formatMoney }: 
 
                 <div className="flex items-center gap-6">
                     <div className="hidden sm:block text-right">
-                        <p className="text-xs text-muted-foreground uppercase mb-1">Date Placed</p>
+                        <p className="text-xs text-muted-foreground uppercase mb-1">{t("card.datePlaced")}</p>
                         <p className="text-sm font-medium">{date}</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-xs text-muted-foreground uppercase mb-1">Total Amount</p>
+                        <p className="text-xs text-muted-foreground uppercase mb-1">{t("card.totalAmount")}</p>
                         <p className="text-sm font-bold text-primary">{formatMoney(order.total)}</p>
                     </div>
                     <div className="flex items-center gap-1">

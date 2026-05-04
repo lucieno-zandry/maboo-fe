@@ -10,10 +10,10 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
-import Button from "../custom-components/button";
+import Button from "~/components/custom-components/button";
 import { deleteOrder } from "~/api/http-requests";
 import { toast } from "sonner";
-import { useFetcher, useNavigate, useRevalidator } from "react-router";
+import { useTranslation } from "react-i18next";
 
 interface DeleteOrderDialogProps {
     open: boolean;
@@ -23,6 +23,7 @@ interface DeleteOrderDialogProps {
 }
 
 export function DeleteOrderDialog({ open, onOpenChange, orderUuid, onSuccess }: DeleteOrderDialogProps) {
+    const { t } = useTranslation('orders');
     const [loading, setLoading] = useState(false);
 
     const orderNumber = useMemo(() => orderUuid.split("-")[0], [orderUuid]);
@@ -31,31 +32,31 @@ export function DeleteOrderDialog({ open, onOpenChange, orderUuid, onSuccess }: 
         setLoading(true);
         deleteOrder(orderUuid)
             .then(() => {
-                toast.success(`Order #${orderNumber} has been deleted.`);
+                toast.success(t("deleteDialog.toastSuccess", { orderNumber }));
                 onOpenChange(false);
                 onSuccess?.();
             })
             .catch(() => {
-                toast.error(`Failed to delete order #${orderNumber}. Please try again.`);
+                toast.error(t("deleteDialog.toastError", { orderNumber }));
             })
             .finally(() => {
                 setLoading(false);
             });
-    }, [orderUuid, orderNumber]);
+    }, [orderUuid, orderNumber, onOpenChange, onSuccess, t]);
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Order?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to delete order #{orderNumber}? This action cannot be undone and will permanently remove this order from your history.
+                        {t("deleteDialog.description", { orderNumber })}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("deleteDialog.cancel")}</AlertDialogCancel>
                     <Button type="button" variant="destructive" onClick={handleDelete} isLoading={loading}>
-                        Delete Order
+                        {t("deleteDialog.confirm")}
                     </Button>
                     {/* <AlertDialogAction asChild>
                     </AlertDialogAction> */}

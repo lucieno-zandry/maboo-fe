@@ -29,6 +29,9 @@ import frSettings from "./locales/fr/settings.json";
 import enProductDetail from "~/routes/frontoffice/product-detail/translation/locales/en.json";
 import frProductDetail from "~/routes/frontoffice/product-detail/translation/locales/fr.json";
 
+import enOrders from "~/routes/frontoffice/orders/translation/locales/en.json";
+import frOrders from "~/routes/frontoffice/orders/translation/locales/fr.json";
+
 i18n
   .use(initReactI18next)
   .init({
@@ -36,7 +39,7 @@ i18n
     supportedLngs: ["en", "fr"],
     debug: import.meta.env.DEV,
 
-    ns: ["common", "home", "addresses", "checkout", "product", "search_results", "products", "settings", "product-detail", "landing"],
+    ns: ["common", "home", "addresses", "checkout", "product", "search_results", "products", "settings", "product-detail", "landing", "orders"],
     defaultNS: "common",
 
     resources: {
@@ -50,6 +53,7 @@ i18n
         settings: enSettings,
         "product-detail": enProductDetail,
         landing: enLanding,
+        orders: enOrders,
       },
       fr: {
         common: frCommon,
@@ -61,6 +65,7 @@ i18n
         settings: frSettings,
         "product-detail": frProductDetail,
         landing: frLanding,
+        orders: frOrders,
       },
     },
 

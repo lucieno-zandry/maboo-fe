@@ -1,12 +1,16 @@
 // components/orders/OrderItemsPreview.tsx
+import { useTranslation } from "react-i18next";
+
 interface OrderItemsPreviewProps {
     items: CartItem[];
 }
 
 export function OrderItemsPreview({ items }: OrderItemsPreviewProps) {
+    const { t } = useTranslation("orders");
+
     return (
         <div className="md:col-span-2 p-6 space-y-4">
-            <p className="text-xs font-semibold uppercase text-muted-foreground">Items in this order</p>
+            <p className="text-xs font-semibold uppercase text-muted-foreground">{t("items.title")}</p>
             <div className="flex flex-wrap gap-4">
                 {items.map((item) => (
                     <div key={item.id} className="group relative">
