@@ -9,8 +9,8 @@ import AccountDetailsTab from '~/components/settings-tabs/account-details-tab';
 import getRoleBadgeColor from '~/lib/get-role-badge-color';
 import AccountCard from '~/components/settings/account-card';
 import { PartnerCodeSettings } from '~/components/settings/partner-code-card';
-import NotFound from '~/components/common/not-found';
 import { useTranslation } from 'react-i18next';
+import NotFoundErrorPage from './not-found-error-page';
 
 export type SettingsTabProps = {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,7 +24,7 @@ export default function AccountSettings() {
     if (authStatus === 'unknown')
       return <LoadingScreen />
 
-    return <NotFound />
+    return <NotFoundErrorPage />
   }
 
   return (

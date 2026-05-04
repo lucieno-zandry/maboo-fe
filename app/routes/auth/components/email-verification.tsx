@@ -2,7 +2,7 @@ import React from "react";
 import { redirect, useActionData, useNavigate, type ActionFunctionArgs } from "react-router";
 import { toast } from "sonner";
 import { attemptEmailVerification, sendEmailVerificationCode } from "~/api/http-requests";
-import { EmailVerificationOtp } from "~/components/auth/email-verification-otp";
+import { EmailVerificationOtp } from "~/routes/auth/components/email-verification-otp";
 import { useSuccessRedirect } from "~/hooks/use-redirect-action";
 
 export const clientAction = async ({ request }: ActionFunctionArgs) => {

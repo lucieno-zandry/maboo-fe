@@ -28,7 +28,7 @@ export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
 
         logout()
             .then(res => {
-                toast.success(res.data?.message || t('common:loggedOutSuccess'));
+                toast.success(t('common:loggedOutSuccess'));
                 onOpenChange(false);
             })
             .catch(() => {

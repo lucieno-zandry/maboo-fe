@@ -18,12 +18,12 @@ export default [
         ]),
 
         route("auth", "routes/auth/layout.tsx", [
-            index("routes/auth/index.tsx"),
-            route("login", "routes/auth/login.tsx"),
-            route("register", "routes/auth/register.tsx"),
-            route("verify-email", "routes/auth/email-verification.tsx"),
-            route("password-forgotten", "routes/auth/password-forgotten.tsx"),
-            route("reset-password/:token", "routes/auth/reset-password.tsx"),
+            index("routes/auth/components/index.tsx"),
+            route("login", "routes/auth/components/login.tsx"),
+            route("register", "routes/auth/components/register.tsx"),
+            route("verify-email", "routes/auth/components/email-verification.tsx"),
+            route("password-forgotten", "routes/auth/components/password-forgotten.tsx"),
+            route("reset-password/:token", "routes/auth/components/reset-password.tsx"),
         ]),
 
         // error pages

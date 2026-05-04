@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 type BackButtonProps = {
     path?: string,
@@ -9,8 +10,10 @@ type BackButtonProps = {
 }
 
 export default function ({ path, withLabel }: BackButtonProps) {
-
     const navigate = useNavigate();
+    const { t } = useTranslation('common');
+
+    const label = t('back_button_aria');
 
     const handleClick = useCallback(() => {
         if (path) {
@@ -26,10 +29,11 @@ export default function ({ path, withLabel }: BackButtonProps) {
             variant="ghost"
             className="flex items-center gap-2"
             onClick={handleClick}
+            aria-label={label}
         >
             <ArrowLeft className="w-4 h-4" />
             {withLabel &&
-                "Back"}
+                label}
         </Button>
     </div>
 }

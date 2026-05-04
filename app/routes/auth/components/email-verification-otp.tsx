@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
     InputOTP,
     InputOTPGroup,
@@ -13,7 +14,7 @@ import {
 } from "~/components/ui/card";
 import { Form, useNavigation } from "react-router";
 import { Mail } from "lucide-react";
-import Button from "../custom-components/button";
+import Button from "../../../components/custom-components/button";
 
 export type EmailVerificationOtpProps = {
     onSendEmailVerificationCode: () => void,
@@ -26,6 +27,7 @@ export function EmailVerificationOtp({
     onSendEmailVerificationCode,
     errorMessages
 }: EmailVerificationOtpProps) {
+    const { t } = useTranslation('auth');
     const [otp, setOtp] = React.useState("");
     const codeLength = 6;
 
@@ -59,11 +61,10 @@ export function EmailVerificationOtp({
         <Card>
             <CardHeader className="space-y-1 text-center">
                 <CardTitle className="text-2xl font-bold flex justify-center items-center gap-2">
-                    <Mail /> Verify Your Email
+                    <Mail /> {t('verify_email_title')}
                 </CardTitle>
                 <CardDescription>
-                    We've sent a {codeLength}-digit verification code to your email address.
-                    Please enter it below to confirm your account.
+                    {t('verify_email_description', { codeLength })}
                 </CardDescription>
             </CardHeader>
 
@@ -82,9 +83,11 @@ export function EmailVerificationOtp({
                             </InputOTPGroup>
                         </InputOTP>
 
-                        {errorMessages && <p className="text-destructive text-sm">
-                            {errorMessages}
-                        </p>}
+                        {errorMessages && (
+                            <p className="text-destructive text-sm">
+                                {errorMessages.join(', ')}
+                            </p>
+                        )}
                     </div>
 
                     <Button
@@ -92,23 +95,23 @@ export function EmailVerificationOtp({
                         className="w-full"
                         disabled={otp.length !== codeLength}
                         isLoading={isLoading}>
-                        Verify Account
+                        {t('verify_account_button')}
                     </Button>
                 </Form>
 
                 <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                    Didn't receive the code?
+                    {t('did_not_receive_code')}
                     {canResend ? (
                         <Button
                             variant="link"
                             onClick={handleResend}
                             className="p-1 h-auto"
                         >
-                            Resend Code
+                            {t('resend_code')}
                         </Button>
                     ) : (
                         <span className="ml-1">
-                            Resend available in {secondsLeft}s
+                            {t('resend_available_in', { seconds: secondsLeft })}
                         </span>
                     )}
                 </div>

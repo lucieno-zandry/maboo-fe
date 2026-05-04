@@ -1,12 +1,14 @@
+import { useTranslation, Trans } from 'react-i18next';
 import { Outlet } from "react-router"
 import { Card, CardContent } from "~/components/ui/card"
 import { FieldDescription } from "~/components/ui/field"
 
-export default function() {
+export default function () {
+    const { t } = useTranslation('auth');
     return (
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm md:max-w-4xl">
-                <div className={"flex flex-col gap-6"}>
+                <div className="flex flex-col gap-6">
                     <Card className="overflow-hidden p-0">
                         <CardContent className="grid p-0 md:grid-cols-2">
                             <Outlet />
@@ -20,18 +22,20 @@ export default function() {
                         </CardContent>
                     </Card>
                     <FieldDescription className="px-6 text-center">
-                        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-                        and <a href="#">Privacy Policy</a>.
+                        <Trans i18nKey="terms_text" t={t}>
+                            By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                        </Trans>
                     </FieldDescription>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export function meta() {
+    const {t} = useTranslation('auth');
     return [
-        { title: "Log In or Register" },
-        { name: "description", content: "Use your email and password to authenticate." },
+        { title: t("title") },
+        { name: "description", content: t("description") },
     ];
 }

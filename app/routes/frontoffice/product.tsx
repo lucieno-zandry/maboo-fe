@@ -12,7 +12,6 @@ import { useRefreshCart } from "~/hooks/use-cart";
 import { useUserStore } from "~/hooks/use-user";
 import { useTranslation } from "react-i18next";
 import { addVariantToCart, getProduct } from "~/api/http-requests";
-import NotFound from "~/components/common/not-found";
 import navigateToCheckout from "~/lib/navigate-to-checkout";
 import { ProductImageGallery } from "~/components/product/product-image-gallery";
 import { ProductInfo } from "~/components/product/product-info";
@@ -25,6 +24,7 @@ import { getPreferencesFromLoaderFunctionArgs } from "~/lib/app-pathname";
 import { HttpException } from "~/api/app-fetch";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
 import { useFormatMoney } from "~/lib/format-money";
+import NotFoundErrorPage from "../common/not-found-error-page";
 
 export const loader = async (args: LoaderFunctionArgs) => {
     const { request, params } = args;
@@ -170,7 +170,7 @@ export default function ProductPage() {
         );
     };
 
-    if (!product) return <NotFound />;
+    if (!product) return <NotFoundErrorPage />;
 
     return (
         <div className="min-h-screen bg-background pb-20">
