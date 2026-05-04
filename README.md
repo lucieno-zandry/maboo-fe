@@ -2,8 +2,8 @@
 
 ```
 docker run -d \
-  -p 3000:80 \
-  -e API_URL=https://api.example.com \
-  --name react-router-app \
-  my-react-router-v7-image
+  -p 443:3000 \
+  -e VITE_API_BASE_URL=http://102.16.254.6:8000 \
+  --name maboo_fe \
+  lucienozandry/maboo_fe:latest
 ```
