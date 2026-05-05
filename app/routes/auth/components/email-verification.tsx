@@ -1,9 +1,13 @@
+// email-verification.tsx
 import React from "react";
 import { redirect, useActionData, useNavigate, type ActionFunctionArgs } from "react-router";
 import { toast } from "sonner";
 import { attemptEmailVerification, sendEmailVerificationCode } from "~/api/http-requests";
 import { EmailVerificationOtp } from "~/routes/auth/components/email-verification-otp";
 import { useSuccessRedirect } from "~/hooks/use-redirect-action";
+import { useLogout } from "~/hooks/use-logout";
+import appPathname from "~/lib/app-pathname";
+import { useUserStore } from "~/hooks/use-user";
 
 export const clientAction = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
@@ -31,7 +35,12 @@ export default function () {
     const error = useActionData();
     const navigate = useNavigate();
     const didSendRef = React.useRef(false);
+    const logout = useLogout();
+    const { user } = useUserStore();
 
+    const userEmail = user?.email ?? "";
+
+    const handleLogout = () => logout({ onSuccess: () => navigate(appPathname('/auth')) });
 
     const handleSendEmailVerificationCode = () => {
         sendEmailVerificationCode()
@@ -52,15 +61,16 @@ export default function () {
             })
     }
 
-
     React.useEffect(() => {
         if (didSendRef.current) return;
         didSendRef.current = true;
-
         handleSendEmailVerificationCode();
     }, []);
 
     return <EmailVerificationOtp
+        email={userEmail}
         onSendEmailVerificationCode={handleSendEmailVerificationCode}
-        errorMessages={error?.errors?.code || null} />
+        onLogout={handleLogout}
+        errorMessages={error?.errors?.code || null}
+    />
 }

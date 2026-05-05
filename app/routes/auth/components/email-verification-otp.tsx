@@ -1,3 +1,4 @@
+// email-verification-otp.tsx
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,18 +14,22 @@ import {
     CardTitle,
 } from "~/components/ui/card";
 import { Form, useNavigation } from "react-router";
-import { Mail } from "lucide-react";
+import { Mail, LogOut } from "lucide-react";
 import Button from "../../../components/custom-components/button";
 
 export type EmailVerificationOtpProps = {
-    onSendEmailVerificationCode: () => void,
-    errorMessages: string[] | null,
+    email: string;
+    onSendEmailVerificationCode: () => void;
+    onLogout: () => void;
+    errorMessages: string[] | null;
 }
 
 const RESEND_TIMEOUT = 30;
 
 export function EmailVerificationOtp({
+    email,
     onSendEmailVerificationCode,
+    onLogout,
     errorMessages
 }: EmailVerificationOtpProps) {
     const { t } = useTranslation('auth');
@@ -69,6 +74,18 @@ export function EmailVerificationOtp({
             </CardHeader>
 
             <CardContent>
+                {/* Show email and logout option */}
+                <div className="mb-4 text-center text-sm text-muted-foreground">
+                    <p>{t('verification_email_sent_to', { email })}</p>
+                    <button
+                        onClick={onLogout}
+                        className="inline-flex items-center gap-1 text-primary hover:underline mt-1"
+                    >
+                        <LogOut className="h-3 w-3" />
+                        {t('logout_button')}
+                    </button>
+                </div>
+
                 <Form className="space-y-6" method="post">
                     <div className="flex flex-col items-center gap-3">
                         <InputOTP

@@ -50,5 +50,7 @@
     "did_not_receive_code": "Didn't receive the code?",
     "resend_code": "Resend Code",
     "resend_available_in": "Resend available in {{seconds}}s",
-    "code_required": "The code is required"
+    "code_required": "The code is required",
+    "verification_email_sent_to": "We sent a verification code to: {{email}}",
+    "logout_button": "Logout"
 }

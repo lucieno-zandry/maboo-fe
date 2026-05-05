@@ -1,6 +1,4 @@
-import React from "react"
-import { toast } from "sonner"
-import { logout } from "~/api/http-requests"
+import { useCallback } from "react"
 import {
     Dialog,
     DialogClose,
@@ -10,9 +8,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "~/components/ui/dialog"
-import { useUserStore } from "~/hooks/use-user"
 import Button from "../custom-components/button"
 import { useTranslation } from "react-i18next";
+import { useLogout } from "~/hooks/use-logout"
 
 export type LogoutDialogProps = {
     open: boolean,
@@ -20,26 +18,11 @@ export type LogoutDialogProps = {
 }
 
 export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
-    const { setUser } = useUserStore();
     const { t } = useTranslation();
 
-    const handleLogout = React.useCallback(() => {
-        const loading = toast.loading(t('common:loggingOutLoading'));
+    const logout = useLogout();
 
-        logout()
-            .then(res => {
-                toast.success(t('common:loggedOutSuccess'));
-                onOpenChange(false);
-            })
-            .catch(() => {
-                toast.error(t('common:logoutFailedWarning'));
-            })
-            .finally(() => {
-                setUser(null);
-                localStorage.removeItem('token');
-                toast.dismiss(loading);
-            });
-    }, [setUser, onOpenChange, t]);
+    const handleLogout = useCallback(() => logout({ onSuccess: () => onOpenChange(false) }), [logout]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -60,7 +43,8 @@ export function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
                         <Button
                             type="button"
                             variant="destructive"
-                            onClick={handleLogout}>{t('common:logOut')}</Button>
+                            onClick={handleLogout}
+                            disabled={logout.loading}>{t('common:logOut')}</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
