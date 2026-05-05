@@ -28,11 +28,11 @@ export default function PaymentMethodSelector({ currentMethod, onMethodChange }:
                 >
                     {/* Card Option */}
                     <div>
-                        <RadioGroupItem value="CARD" id="card" className="peer sr-only" />
+                        <RadioGroupItem value="card" id="card" className="peer sr-only" disabled />
                         <Label
                             htmlFor="card"
                             className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                        >
+                            aria-disabled>
                             <CreditCard className="mb-3 h-6 w-6" />
                             <span className="text-sm font-medium">{t("paymentMethod.creditCard")}</span>
                         </Label>
@@ -40,7 +40,7 @@ export default function PaymentMethodSelector({ currentMethod, onMethodChange }:
 
                     {/* PayPal Option */}
                     <div>
-                        <RadioGroupItem value="PAYPAL" id="paypal" className="peer sr-only" />
+                        <RadioGroupItem value="paypal" id="paypal" className="peer sr-only" />
                         <Label
                             htmlFor="paypal"
                             className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"

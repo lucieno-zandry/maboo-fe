@@ -23,9 +23,9 @@ type PaymentMethodOption = {
 const paymentMethods: PaymentMethodOption[] = [
     { value: "card", labelKey: "payment.methods.card", requiresPhone: false, disabled: true, disabledLabelKey: "payment.coming_soon" },
     { value: "paypal", labelKey: "payment.methods.paypal", requiresPhone: false },
-    { value: "orangemoney", labelKey: "payment.methods.orangemoney", requiresPhone: true },
-    { value: "airtelmoney", labelKey: "payment.methods.airtelmoney", requiresPhone: true },
-    { value: "mvola", labelKey: "payment.methods.mvola", requiresPhone: true },
+    // { value: "orangemoney", labelKey: "payment.methods.orangemoney", requiresPhone: true },
+    // { value: "airtelmoney", labelKey: "payment.methods.airtelmoney", requiresPhone: true },
+    // { value: "mvola", labelKey: "payment.methods.mvola", requiresPhone: true },
 ];
 
 export default function PaymentStep() {
