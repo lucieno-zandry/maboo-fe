@@ -19,12 +19,18 @@
         "title": "Adresse de livraison",
         "no_addresses": "Vous n'avez aucune adresse enregistrée. Veuillez en ajouter une.",
         "add_new": "Ajouter une nouvelle adresse",
-        "continue_to_shipping": "Continuer vers la livraison"
+        "continue_to_shipping": "Continuer vers la livraison",
+        "no_addresses_title": "Aucune adresse trouvée",
+        "no_addresses_desc": "Veuillez ajouter une adresse de livraison pour commander un produit."
     },
     "shipping": {
         "title": "Méthode de livraison",
         "select_address_first": "Veuillez d'abord sélectionner une adresse de livraison.",
-        "continue_to_payment": "Continuer vers le paiement"
+        "continue_to_payment": "Continuer vers le paiement",
+        "noMethodsAvailable": "Aucun mode de livraison disponible pour votre emplacement.",
+        "deliveryTimeNotSpecified": "Délai de livraison non spécifié",
+        "freeShipping": "Livraison gratuite",
+        "deliveryTimeRange": "{{min}}–{{max}} jours ouvrables"
     },
     "coupon": {
         "label": "Code promo",

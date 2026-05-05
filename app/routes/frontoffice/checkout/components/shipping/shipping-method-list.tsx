@@ -2,6 +2,7 @@
 import { cn } from "~/lib/utils";
 import { Truck, CheckCircle2, Clock } from "lucide-react";
 import { useFormatMoney } from "~/lib/format-money";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     methods: { method: ShippingMethod; cost: number }[];
@@ -11,11 +12,12 @@ type Props = {
 
 export default function ShippingMethodList({ methods, selectedId, onSelect }: Props) {
     const formatMoney = useFormatMoney();
+    const { t } = useTranslation('checkout');
 
     if (methods.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-                <p>No shipping methods available for your location.</p>
+                <p>{t('shipping.noMethodsAvailable')}</p>
             </div>
         );
     }
@@ -52,13 +54,13 @@ export default function ShippingMethodList({ methods, selectedId, onSelect }: Pr
                                         <p className="flex items-center gap-1 text-sm text-muted-foreground">
                                             <Clock className="h-3 w-3" />
                                             {method.min_delivery_days !== undefined && method.max_delivery_days !== undefined
-                                                ? `${method.min_delivery_days}–${method.max_delivery_days} business days`
-                                                : "Delivery time not specified"}
+                                                ? t('shipping.deliveryTimeRange', { min: method.min_delivery_days, max: method.max_delivery_days })
+                                                : t('shipping.deliveryTimeNotSpecified')}
                                         </p>
                                     </div>
                                     {method.free_shipping_threshold && cost === 0 && (
                                         <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
-                                            Free shipping
+                                            {t('shipping.freeShipping')}
                                         </span>
                                     )}
                                 </div>

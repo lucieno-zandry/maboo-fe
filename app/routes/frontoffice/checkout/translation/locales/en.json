@@ -19,12 +19,18 @@
         "title": "Shipping address",
         "no_addresses": "You have no saved addresses. Please add one.",
         "add_new": "Add new address",
-        "continue_to_shipping": "Continue to shipping"
+        "continue_to_shipping": "Continue to shipping",
+        "no_addresses_title": "No addresses found",
+        "no_addresses_desc": "Please add a new delivery address to proceed with your order."
     },
     "shipping": {
         "title": "Shipping method",
         "select_address_first": "Please select a shipping address first.",
-        "continue_to_payment": "Continue to payment"
+        "continue_to_payment": "Continue to payment",
+        "noMethodsAvailable": "No shipping methods available for your location.",
+        "deliveryTimeNotSpecified": "Delivery time not specified",
+        "freeShipping": "Free shipping",
+        "deliveryTimeRange": "{{min}}–{{max}} business days"
     },
     "coupon": {
         "label": "Coupon code",
