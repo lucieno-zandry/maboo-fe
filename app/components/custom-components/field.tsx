@@ -11,9 +11,21 @@ export type AppFieldInputProps = {
     dataFormat?: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>,
     children?: React.ReactNode,
     onValidationErrorsChange?: (validationErrors: string[] | null, e: any) => void,
+    validateOnBlur?: boolean,
+    validateOnChange?: boolean,
 } & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
-export default function ({ validationErrors, label, dataFormat, children, onValidationErrorsChange, onBlur, onChange, ...inputProps }: AppFieldInputProps) {
+export default function ({
+    validationErrors,
+    label,
+    dataFormat,
+    children,
+    onValidationErrorsChange,
+    onBlur,
+    onChange,
+    validateOnBlur = true,
+    validateOnChange = true,
+    ...inputProps }: AppFieldInputProps) {
     const [stateValidationErrors, setStateValidationErrors] = React.useState<string[] | null>(null);
 
     React.useEffect(() => {
@@ -36,14 +48,16 @@ export default function ({ validationErrors, label, dataFormat, children, onVali
     }, [dataFormat, onValidationErrorsChange, validationErrors]);
 
     const handleBlur: React.FocusEventHandler<HTMLInputElement> = React.useCallback((e) => {
-        validateInput(e);
+        if (validateOnBlur)
+            validateInput(e);
         onBlur?.(e);
-    }, [validateInput, onBlur]);
+    }, [validateInput, onBlur, validateOnBlur]);
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = React.useCallback((e) => {
-        validateInput(e);
+        if (validateOnChange)
+            validateInput(e);
         onChange?.(e);
-    }, [validateInput, onChange]);
+    }, [validateInput, onChange, validateOnChange]);
 
     return <Field data-invalid={!!stateValidationErrors}>
         {label &&

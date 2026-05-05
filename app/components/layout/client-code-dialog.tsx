@@ -160,6 +160,7 @@ export function ClientCodeDialog() {
                             dataFormat={dataFormat.code}
                             validationErrors={formValidationErrors?.code}
                             onValidationErrorsChange={handleFormValidationChange}
+                            validateOnBlur={false}
                             required
                         />
                     </div>
