@@ -474,6 +474,17 @@ type ClientCodeNotificationData = {
   message: string;
 };
 
+type UserNotificationData = {
+  notification_type: 'user';
+  type: 'user_waiting_approval' | 'user_registration',
+  'user_id': number,
+  'user_name': string,
+  'user_email': string,
+  'user_role': User['role'],
+  'registered_at': string
+  'message': string
+}
+
 type OtherNotificationData = {
   notification_type: "system";
   title: string;
@@ -486,7 +497,8 @@ type NotificationData =
   | RefundNotificationData
   | DisputeNotificationData
   | OtherNotificationData
-  | ClientCodeNotificationData;
+  | ClientCodeNotificationData
+  | UserNotificationData;
 
 type AppNotification = {
   id: string;
