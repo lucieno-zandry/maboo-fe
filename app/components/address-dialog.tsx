@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
 import getValidationError from "~/lib/get-validation-error";
+import { CountrySelector } from "./custom-components/country-selector";
 
 // Helper to create schema with translated messages
 const createAddressSchema = (t: TFunction) => z.object({
@@ -199,15 +200,15 @@ export function AddressDialog({
                                 validationErrors={formErrors?.postal_code}
                                 required
                             />
-                            <CustomField
+                            <CountrySelector
                                 name="country"
                                 label={t('addresses:country')}
-                                placeholder={t('addresses:country_placeholder')}
                                 defaultValue={address?.country}
+                                required
                                 dataFormat={addressSchema.shape.country}
                                 onValidationErrorsChange={onValidationChange}
                                 validationErrors={formErrors?.country}
-                                required
+                                t={t}
                             />
                         </div>
 
@@ -297,13 +298,12 @@ export default function ({
     }, [errors, props.open]);
 
     const handleValidationChange = useCallback((errors: string[] | null, e: FocusEvent<HTMLInputElement> | string) => {
-        const updatedErrors = getUpdatedFormErrors({
-            formErrors: formErrors,
-            name: typeof e === "string" ? e : e.target.name,
+        setFormErrors(prevErrors => getUpdatedFormErrors({
+            formErrors: prevErrors,
+            name: typeof e === 'string' ? e : e.target.name,
             validationErrors: errors
-        });
-        setFormErrors(updatedErrors);
-    }, [formErrors]);
+        }));
+    }, []);
 
     const canSubmit = useMemo(() => !formErrors, [formErrors]);
 
