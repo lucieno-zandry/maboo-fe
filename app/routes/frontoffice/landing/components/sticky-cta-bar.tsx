@@ -17,6 +17,18 @@ interface StickyCTABarViewProps {
   dismissAriaLabel: string;
 }
 
+interface StickyCTABarViewProps {
+  isVisible: boolean;
+  productName: string;
+  price: string;
+  thumbnailUrl: string | null;
+  onAddToCart: () => void;
+  onDismiss: () => void;
+  quickAddAriaLabel: string;
+  addToCartLabel: string;
+  dismissAriaLabel: string;
+}
+
 export function StickyCTABarView({
   isVisible,
   productName,
@@ -46,7 +58,8 @@ export function StickyCTABarView({
           ) : (
             <div className="sticky-cta__thumb sticky-cta__thumb--placeholder" />
           )}
-          <div>
+          {/* Add a class here to constrain the flex child */}
+          <div className="sticky-cta__info">
             <p className="sticky-cta__name">{productName}</p>
             <p className="sticky-cta__price">{price}</p>
           </div>
@@ -54,7 +67,7 @@ export function StickyCTABarView({
 
         <Button onClick={onAddToCart} size="sm" className="sticky-cta__btn">
           <ShoppingCart className="w-4 h-4 mr-1.5" />
-          {addToCartLabel}
+          <span className="sticky-cta__btn-text">{addToCartLabel}</span>
         </Button>
 
         <button onClick={onDismiss} className="sticky-cta__dismiss" aria-label={dismissAriaLabel}>
@@ -64,6 +77,8 @@ export function StickyCTABarView({
     </div>
   );
 }
+
+// ... StickyCTABar component remains exactly the same ...
 
 interface StickyCTABarProps {
   product: Product;
