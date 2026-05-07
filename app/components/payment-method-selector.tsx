@@ -35,10 +35,10 @@ export const paymentMethods: PaymentMethodOption[] = [
         disabled: true,
         disabledLabelKey: "payment.coming_soon",
     },
-    { value: "paypal", labelKey: "payment.methods.paypal", requiresPhone: false },
-    // { value: "orangemoney", labelKey: "payment.methods.orangemoney", requiresPhone: true },
-    // { value: "airtelmoney", labelKey: "payment.methods.airtelmoney", requiresPhone: true },
-    // { value: "mvola", labelKey: "payment.methods.mvola", requiresPhone: true },
+    // { value: "paypal", labelKey: "payment.methods.paypal", requiresPhone: false },
+    { value: "orangemoney", labelKey: "payment.methods.orangemoney", requiresPhone: false },
+    { value: "airtelmoney", labelKey: "payment.methods.airtelmoney", requiresPhone: true, disabled: true, disabledLabelKey: "payment.coming_soon" },
+    { value: "mvola", labelKey: "payment.methods.mvola", requiresPhone: true, disabled: true, disabledLabelKey: "payment.coming_soon"},
 ];
 
 
