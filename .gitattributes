@@ -1,2 +1,2 @@
-/.github/ merge=ours
-/app/app.css merge=ours
+.github/** merge=ours
+app/app.css merge=ours
