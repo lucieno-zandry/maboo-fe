@@ -122,7 +122,7 @@ export default function Navbar() {
     const appPathname = useAppPathname();
     const { openDialog } = useAuthDialogStore();
 
-    const name: string = get('app_name', 'Alofo');
+    const name: string = get('app_name', '');
     const appLogoUrl: string = get('app_logo', '');
 
     const isUnAuthenticated = useMemo(() => authStatus === "unauthenticated", [authStatus])

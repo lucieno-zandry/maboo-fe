@@ -1,8 +1,8 @@
 export default {
-    app_logo: 'support@alofo.com',
-    app_name: 'Maboo',
-    contact_email: 'support@alofo.com',
-    currency: 'EUR',
+    app_logo: 'support@xyz.com',
+    app_name: '',
+    contact_email: 'support@xyz.com',
+    currency: 'USD',
     maintenance_mode: false,
     client_code_enabled: false,
 } as Record<string, any>
