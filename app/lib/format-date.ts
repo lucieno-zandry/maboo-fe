@@ -1,4 +1,4 @@
-import { usePreferencesStore } from "~/hooks/use-user-preference-store";
+import { usePreferencesStore } from "~/stores/use-user-preference-store";
 import { ALLOWED_LANGUAGES, extractLang } from "./lang-helpers";
 import isCsr from "./is-csr";
 

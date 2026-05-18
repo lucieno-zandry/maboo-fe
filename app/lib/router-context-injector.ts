@@ -2,7 +2,7 @@ import React from 'react';
 import {
     useNavigate,
 } from 'react-router';
-import useRouterStore from '~/hooks/use-router-store';
+import useRouterStore from '~/stores/use-router-store';
 
 const RouterContextInjector = () => {
     const navigate = useNavigate();

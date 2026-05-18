@@ -3,12 +3,12 @@ import { redirect, useFetcher, useLoaderData, useLocation, type LoaderFunctionAr
 import { getProducts } from "~/api/http-requests";
 import { HttpException, type PaginatedResponse } from "~/api/app-fetch";
 import handleHttpExceptionError from "~/lib/handle-http-exception-error";
-import ProductsHeader from "~/components/products/products-header";
-import { ProductGrid } from "~/components/products/product-grid";
+import ProductsHeader from "./components/products-header";
+import { ProductGrid } from "../../../components/product-grid";
 import { useEffect, useRef, useState } from "react";
 import useDebounce from "~/hooks/use-debounce";
 import { LoadMoreButton } from "~/components/custom-components/load-more-button";
-import { ProductGridSkeleton } from "~/components/products/product-grid-skeleton";
+import { ProductGridSkeleton } from "./components/product-grid-skeleton";
 import { getPreferencesFromLoaderFunctionArgs } from "~/lib/app-pathname";
 
 export const loader = async (args: LoaderFunctionArgs) => {
@@ -42,7 +42,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
         }
     }
 };
- 
+
 export default function ProductsPage() {
     const initialData = useLoaderData() as PaginatedResponse<Product>;
     const fetcher = useFetcher<PaginatedResponse<Product>>();

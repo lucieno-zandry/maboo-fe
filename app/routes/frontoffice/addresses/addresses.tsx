@@ -22,7 +22,7 @@ import AddressDialog from "~/components/address-dialog"
 import { toast } from "sonner"
 import AddressCard from "~/routes/frontoffice/addresses/components/address-card"
 import { useUserStore } from "~/hooks/use-user"
-import useAddressStore from "~/hooks/use-address-store"
+import useAddressStore from "~/stores/use-address-store"
 import ConfirmDeleteDialog from "~/routes/frontoffice/addresses/components/confirm-delete-dialog"
 import { HttpException, ValidationException } from "~/api/app-fetch"
 import i18next from "i18next";

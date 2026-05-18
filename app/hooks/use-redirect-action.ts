@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import useRouterStore from "./use-router-store";
+import useRouterStore from "../stores/use-router-store";
 
 type RedirectActionStore = {
     successPathname: string | null,

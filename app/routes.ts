@@ -7,7 +7,7 @@ export default [
     route("/:lang", "routes/config/config-boundary.tsx", [
         route("", "routes/frontoffice/layout.tsx", [
             index("routes/frontoffice/landing/index.tsx"),
-            route("products", "routes/frontoffice/products.tsx"),
+            route("products", "routes/frontoffice/products/products.tsx"),
             route("product/:slug", "routes/frontoffice/product-detail/product-detail.tsx"),
             route("settings", "routes/common/settings.tsx"),
             route("addresses", "routes/frontoffice/addresses/addresses.tsx"),

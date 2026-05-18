@@ -1,4 +1,4 @@
-import { ProductGrid } from "~/components/products/product-grid";
+import { ProductGrid } from "~/components/product-grid";
 import { Button } from "~/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";

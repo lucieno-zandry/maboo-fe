@@ -6,7 +6,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '~/components/ui/select';
-import { defaultPreference, usePreferencesStore } from '~/hooks/use-user-preference-store';
+import { defaultPreference, usePreferencesStore } from '~/stores/use-user-preference-store';
 import { useUserStore } from '~/hooks/use-user';
 import { CircleDollarSign } from 'lucide-react';
 import { useUpdatePreferences } from '~/hooks/use-update-preferences';

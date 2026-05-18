@@ -13,17 +13,14 @@ import frCheckout from "~/routes/frontoffice/checkout/translation/locales/fr.jso
 import enLanding from "~/routes/frontoffice/landing/translation/locales/en.json";
 import frLanding from "~/routes/frontoffice/landing/translation/locales/fr.json";
 
-import enProduct from "./locales/en/product.json";
-import frProduct from "./locales/fr/product.json";
-
 import enSearch from "~/routes/frontoffice/search/translation/locales/en.json";
 import frSearch from "~/routes/frontoffice/search/translation/locales/fr.json";
 
-import enProducts from "./locales/en/products.json";
-import frProducts from "./locales/fr/products.json";
+import enProducts from "~/routes/frontoffice/products/translation/locales/en.json";
+import frProducts from "~/routes/frontoffice/products/translation/locales/fr.json";
 
-import enSettings from "./locales/en/settings.json";
-import frSettings from "./locales/fr/settings.json";
+import enSettings from "~/routes/common/settings/translation/locales/en.json";
+import frSettings from "~/routes/common/settings/translation/locales/fr.json";
 
 import enProductDetail from "~/routes/frontoffice/product-detail/translation/locales/en.json";
 import frProductDetail from "~/routes/frontoffice/product-detail/translation/locales/fr.json";
@@ -52,7 +49,6 @@ i18n
         common: enCommon,
         addresses: enAddresses,
         checkout: enCheckout,
-        product: enProduct,
         search: enSearch,
         products: enProducts,
         settings: enSettings,
@@ -66,7 +62,6 @@ i18n
         common: frCommon,
         addresses: frAddresses,
         checkout: frCheckout,
-        product: frProduct,
         search: frSearch,
         products: frProducts,
         settings: frSettings,

@@ -1,4 +1,4 @@
-import { ProductCard } from "../product-card";
+import { ProductCard } from "~/components/product-card";
 
 interface ProductGridProps {
     products: Product[];

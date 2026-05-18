@@ -1,18 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { TabsContent } from "../ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../components/ui/card";
+import { TabsContent } from "../../../../../components/ui/tabs";
 import React from "react";
 import { useUserStore } from "~/hooks/use-user";
-import ConfirmEmailChangeDialog from "../settings/confirm-email-change-dialog";
 import { updateAuthUser } from "~/api/http-requests";
 import { toast } from "sonner";
-import Field from "../custom-components/field";
-import Button from "../custom-components/button";
+import Field from "../../../../../components/custom-components/field";
+import Button from "../../../../../components/custom-components/button";
 import z from "zod";
 import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import useRedirectAction from "~/hooks/use-redirect-action";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import appPathname from "~/lib/app-pathname";
+import ConfirmEmailChangeDialog from "../confirm-email-change-dialog";
 
 const dataFormat = {
     email: z.email(),
