@@ -9,7 +9,7 @@ export default [
             index("routes/frontoffice/landing/index.tsx"),
             route("products", "routes/frontoffice/products/products.tsx"),
             route("product/:slug", "routes/frontoffice/product-detail/product-detail.tsx"),
-            route("settings", "routes/common/settings.tsx"),
+            route("settings", "routes/common/settings/settings.tsx"),
             route("addresses", "routes/frontoffice/addresses/addresses.tsx"),
             route("checkout", "routes/frontoffice/checkout/checkout.tsx"),
             route("orders", "routes/frontoffice/orders/orders.tsx"),
