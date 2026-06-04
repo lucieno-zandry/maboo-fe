@@ -1,30 +1,6 @@
+import { CtaBannerView } from "wle-ui-package";
 import { Actions } from "./actions";
 import { useTranslation } from "react-i18next";
-
-interface CtaBannerViewProps {
-  eyebrow?: string;
-  headline: string;
-  subline: string;
-  backgroundImageUrl: string | null;
-  related?: LandingAble
-}
-
-export function CtaBannerView({ eyebrow, headline, subline, backgroundImageUrl, related }: CtaBannerViewProps) {
-  return (
-    <section className="cta-banner" id="cta">
-      <div className="cta-banner__bg" aria-hidden>
-        <img src={backgroundImageUrl ?? "/images/cta-banner-bg.jpg"} alt="" className="cta-banner__bg-img" />
-        <div className="cta-banner__bg-overlay" />
-      </div>
-      <div className="cta-banner__content">
-        {eyebrow && <p className="cta-banner__eyebrow">{eyebrow}</p>}
-        <h2 className="cta-banner__headline w-full md:w-[50%]">{headline}</h2>
-        {subline && <p className="cta-banner__sub">{subline}</p>}
-        <Actions related={related} />
-      </div>
-    </section>
-  );
-}
 
 export function CtaBanner({ block }: { block: LandingBlock<CtaBannerContent> }) {
   const { t } = useTranslation("landing");
@@ -42,7 +18,7 @@ export function CtaBanner({ block }: { block: LandingBlock<CtaBannerContent> }) 
       headline={headline}
       subline={subline}
       backgroundImageUrl={backgroundImageUrl}
-      related={related}
+      actions={<Actions />}
     />
   );
 }
