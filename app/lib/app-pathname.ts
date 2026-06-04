@@ -1,6 +1,6 @@
 import { useParams, useSearchParams, type LoaderFunctionArgs } from "react-router";
-import { defaultPreference, usePreferencesStore, type StorePreference } from "~/hooks/use-user-preference-store";
-import i18n from "~/i18n/i18n";
+import { defaultPreference, usePreferencesStore, type StorePreference } from "~/stores/use-user-preference-store";
+import i18n from "~/translation/i18n";
 
 export function getPreferencesFromLoaderFunctionArgs(loaderFunctionArgs: LoaderFunctionArgs): StorePreference {
     const { params, request } = loaderFunctionArgs;

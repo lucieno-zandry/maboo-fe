@@ -2,15 +2,15 @@ import React from 'react';
 import { Badge } from '~/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { useUserStore } from '~/hooks/use-user';
-import LoadingScreen from '~/components/settings/loading-screen';
-import ProfileTab from '~/components/settings-tabs/profile-tab';
-import SecurityTab from '~/components/settings-tabs/security-tab';
-import AccountDetailsTab from '~/components/settings-tabs/account-details-tab';
+import LoadingScreen from './components/loading-screen';
+import ProfileTab from '~/routes/common/settings/components/tabs/profile-tab';
+import SecurityTab from '~/routes/common/settings/components/tabs/security-tab';
+import AccountDetailsTab from '~/routes/common/settings/components/tabs/account-details-tab';
 import getRoleBadgeColor from '~/lib/get-role-badge-color';
-import AccountCard from '~/components/settings/account-card';
-import { PartnerCodeSettings } from '~/components/settings/partner-code-card';
+import AccountCard from './components/account-card';
+import { PartnerCodeSettings } from './components/partner-code-card';
 import { useTranslation } from 'react-i18next';
-import NotFoundErrorPage from './not-found-error-page';
+import NotFoundErrorPage from '../not-found-error-page';
 
 export type SettingsTabProps = {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

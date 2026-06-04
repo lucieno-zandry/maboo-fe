@@ -1,4 +1,4 @@
-import { defaultPreference, type StorePreference } from "~/hooks/use-user-preference-store";
+import { defaultPreference, type StorePreference } from "~/stores/use-user-preference-store";
 
 export default function (preferences: StorePreference): boolean {
     return preferences.currency === defaultPreference.currency &&

@@ -1,7 +1,7 @@
 import { Outlet, redirect, useLoaderData, useParams, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from "react-router";
-import i18n from "~/i18n/i18n";
+import i18n from "~/translation/i18n";
 import { useEffect } from "react";
-import { defaultPreference, usePreferencesStore } from "~/hooks/use-user-preference-store";
+import { defaultPreference, usePreferencesStore } from "~/stores/use-user-preference-store";
 import defaultSettings from "~/lib/default-settings";
 import { fetchUserPreferences, getSettings } from "~/api/http-requests";
 import { ThemeProvider } from "~/components/theme/theme-provider";

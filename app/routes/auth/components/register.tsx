@@ -10,7 +10,7 @@ import getUpdatedFormErrors from "~/lib/get-updated-form-errors";
 import { toast } from "sonner";
 import { ValidationException } from "~/api/app-fetch";
 import BackButton from "~/components/custom-components/back-button";
-import { usePreferencesStore } from "~/hooks/use-user-preference-store";
+import { usePreferencesStore } from "~/stores/use-user-preference-store";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const url = new URL(request.url);

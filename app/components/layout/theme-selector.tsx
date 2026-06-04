@@ -5,7 +5,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '~/components/ui/select';
-import { usePreferencesStore } from '~/hooks/use-user-preference-store';
+import { usePreferencesStore } from '~/stores/use-user-preference-store';
 import { useUserStore } from '~/hooks/use-user';
 import { Sun, Moon, Laptop, Palette } from 'lucide-react';
 import { useUpdatePreferences } from '~/hooks/use-update-preferences';

@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Pencil, Trash2, MapPin, Phone, Building2 } from "lucide-react";
-import useAddressStore from "~/hooks/use-address-store";
+import useAddressStore from "~/stores/use-address-store";
 import { Checkbox } from "../../../../components/ui/checkbox";
 import { useTranslation } from "react-i18next";
 import ConfirmDeleteDialog from "./confirm-delete-dialog";

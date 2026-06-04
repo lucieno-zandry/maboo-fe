@@ -1,87 +1,8 @@
-import { Link } from "react-router";
-import { ArrowRight } from "lucide-react";
 import { useFormatMoney } from "~/lib/format-money";
-import { isCategory } from "../../helpers/landing-able-guards";
-import appPathname, { useAppPathname } from "~/lib/app-pathname";
+import { useAppPathname } from "~/lib/app-pathname";
 import { useTranslation } from "react-i18next";
+import { CollectionItemView } from "wle-ui-package";
 
-// ----------------------------------------------------------------------------
-// View Component (dumb)
-// ----------------------------------------------------------------------------
-type CollectionItemViewProps = {
-    id: number;                 // category id
-    slug: string;              // category slug for the link
-    title: string;             // category title
-    subtitle: string | null;   // from item.subtitle
-    imageUrl: string | null;   // from item.image.url
-    startingPrice: number;     // cheapest variant's effective price (or price)
-    index: number;             // animation delay index
-    formatMoney: (value: number) => string;
-    appPathname: typeof appPathname;
-    fromLabel: string;
-    shopLabel: string;
-};
-
-export function CollectionItemView({
-    slug,
-    title,
-    subtitle,
-    imageUrl,
-    startingPrice,
-    index,
-    formatMoney,
-    appPathname,
-    fromLabel,
-    shopLabel
-}: CollectionItemViewProps) {
-    return (
-        <Link
-            to={appPathname(`/search/${title}`)}
-            className="collection-card"
-            style={{ animationDelay: `${index * 120}ms` }}
-        >
-            {/* Image */}
-            <div className="collection-card__img-wrap">
-                {imageUrl ? (
-                    <img
-                        src={imageUrl}
-                        alt={title}
-                        className="collection-card__img"
-                        loading="lazy"
-                    />
-                ) : (
-                    <div className="collection-card__img collection-card__img--placeholder" />
-                )}
-                <div className="collection-card__img-overlay" />
-            </div>
-
-            {/* Body */}
-            <div className="collection-card__body">
-                <div>
-                    {subtitle && (
-                        <p className="collection-card__subtitle">
-                            {subtitle}
-                        </p>
-                    )}
-                    <h3 className="collection-card__title">
-                        {title}
-                    </h3>
-                </div>
-
-                <div className="collection-card__footer">
-                    <span className="collection-card__price">
-                        {fromLabel} {formatMoney(startingPrice)}
-                    </span>
-
-                    <span className="collection-card__cta">
-                        {shopLabel}{" "}
-                        <ArrowRight className="w-3.5 h-3.5 ml-1 inline-item" />
-                    </span>
-                </div>
-            </div>
-        </Link>
-    );
-}
 
 // ----------------------------------------------------------------------------
 // Smart Component – connects to the actual LandingBlock
@@ -121,9 +42,9 @@ export function CollectionItem({ item, index }: CollectionItemProps) {
             startingPrice={startingPrice}
             index={index}
             formatMoney={formatMoney}
-            appPathname={appPathname}
             fromLabel={t("landing:collections.from")}
             shopLabel={t("landing:collections.shop")}
+            linkTo={appPathname('/search/' + category.title.toLocaleLowerCase())}
         />
     );
 }

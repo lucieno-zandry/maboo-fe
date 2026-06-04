@@ -29,6 +29,7 @@ import { CtaBanner } from "./components/cta-banner/cta-banner";
 
 // ─── CSS ──────────────────────────────────────────────────────────────────────
 import "./landing.css";
+import "wle-ui-package/style.css";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { isProduct } from "./helpers/landing-able-guards";

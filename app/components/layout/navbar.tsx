@@ -16,7 +16,7 @@ import type { loader } from "~/routes/config/config-boundary";
 import { useSettings } from "~/hooks/use-settings";
 import BackButton from "../custom-components/back-button";
 import { ChevronLeft } from "lucide-react";
-import { useAuthDialogStore } from "../stores/use-auth-dialog-store";
+import { useAuthDialogStore } from "../../stores/use-auth-dialog-store";
 
 type NavbarProps = {
     isUnAuthenticated: boolean,

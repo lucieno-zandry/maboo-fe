@@ -1,6 +1,6 @@
 // hooks/use-auth-dialog.ts
 import { useState, useCallback, useEffect } from "react";
-import { useAuthDialogStore, type Step } from "~/components/stores/use-auth-dialog-store";
+import { useAuthDialogStore, type Step } from "~/stores/use-auth-dialog-store";
 import { useBuyNow } from "~/routes/frontoffice/product-detail/hooks/use-buy-now";
 import { HttpException, ValidationException } from "~/api/app-fetch";
 import { attemptEmailVerification, getEmailInfo, logInWithEmail, sendEmailVerificationCode, sendPasswordResetLink, updateAuthUser } from "~/api/http-requests";

@@ -3,7 +3,7 @@ import { useAppPathname } from "~/lib/app-pathname";
 import { checkout } from "~/api/http-requests";
 import { toast } from "sonner";
 import { HttpException } from "~/api/app-fetch";
-import { useAuthDialogStore } from "~/components/stores/use-auth-dialog-store";
+import { useAuthDialogStore } from "~/stores/use-auth-dialog-store";
 import { useState } from "react";
 
 export type BuyNow = ((data: {

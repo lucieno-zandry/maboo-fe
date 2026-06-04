@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { HttpException, ValidationException } from "~/api/app-fetch";
 import { createAddress, getAuthAddresses } from "~/api/http-requests";
-import useAddressStore from "~/hooks/use-address-store";
+import useAddressStore from "~/stores/use-address-store";
 import { useUserStore } from "./use-user";
 
 let promise: Promise<any> | null = null;

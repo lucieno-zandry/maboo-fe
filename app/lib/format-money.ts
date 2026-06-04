@@ -1,5 +1,5 @@
 import { useRouteLoaderData } from "react-router";
-import { usePreferencesStore } from "~/hooks/use-user-preference-store";
+import { usePreferencesStore } from "~/stores/use-user-preference-store";
 import type { loader } from "~/routes/config/config-boundary";
 
 function base(currency: string, language: string, n?: number, fractionDigits: number = 2) {

@@ -6,14 +6,14 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  type LinksFunction,
   type LoaderFunctionArgs,
 } from "react-router";
 
-import type { Route } from "./+types/root";
 import "./app.css";
 import RouterContextInjector from "./lib/router-context-injector";
 import { Toaster } from "./components/ui/sonner";
-import './i18n/i18n';
+import './translation/i18n';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return {
@@ -25,7 +25,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 
-export const links: Route.LinksFunction = () => [
+export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -49,7 +49,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script src="/env.js" />
       </head>
       <body className="custom-scrollbar">
         {children}
@@ -73,7 +72,7 @@ export default function App() {
   </>
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: any) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;

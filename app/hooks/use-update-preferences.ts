@@ -1,6 +1,6 @@
 import { useNavigation, useRevalidator } from "react-router";
 import { useUserStore } from "./use-user";
-import { usePreferencesStore } from "./use-user-preference-store";
+import { usePreferencesStore } from "../stores/use-user-preference-store";
 import { updateUserPreferences } from "~/api/http-requests";
 import { HttpException } from "~/api/app-fetch";
 import { toast } from "sonner";
