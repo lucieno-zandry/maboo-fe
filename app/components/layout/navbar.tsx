@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useLocation } from "react-router"
+import { Link, useLoaderData, useLocation, useNavigate } from "react-router"
 import { useUserStore } from "~/hooks/use-user"
 import { Button } from "../ui/button";
 import UserDropdown from "./user-dropdown";
@@ -29,6 +29,7 @@ type NavbarProps = {
     user: User | null,
     showBackButton: boolean,
     onLogIn: () => void,
+    onBackClick: () => void,
 }
 
 export function NavbarView({
@@ -41,20 +42,25 @@ export function NavbarView({
     user,
     showBackButton,
     onLogIn,
-
+    onBackClick,
 }: NavbarProps) {
     return (
         <header className="flex flex-wrap justify-between items-center px-4 sm:px-8 py-3 shadow-sm bg-background/95 backdrop-blur-md sticky top-0 z-50 gap-4 border-b border-border">
 
             {/* Left Section: Logo, Brand Name & Desktop Links */}
             <div className="flex items-center gap-6 md:gap-8">
-                <h1>
+                <h1 className="flex items-center gap-2.5">
+                    {showBackButton &&
+                        <Button
+                            variant={'ghost'}
+                            onClick={onBackClick}
+                            aria-label={t('common:back_button_aria')}>
+                            <ChevronLeft />
+                        </Button>}
+
                     <Link
                         to={appPathname('')}
-                        className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
-                    >
-                        {showBackButton &&
-                            <ChevronLeft />}
+                        className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
                         {appLogoUrl && (
                             <img
                                 src={appLogoUrl}
@@ -122,6 +128,7 @@ export default function Navbar() {
     const { pathname } = useLocation();
     const appPathname = useAppPathname();
     const { openDialog } = useAuthDialogStore();
+    const navigate = useNavigate();
 
     const name: string = get('app_name', '');
     const appLogoUrl: string = get('app_logo', '');
@@ -149,5 +156,6 @@ export default function Navbar() {
         user={user}
         showBackButton={showBackButton}
         onLogIn={handleLogIn}
+        onBackClick={() => navigate(-1)}
     />
 }
