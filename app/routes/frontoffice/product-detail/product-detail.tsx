@@ -1,6 +1,6 @@
 // routes/frontoffice/product-detail/index.tsx
 import { redirect, useLoaderData } from "react-router";
-import type { LoaderFunctionArgs } from "react-router";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { getProduct } from "~/api/http-requests";
 import { ProductHeader } from "./components/product-header";
 import { ProductImagesGallery } from "./components/product-images-gallery";
@@ -127,4 +127,14 @@ export default function ProductDetailPage() {
             </div>
         </>
     );
+}
+
+export const meta: MetaFunction<typeof loader> = (args) => {
+    const title = args.loaderData?.title;
+    const description = args.loaderData?.description.substring(0, 50);
+
+    return [
+        { title },
+        { name: "description", content: description },
+    ];
 }
