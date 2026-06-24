@@ -40,6 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
     try {
         const cookies = request.headers.get('cookie');
         const parsedCookies = parseCookies(cookies);
+        // const parsedCookies = parseClientCookies();
         const headers: HeadersInit = {};
 
         if (cookies) headers['Cookie'] = cookies;
@@ -118,7 +119,7 @@ export async function action({ request }: ActionFunctionArgs) {
         }
     } catch (e) {
         console.error(e);
-        return { error: e };
+        return { error: e }
     }
 }
 
