@@ -36,7 +36,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 // action for checkout
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ActionFunctionArgs) {
     const cookies = request.headers.get('cookie');
     const parsedCookies = parseCookies(cookies);
     const headers: HeadersInit = {};
