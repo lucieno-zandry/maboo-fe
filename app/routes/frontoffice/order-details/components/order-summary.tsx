@@ -31,7 +31,7 @@ function OrderSummary({ order, statusConfig, method }: { order: Order; statusCon
         })
             .then(response => {
                 if (response.data?.transaction.informations?.payment_url)
-                    location.href = response.data.transaction.informations.payment_url;
+                    location.href = decodeURIComponent(response.data.transaction.informations.payment_url);
             })
             .catch((error) => {
                 if (error instanceof HttpException) {
