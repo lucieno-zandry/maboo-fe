@@ -28,17 +28,18 @@ interface PaymentMethodSelectorProps {
 }
 
 export const paymentMethods: PaymentMethodOption[] = [
-    {
-        value: "card",
-        labelKey: "payment.methods.card",
-        requiresPhone: false,
-        disabled: true,
-        disabledLabelKey: "payment.coming_soon",
-    },
+    // {
+    //     value: "card",
+    //     labelKey: "payment.methods.card",
+    //     requiresPhone: false,
+    //     disabled: true,
+    //     disabledLabelKey: "payment.coming_soon",
+    // },
     // { value: "paypal", labelKey: "payment.methods.paypal", requiresPhone: false },
-    { value: "orangemoney", labelKey: "payment.methods.orangemoney", requiresPhone: false },
-    { value: "airtelmoney", labelKey: "payment.methods.airtelmoney", requiresPhone: true, disabled: true, disabledLabelKey: "payment.coming_soon" },
-    { value: "mvola", labelKey: "payment.methods.mvola", requiresPhone: true, disabled: true, disabledLabelKey: "payment.coming_soon"},
+    { value: "vanilla_pay", labelKey: "payment.methods.vanilla_pay", requiresPhone: false },
+    // { value: "orangemoney", labelKey: "payment.methods.orangemoney", requiresPhone: true },
+    // { value: "airtelmoney", labelKey: "payment.methods.airtelmoney", requiresPhone: true },
+    // { value: "mvola", labelKey: "payment.methods.mvola", requiresPhone: true },
 ];
 
 
