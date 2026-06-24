@@ -7,6 +7,7 @@ import CheckoutPageContent from "./components/checkout-page-content";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useCheckoutStore, { defaultCheckoutStoreState } from "./stores/use-checkout-store";
+import { log } from "console";
 
 // loader as before
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -37,6 +38,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 // action for checkout
 export async function action({ request }: ActionFunctionArgs) {
+    log('ACTION START');
+
+
     try {
         const cookies = request.headers.get('cookie');
         const parsedCookies = parseCookies(cookies);
